@@ -1,26 +1,683 @@
 @import "tailwindcss";
+@config "../tailwind.config.js";
 
+/*
+ * Global theme tokens — light / dark via prefers-color-scheme (Tailwind darkMode: media).
+ * --bg-main, --text-main, --card-bg, --card-border: canonical surfaces & text.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --bg-main: #ffffff;
+  --text-main: #111827;
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --bg: var(--bg-main);
+  --text: var(--text-main);
+  --muted: #475569;
+  --card: var(--card-bg);
+  --border: var(--card-border);
+  --primary: #1e293b;
+  --accent: #2563eb;
+  --accent-soft: #eff6ff;
+
+  --surface-muted: #f8fafc;
+  --surface-muted-strong: #f1f5f9;
+  --cta-band: #1e293b;
+  --hero-from: var(--primary);
+  --hero-to: var(--accent);
+  --header-surface: rgb(255 255 255 / 0.93);
+  --image-placeholder: color-mix(in srgb, var(--border) 55%, var(--muted) 45%);
+  --badge-bg: var(--accent-soft);
+  --badge-border: color-mix(in srgb, var(--accent) 22%, var(--border));
+  --btn-on-light-text: #111827;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 12px 40px rgba(0, 0, 0, 0.08);
+  --shadow-cta: 0 10px 40px rgba(0, 0, 0, 0.15);
+  /* Banner gelap dengan teks putih — tidak mengikuti --primary (yang berubah di dark mode). */
+  --cta-mid-from: #0f172a;
+  --cta-mid-to: #1e40af;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg-main: #020617;
+    --text-main: #e5e7eb;
+    --card-bg: #0f172a;
+    --card-border: rgba(255, 255, 255, 0.08);
+
+    --bg: var(--bg-main);
+    --text: var(--text-main);
+    --muted: #94a3b8;
+    --card: var(--card-bg);
+    --border: var(--card-border);
+    --primary: #e5e7eb;
+    --accent: #3b82f6;
+    --accent-soft: rgba(59, 130, 246, 0.15);
+
+    --surface-muted: #0f172a;
+    --surface-muted-strong: #1e293b;
+    --cta-band: #020617;
+    --hero-from: #020617;
+    --hero-to: #1e40af;
+    --header-surface: rgb(15 23 42 / 0.88);
+    --image-placeholder: color-mix(in srgb, var(--card) 70%, var(--border));
+    --badge-bg: color-mix(in srgb, var(--accent-soft) 55%, var(--card));
+    --badge-border: color-mix(in srgb, var(--accent) 35%, var(--border));
+    --btn-on-light-text: #0f172a;
+    --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.35);
+    --shadow-card-hover: 0 12px 44px rgba(0, 0, 0, 0.48);
+    --shadow-cta: 0 10px 44px rgba(0, 0, 0, 0.42);
+    --cta-mid-from: #020617;
+    --cta-mid-to: #1d4ed8;
   }
 }
 
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
+  --color-muted: var(--muted);
+  --color-card: var(--card);
+  --color-border: var(--border);
+  --color-bg-main: var(--bg-main);
+  --color-text-main: var(--text-main);
+  --color-card-bg: var(--card-bg);
+  --color-card-border: var(--card-border);
+  --color-primary: var(--primary);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-muted-bg: var(--surface-muted);
+  --color-muted-bg-strong: var(--surface-muted-strong);
+  --color-cta-band: var(--cta-band);
+  --color-brand: var(--primary);
+  --color-brand-accent: var(--accent);
+  --color-brand-hover: var(--accent);
+  --color-brand-contrast: var(--btn-on-light-text);
+  --color-header-surface: var(--header-surface);
+  --color-image-placeholder: var(--image-placeholder);
+  --color-badge-bg: var(--badge-bg);
+  --color-badge-border: var(--badge-border);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html {
+  color-scheme: light dark;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/*
+ * Kartu produk B2B — color-scheme mengikuti prefers-color-scheme; warna permukaan dari Tailwind di komponen.
+ */
+.dark-card {
+  color-scheme: light dark;
+}
+
+/*
+ * Hero stats — selalu mode gelap (tidak mengikuti prefers-color-scheme perangkat).
+ */
+.hero-stats-section {
+  color-scheme: dark;
+  background: linear-gradient(180deg, #0b1220 0%, #0f1b2d 100%);
+}
+
+.hero-stats-section .card-stats-tile {
+  color-scheme: dark;
+  background: rgba(20, 25, 35, 0.72) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 22px 48px -20px rgba(0, 0, 0, 0.65),
+    0 10px 28px -14px rgba(0, 0, 0, 0.45);
+}
+
+@media (max-width: 767px) {
+  .hero-stats-section .card-stats-tile {
+    border-color: rgba(255, 255, 255, 0.072) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.058),
+      0 14px 34px -18px rgba(0, 0, 0, 0.52),
+      0 8px 20px -12px rgba(0, 0, 0, 0.36);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-stats-section .card-stats-tile:hover {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 32px 64px -24px rgba(0, 0, 0, 0.72),
+      0 14px 36px -16px rgba(0, 0, 0, 0.5) !important;
+  }
+}
+
+.hero-stats-section .card-stats__value,
+.hero-stats-section .card-stats__label {
+  color: #ffffff !important;
+}
+
+.hero-stats-section .card-stats__hint {
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+
+/* Layanan ringkas — kartu glass mengikuti tema sistem */
+.layanan-glass-card {
+  color-scheme: dark;
+  position: relative;
+  background: rgba(18, 23, 32, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.075),
+    0 24px 52px -22px rgba(0, 0, 0, 0.68),
+    0 12px 32px -16px rgba(0, 0, 0, 0.48);
+  transition:
+    transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.38s ease !important;
+}
+
+@media (prefers-color-scheme: light) {
+  .layanan-glass-card {
+    color-scheme: light;
+    background: color-mix(in srgb, var(--card-bg) 92%, rgba(59, 130, 246, 0.06));
+    border: 1px solid var(--card-border);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      0 16px 40px -18px rgba(15, 23, 42, 0.1),
+      0 8px 24px -12px rgba(15, 23, 42, 0.06);
+  }
+}
+
+.layanan-glass-card::before {
+  content: "";
+  position: absolute;
+  left: clamp(1rem, 3vw, 1.75rem);
+  right: clamp(1rem, 3vw, 1.75rem);
+  top: 0;
+  height: 1px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.12) 42%,
+    rgba(125, 211, 252, 0.2) 50%,
+    rgba(255, 255, 255, 0.12) 58%,
+    transparent
+  );
+  opacity: 0.88;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Kutipan penutup — aksen atas via pseudo (tanpa span di dalam teks) */
+.layanan-quote-panel {
+  position: relative;
+}
+.layanan-quote-panel::before {
+  content: "";
+  position: absolute;
+  left: clamp(1.25rem, 4vw, 2.5rem);
+  top: 0;
+  width: 2.75rem;
+  height: 1px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(56, 189, 248, 0.45),
+    rgba(125, 211, 252, 0.12),
+    transparent
+  );
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .layanan-glass-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, 0.118);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 34px 68px -26px rgba(0, 0, 0, 0.76),
+      0 16px 40px -18px rgba(0, 0, 0, 0.52),
+      0 0 0 1px rgba(56, 189, 248, 0.055);
+  }
+
+  /* Sentuhan: perangkat tanpa hover tetap dapat angkat kartu + shimmer saat menekan */
+  @media (hover: none) {
+    .layanan-glass-card:active {
+      transform: translateY(-3px);
+      border-color: rgba(255, 255, 255, 0.118);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 34px 68px -26px rgba(0, 0, 0, 0.76),
+        0 16px 40px -18px rgba(0, 0, 0, 0.52),
+        0 0 0 1px rgba(56, 189, 248, 0.055);
+    }
+  }
+
+  @media (prefers-color-scheme: light) {
+    .layanan-glass-card:hover {
+      border-color: color-mix(in srgb, var(--accent) 38%, var(--card-border));
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 1),
+        0 28px 56px -22px rgba(15, 23, 42, 0.14),
+        0 14px 36px -16px rgba(15, 23, 42, 0.09),
+        0 0 0 1px rgba(37, 99, 235, 0.14);
+    }
+
+    @media (hover: none) {
+      .layanan-glass-card:active {
+        border-color: color-mix(in srgb, var(--accent) 38%, var(--card-border));
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 1),
+          0 28px 56px -22px rgba(15, 23, 42, 0.14),
+          0 14px 36px -16px rgba(15, 23, 42, 0.09),
+          0 0 0 1px rgba(37, 99, 235, 0.14);
+      }
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .layanan-glass-card:hover {
+    transform: none;
+    border-color: rgba(255, 255, 255, 0.085);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.075),
+      0 24px 52px -22px rgba(0, 0, 0, 0.68),
+      0 12px 32px -16px rgba(0, 0, 0, 0.48);
+  }
+
+  @media (prefers-color-scheme: light) {
+    .layanan-glass-card:hover {
+      border-color: var(--card-border);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        0 16px 40px -18px rgba(15, 23, 42, 0.1),
+        0 8px 24px -12px rgba(15, 23, 42, 0.06);
+    }
+  }
+}
+
+@keyframes layanan-touch-shimmer {
+  0% {
+    transform: translateY(-42%);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(118%);
+    opacity: 0.85;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-42%);
+    opacity: 0;
+  }
+}
+
+/* Highlight vertikal naik–turun saat hover / sentuh */
+.layanan-card-shimmer-overlay {
+  pointer-events: none;
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.layanan-card-shimmer-overlay::before {
+  content: "";
+  position: absolute;
+  left: 8%;
+  width: 84%;
+  height: 52%;
+  top: -55%;
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 38%,
+    rgba(125, 211, 252, 0.18) 50%,
+    rgba(255, 255, 255, 0.06) 62%,
+    transparent 100%
+  );
+  filter: blur(10px);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .layanan-glass-card:active .layanan-card-shimmer-overlay::before {
+    animation: layanan-touch-shimmer 2.2s cubic-bezier(0.42, 0, 0.58, 1) infinite;
+  }
+
+  @media (hover: hover) {
+    .layanan-glass-card:hover .layanan-card-shimmer-overlay::before {
+      animation: layanan-touch-shimmer 2.2s cubic-bezier(0.42, 0, 0.58, 1) infinite;
+    }
+  }
+}
+
+/*
+ * Lightbox gambar layanan: mengurangi drag / menu konteks / seleksi dari halaman.
+ * Tangkapan layar tingkat OS umumnya tidak dapat diblokir dari web.
+ * Teks peringatan hak cipta di atas dikaitkan dengan kombinasi tombol tangkapan (lihat komponen).
+ */
+.layanan-lightbox-asset {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+@media print {
+  .layanan-lightbox {
+    display: none !important;
+  }
+}
+
+html {
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: calc(3.5rem + env(safe-area-inset-top, 0px));
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Hero (#beranda): selalu mode gelap — tidak mengikuti prefers-color-scheme perangkat */
+.hero-section-fixed-dark {
+  color-scheme: dark;
+}
+
+@keyframes fadeUpSoft {
+  from {
+    opacity: 0;
+    transform: translateY(0.625rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/*
+ * Global `transition` includes transform; on mobile WebKit that can break stable
+ * compositing untuk elemen fixed / animasi.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  *,
+  *::before,
+  *::after {
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease,
+      opacity 0.25s ease,
+      transform 0.2s ease;
+  }
+
+  /*
+   * Section layanan (#layanan): transisi `opacity` global membuat stagger Framer Motion
+   * sering macet / tidak pernah mencapai opacity 1 di Safari & Chrome mobile.
+   * Sertakan elemen #layanan itu sendiri — motion.section punya id ini dan bukan cocok #layanan *.
+   */
+  #layanan,
+  #layanan * {
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  #layanan .layanan-glass-card {
+    transition:
+      transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.38s ease !important;
+  }
+
+  /*
+   * Section keunggulan (#keunggulan): sama seperti #layanan — FM stagger di HP/Safari
+   * bisa macet di opacity 0 jika transisi opacity global ikut campur.
+   */
+  #keunggulan,
+  #keunggulan * {
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  /* Hero stats — sama seperti #layanan: jangan transisi opacity/transform global vs Framer Motion */
+  .hero-stats-section * {
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  /*
+   * Hero marquee (CSS transform): transisi `transform` global mengganggu keyframes carousel.
+   */
+  #beranda .hero-marquee-viewport,
+  #beranda .hero-marquee-viewport * {
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  #beranda .hero-marquee-track {
+    transition: none !important;
+  }
+
+  #beranda .hero-content-enter {
+    opacity: 0;
+    animation: fadeUpSoft 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+}
+
+/*
+ * Layar sempit: hindari opacity di keyframe (Safari mobile + FM/CSS global);
+ * tetap beri gerakan masuk dari translateY seperti desktop.
+ */
+@keyframes product-card-in-mobile {
+  from {
+    transform: translateY(12px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes footer-content-in-mobile {
+  from {
+    transform: translateY(10px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
+  .animate-product-card-in {
+    opacity: 1 !important;
+    animation: product-card-in-mobile 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+  }
+
+  .animate-footer-content-in {
+    opacity: 1 !important;
+    animation: footer-content-in-mobile 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+  }
+}
+
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+  .animate-product-card-in,
+  .animate-footer-content-in {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+
+  .hero-content-enter {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  #beranda .hero-marquee-track {
+    animation: none !important;
+    transform: translate3d(0, 0, 0) !important;
+    will-change: auto !important;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@keyframes product-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-product-card-in {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-product-card-in {
+    animation: product-card-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-product-card-in {
+    opacity: 1;
+    animation: none;
+  }
+}
+
+@keyframes footer-content-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-footer-content-in {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-footer-content-in {
+    animation: footer-content-in 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-footer-content-in {
+    opacity: 1;
+    animation: none;
+  }
+}
+
+@keyframes partner-marquee-ltr {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.partner-marquee-mask {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 6%,
+    black 94%,
+    transparent
+  );
+}
+
+.partner-marquee-track {
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .partner-marquee-track {
+    animation: partner-marquee-ltr 42s linear infinite;
+    will-change: transform;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .partner-marquee-track {
+    animation: none;
+    transform: none;
+  }
+}
+
+@keyframes customer-marquee-rtl {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.customer-marquee-track {
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .customer-marquee-track {
+    animation: customer-marquee-rtl 36s linear infinite;
+    will-change: transform;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .customer-marquee-track {
+    animation: none;
+    transform: none;
+  }
 }
