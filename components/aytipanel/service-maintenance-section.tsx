@@ -354,7 +354,7 @@ export function ServiceMaintenanceSection({
           </p>
         </div>
 
-        <div className="mt-5 grid grid-cols-1 items-stretch gap-5 sm:mt-6 sm:gap-5 md:mt-7 md:grid-cols-3 md:gap-5 xl:gap-6">
+        <div className="-mt-20 grid grid-cols-1 items-stretch gap-5 sm:mt-6 sm:gap-5 md:mt-7 md:grid-cols-3 md:gap-5 xl:gap-6">
           {cards.map((card, cardIndex) => (
             <ServiceMaintenanceCardArticle
               key={`${card.title}-${cardIndex}`}

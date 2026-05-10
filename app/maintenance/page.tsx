@@ -28,12 +28,12 @@ export default async function MaintenancePage() {
   const waHref = generateWhatsAppLink(settings.maintenanceWhatsAppMessage, waDigits);
 
   return (
-    <main className="relative isolate flex min-h-[100dvh] items-start justify-center overflow-hidden bg-slate-100 px-4 pb-14 pt-[5.75rem] text-slate-900 sm:pt-24 dark:bg-black dark:text-slate-100">
+    <main className="relative isolate flex min-h-[100dvh] items-start justify-center overflow-hidden bg-slate-100 px-4 pb-14 pt-[4.75rem] text-slate-900 sm:pt-[4.75rem] md:pt-20 dark:bg-black dark:text-slate-100">
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(55%_45%_at_12%_10%,rgba(2,132,199,0.16),transparent_65%),radial-gradient(65%_50%_at_88%_90%,rgba(217,119,6,0.08),transparent_70%),linear-gradient(180deg,#e2e8f0_0%,#f8fafc_40%,#f1f5f9_100%)] dark:bg-[radial-gradient(55%_45%_at_12%_10%,rgba(56,189,248,0.16),transparent_65%),radial-gradient(65%_50%_at_88%_90%,rgba(245,158,11,0.1),transparent_70%),linear-gradient(180deg,#010409_0%,#020617_40%,#020617_100%)]" />
       <div className="pointer-events-none absolute inset-0 -z-10 bg-white/20 dark:bg-black/35" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-[linear-gradient(180deg,transparent,rgba(226,232,240,0.8))] dark:bg-[linear-gradient(180deg,transparent,rgba(2,6,23,0.95))]" />
 
-      <section className="relative mt-6 w-full max-w-2xl rounded-3xl border border-slate-300/80 bg-white/88 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.18)] backdrop-blur-xl sm:mt-7 sm:p-10 dark:border-white/20 dark:bg-black/80 dark:shadow-[0_30px_120px_rgba(0,0,0,0.95)] motion-safe:animate-[premium-page-reveal_420ms_var(--ease-premium-soft)_both]">
+      <section className="relative mt-0 w-full max-w-2xl rounded-3xl border border-slate-300/80 bg-white/88 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.18)] backdrop-blur-xl sm:mt-0 sm:p-10 md:mt-2 dark:border-white/20 dark:bg-black/80 dark:shadow-[0_30px_120px_rgba(0,0,0,0.95)] motion-safe:animate-[premium-page-reveal_420ms_var(--ease-premium-soft)_both]">
         <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-b from-white/60 via-transparent to-slate-100/40 dark:from-white/[0.06] dark:to-black/25" />
         <div className="relative">
         <div className="inline-flex items-center gap-2 rounded-full border border-sky-300/65 bg-sky-500/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-sky-900 dark:border-sky-100/45 dark:bg-sky-300/20 dark:text-white">

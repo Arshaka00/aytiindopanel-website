@@ -88,8 +88,8 @@
       "disableVideoBackground": false
     },
     "redirects": [],
-    "published": false,
-    "maintenanceMode": true,
+    "published": true,
+    "maintenanceMode": false,
     "maintenanceHeadline": "Website Sedang Dalam Pemeliharaan",
     "maintenanceSubtext": "Kami sedang melakukan peningkatan sistem untuk pengalaman yang lebih baik. Tim kami tetap standby untuk membantu kebutuhan proyek Anda.",
     "maintenanceShowWhatsApp": true,
