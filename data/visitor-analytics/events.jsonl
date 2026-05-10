@@ -1729,3 +1729,6 @@
 {"ts":"2026-05-10T19:14:23.872Z","path":"/","sid":"a354cc3b-9005-4760-bef1-a0c1d2a3e0fe","browser":"Chrome","device":"desktop","country":"—","city":"—","referrerHost":"172.20.10.6","referrerKind":"other","kind":"pageview"}
 {"ts":"2026-05-10T19:14:26.510Z","path":"/","sid":"a354cc3b-9005-4760-bef1-a0c1d2a3e0fe","browser":"Chrome","device":"desktop","country":"—","city":"—","referrerHost":"172.20.10.6","referrerKind":"other","kind":"pageview"}
 {"ts":"2026-05-10T19:15:31.278Z","path":"/","sid":"a354cc3b-9005-4760-bef1-a0c1d2a3e0fe","browser":"Chrome","device":"desktop","country":"—","city":"—","referrerHost":"172.20.10.6","referrerKind":"other","kind":"pageview"}
+{"ts":"2026-05-10T19:19:52.551Z","path":"/","sid":"e77da747-92a2-4fb9-aa19-a89e7f3b988c","browser":"Chrome","device":"desktop","country":"—","city":"—","referrerHost":"localhost","referrerKind":"other","kind":"pageview"}
+{"ts":"2026-05-10T19:19:52.553Z","path":"/","sid":"e77da747-92a2-4fb9-aa19-a89e7f3b988c","browser":"Chrome","device":"desktop","country":"—","city":"—","referrerHost":"localhost","referrerKind":"other","kind":"visit"}
+{"ts":"2026-05-10T19:19:58.481Z","path":"/","sid":"e77da747-92a2-4fb9-aa19-a89e7f3b988c","browser":"Chrome","device":"desktop","country":"—","city":"—","referrerHost":"localhost","referrerKind":"other","kind":"pageview"}
