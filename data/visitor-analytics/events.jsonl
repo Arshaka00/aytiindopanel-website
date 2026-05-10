@@ -1444,3 +1444,4 @@
 {"ts":"2026-05-10T17:21:31.772Z","path":"/proses/survey","sid":"74a2f7c8-d0c4-4aa8-866d-2ff6bd998d54","browser":"Safari","device":"mobile","country":"—","city":"—","referrerHost":"172.20.10.6","referrerKind":"other","kind":"pageview"}
 {"ts":"2026-05-10T17:21:40.951Z","path":"/","sid":"2f39f061-60ed-4918-b475-ed71b0afe120","browser":"Chrome","device":"desktop","country":"—","city":"—","referrerHost":"172.20.10.6","referrerKind":"other","kind":"pageview"}
 {"ts":"2026-05-10T17:21:48.935Z","path":"/","sid":"e77da747-92a2-4fb9-aa19-a89e7f3b988c","browser":"Chrome","device":"desktop","country":"—","city":"—","referrerHost":"localhost","referrerKind":"other","kind":"pageview"}
+{"ts":"2026-05-10T17:24:44.003Z","path":"/proses/survey","sid":"74a2f7c8-d0c4-4aa8-866d-2ff6bd998d54","browser":"Safari","device":"mobile","country":"—","city":"—","referrerHost":"172.20.10.6","referrerKind":"other","kind":"pageview"}
