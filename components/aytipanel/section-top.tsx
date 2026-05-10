@@ -47,13 +47,13 @@ export function SectionTop({
           aria-hidden
         />
         <div className="hero-overlay-top-hairline pointer-events-none absolute inset-x-0 top-0 z-[1] h-px" aria-hidden />
-        <div className="relative z-10 mx-auto flex w-full min-w-0 max-w-6xl flex-1 items-start pl-[max(1.25rem,env(safe-area-inset-left,0px))] pr-[max(1.25rem,env(safe-area-inset-right,0px))] pt-2 sm:pl-6 sm:pr-6 sm:pt-3 md:items-center md:px-8 md:pt-0">
+        <div className="hero-layout-shell relative z-10 mx-auto flex w-full min-w-0 max-w-6xl flex-1 items-start pl-[max(1.25rem,env(safe-area-inset-left,0px))] pr-[max(1.25rem,env(safe-area-inset-right,0px))] pt-2 sm:pl-6 sm:pr-6 sm:pt-3 md:items-center md:px-8 md:pt-0">
           <div className="hero-content-enter w-full drop-shadow-[0_3px_8px_rgba(2,7,18,0.62)]">
             <div className="mx-auto flex w-full min-w-0 max-w-[min(100%,56.25rem)] flex-col text-left">
               <div className="hero-content-stack mt-5 flex flex-col sm:mt-6 md:mt-0">
-                <div className="flex flex-col gap-2 md:gap-3">
+                <div className="hero-title-intro-block flex flex-col gap-2 md:gap-3">
                   <div className="space-y-1.5 md:space-y-2">
-                  <div className="-mt-3 -translate-y-3 flex w-full items-center justify-center gap-2.5 will-change-transform sm:-mt-4 sm:translate-y-0 sm:gap-3.5 md:-mt-6 md:-translate-y-2 md:gap-4 lg:-mt-8 lg:-translate-y-4">
+                  <div className="hero-eyebrow-row -mt-3 -translate-y-3 flex w-full items-center justify-center gap-2.5 will-change-transform sm:-mt-4 sm:translate-y-0 sm:gap-3.5 md:-mt-6 md:-translate-y-2 md:gap-4 lg:-mt-8 lg:-translate-y-4">
                     <span
                       className="h-px min-w-[1.25rem] flex-1 rounded-full bg-gradient-to-r from-transparent via-sky-400/30 to-sky-300/55 max-[360px]:max-w-[2.25rem] sm:max-w-none"
                       aria-hidden
@@ -114,7 +114,7 @@ export function SectionTop({
 
                 <div className="mx-auto w-full min-w-0 space-y-4 pt-3 text-left md:space-y-5 md:pt-4">
                   <div
-                    className="h-px w-full max-w-[16rem] rounded-full bg-gradient-to-r from-transparent via-sky-300/45 to-transparent md:max-w-[20rem]"
+                    className="hero-intro-divider h-px w-full max-w-[16rem] rounded-full bg-gradient-to-r from-transparent via-sky-300/45 to-transparent md:max-w-[20rem]"
                     aria-hidden
                   />
                   <div className="hero-intro-phone w-full min-w-0 max-w-[min(100%,42rem)] text-pretty text-left">
@@ -147,7 +147,7 @@ export function SectionTop({
                   </div>
                 </div>
 
-                <div className="mt-7 flex w-full min-w-0 flex-col gap-y-0.5 pt-px md:mt-8 md:gap-y-4 md:pt-0">
+                <div className="hero-process-block mt-7 flex w-full min-w-0 flex-col gap-y-0.5 pt-px md:mt-8 md:gap-y-4 md:pt-0">
                   <div
                     id="proses"
                     className="mx-auto w-full min-w-0 scroll-mt-[max(5rem,env(safe-area-inset-top,0px)+4.5rem)] space-y-3 py-0.5 text-center md:scroll-mt-[5.25rem] md:space-y-4 md:py-2.5"
