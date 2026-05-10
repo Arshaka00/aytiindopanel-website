@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 56" fill="none" aria-hidden="true">
+  <rect width="160" height="56" rx="10" fill="#faf5ff"/>
+  <path fill="#7c3aed" d="M44 20h72v24H44V20Zm8 8h20v8H52v-8Zm28 0h20v8H80v-8Z"/>
+  <path fill="#a78bfa" d="M56 26h8v4h-8v-4Zm40 0h8v4h-8v-4Z"/>
+  <text x="80" y="52" text-anchor="middle" fill="#5b21b6" font-family="system-ui,sans-serif" font-size="8" font-weight="700">RETAIL</text>
+</svg>

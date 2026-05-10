@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 56" fill="none" aria-hidden="true">
+  <rect width="160" height="56" rx="10" fill="#ecfdf5"/>
+  <path stroke="#059669" stroke-width="2" d="M72 18v8M68 22h8"/>
+  <rect x="52" y="30" width="56" height="18" rx="4" stroke="#047857" stroke-width="2" fill="#d1fae5"/>
+  <path fill="#10b981" d="M76 36h8v6h-8v-6Z"/>
+  <text x="80" y="52" text-anchor="middle" fill="#047857" font-family="system-ui,sans-serif" font-size="7.5" font-weight="700">PHARMA</text>
+</svg>

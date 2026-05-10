@@ -1,5 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { cookies } from "next/headers";
+import { Geist, Geist_Mono, Sora } from "next/font/google";
+import { SiteAnalyticsScripts } from "@/components/common/site-analytics-scripts";
+import { SiteJsonLd } from "@/components/common/site-json-ld";
+import { SiteHeader } from "@/components/aytipanel/site-header";
+import { SiteContentAutoRefresh } from "@/components/common/site-content-auto-refresh";
+import { VisitorAnalyticsTracker } from "@/components/common/visitor-analytics-tracker";
+import { HeroCrystalIceFilters } from "@/components/common/hero-crystal-ice-filters";
+import { UaClassFlags } from "@/components/common/ua-class-flags";
+import { SiteCmsRoot } from "@/components/site-cms/site-cms-root";
+import { validateRuntimeEnvOrThrow } from "@/lib/env-validate";
+import { getDraftSiteContent, getSiteContent } from "@/lib/site-content";
+import { getPreviewCookieName, verifyPreviewToken } from "@/lib/preview-token";
+import { resolveOgImageUrl } from "@/lib/site-seo-resolve";
+import { resolvePublicSiteOrigin } from "@/lib/site-url-resolve";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,31 +26,126 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const sora = Sora({
+  variable: "--font-sora",
+  subsets: ["latin"],
+  /** Intro hero & judul — bobot tubuh + tebal selaras sistem tipografi hero */
+  weight: ["400", "500", "600", "700", "800"],
+});
+
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
 };
 
-export const metadata: Metadata = {
-  title:
-    "Aytipanel — Panel Pendingin, Cold Storage & Cooling System | PT Nusantara Pendingin Sejahtera",
-  description:
-    "Produksi sandwich panel, instalasi cold room & sistem refrigerasi industri. Mitra teknik PT Nusantara Pendingin Sejahtera.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const content = await getSiteContent();
+  const ss = content.siteSettings;
+  const seo = ss.seoContent;
+  const base = resolvePublicSiteOrigin(ss.siteUrl);
+  const titleSuffix = " - sandwich panel & refrigerasi sistem";
+  const titleBase =
+    seo.metaTitle.trim() ||
+    `${ss.siteName.trim() || "PT AYTI INDO PANEL"}${titleSuffix}`;
+  const desc =
+    seo.metaDescription.trim() ||
+    "Produksi sandwich panel, instalasi cold room & sistem refrigerasi industri.";
+  const kw = seo.keywords
+    .split(/[,;\n]+/)
+    .map((k) => k.trim())
+    .filter(Boolean);
 
-export default function RootLayout({
+  const ogDefault = resolveOgImageUrl(content, "");
+  // Samakan dengan header: bila favicon/apple-touch tidak diset di CMS,
+  // fallback otomatis ke logoLight (lalu logoDark) supaya logo header & favicon
+  // selalu konsisten secara default.
+  const FALLBACK_HEADER_LOGO = "/images/logo_ayti.png";
+  const rawLight = ss.brandAssets.logoLight?.trim() ?? "";
+  const rawDark = ss.brandAssets.logoDark?.trim() ?? "";
+  const headerLogoSrc = rawLight || rawDark || FALLBACK_HEADER_LOGO;
+  const fav = ss.brandAssets.favicon.trim() || headerLogoSrc;
+  const apple = ss.brandAssets.appleTouchIcon.trim() || headerLogoSrc;
+  const verifyGoogle = ss.analytics.googleSiteVerification.trim();
+
+  const globalNoIndex =
+    ss.seoControl.stagingMode === true || ss.seoControl.allowIndexing === false;
+
+  return {
+    metadataBase: base,
+    title: titleBase,
+    description: desc,
+    ...(kw.length ? { keywords: kw } : {}),
+    ...(verifyGoogle ? { verification: { google: verifyGoogle } } : {}),
+    robots: globalNoIndex ? { index: false, follow: false } : { index: true, follow: true },
+    icons: {
+      icon: fav,
+      apple,
+    },
+    openGraph: {
+      type: "website",
+      locale: "id_ID",
+      url: base.href,
+      siteName: ss.siteName,
+      title: titleBase,
+      description: desc,
+      images: [
+        {
+          url: ogDefault,
+          width: 1200,
+          height: 630,
+          alt: ss.siteName,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: titleBase,
+      description: desc,
+    },
+  };
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  validateRuntimeEnvOrThrow();
+  const cookieStore = await cookies();
+  const previewToken = cookieStore.get(getPreviewCookieName())?.value ?? "";
+  const previewMode = verifyPreviewToken(previewToken);
+  const content = previewMode ? await getDraftSiteContent() : await getSiteContent();
+
+  const pm = content.siteSettings.performanceMode;
+
   return (
     <html
       lang="id"
-      className={`${geistSans.variable} ${geistMono.variable} h-full scroll-smooth bg-background antialiased`}
+      suppressHydrationWarning
+      data-performance-lightweight={pm.lightweightMode ? "1" : "0"}
+      data-performance-no-anim={pm.disableHeavyAnimations ? "1" : "0"}
+      data-performance-no-video={pm.disableVideoBackground ? "1" : "0"}
+      className={`${geistSans.variable} ${geistMono.variable} ${sora.variable} h-full scroll-smooth bg-background antialiased`}
     >
-      <body className="flex min-h-[100dvh] flex-col overflow-x-clip bg-background text-foreground">
-        <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+      <body className="ayti-title-cold-scope flex min-h-[100dvh] flex-col overflow-x-clip bg-background text-foreground">
+        <HeroCrystalIceFilters />
+        <SiteAnalyticsScripts analytics={content.siteSettings.analytics} />
+        <SiteJsonLd content={content} />
+        <UaClassFlags />
+        <SiteCmsRoot>
+          <VisitorAnalyticsTracker />
+          <SiteContentAutoRefresh />
+          <SiteHeader
+            header={content.header}
+            homeLayout={content.homeLayout}
+            siteContent={content}
+            siteSettings={content.siteSettings}
+          />
+          <div className="flex min-h-0 flex-1 flex-col pt-[var(--site-header-height,4.25rem)]">
+            {children}
+          </div>
+        </SiteCmsRoot>
       </body>
     </html>
   );

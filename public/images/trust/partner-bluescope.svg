@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 56" fill="none" aria-hidden="true">
+  <rect width="160" height="56" rx="10" fill="#f3f4f6"/>
+  <path fill="#475569" d="M36 38V22l44-6 44 6v16l-44 6-44-6Zm44-14v28l36-5V23l-36-5Z"/>
+  <text x="80" y="52" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="8" font-weight="600">STEEL</text>
+</svg>

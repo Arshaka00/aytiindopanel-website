@@ -1,118 +1,187 @@
 "use client";
 
-import { useCallback, useId, useState, useSyncExternalStore } from "react";
-import { createPortal } from "react-dom";
+import { useEffect, useMemo, useState } from "react";
 
 import { HeroBackgroundSlider } from "@/components/aytipanel/hero-background-slider";
+import { heroSlideSources } from "@/components/aytipanel/hero-slider-config";
+import { useSiteCmsOptional } from "@/components/site-cms/site-cms-provider";
 import {
-  HERO_SLIDE_INTERVAL_MS,
-  heroSlideSources,
-} from "@/components/aytipanel/hero-slider-config";
-import { SiteCopyrightImageLightbox } from "@/components/aytipanel/site-copyright-image-lightbox";
-import { useTouchSafeButtonActivate } from "@/components/aytipanel/use-touch-safe-button-activate";
+  CMS_IMAGE_TRANSFORM_PREVIEW,
+  CMS_IMAGE_TRANSFORM_PREVIEW_RESET,
+  type CmsImageTransform,
+} from "@/lib/cms-image-transform";
+import type { HeroSlideEntry } from "@/lib/site-content-model";
 
-const emptySubscribe = () => () => {};
+type HeroBgVideo = null | {
+  src: string;
+  poster?: string;
+  muted?: boolean;
+};
 
-function useIsBrowser(): boolean {
-  return useSyncExternalStore(emptySubscribe, () => true, () => false);
+function isHeroBackgroundVideoSrc(src: string | undefined | null): boolean {
+  const s = typeof src === "string" ? src.trim() : "";
+  if (!s) return false;
+  return s.startsWith("/") || s.startsWith("https://") || s.startsWith("http://");
 }
 
-function GalleryIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      width={22}
-      height={22}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden
-    >
-      <path
-        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" />
-      <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" />
-    </svg>
-  );
-}
+/** Lapisan gambar hero (slider / pratinjau CMS). */
+export function HeroSectionBackground(props?: {
+  slides?: readonly HeroSlideEntry[];
+  backgroundVideo?: HeroBgVideo;
+  /** Jika true (Site Settings), pakai slider gambar menggantikan video. */
+  disableVideoBackground?: boolean;
+}) {
+  const cms = useSiteCmsOptional();
+  const cmsHeroEdit = Boolean(cms?.eligible && cms.editMode);
+  const [previewSlides, setPreviewSlides] = useState<Record<string, string>>({});
+  const [instantPreviewSrc, setInstantPreviewSrc] = useState<string | null>(null);
+  /** Pratinjau transform slide hero sebelum simpan draft. */
+  const [slideTransformPreview, setSlideTransformPreview] = useState<Record<number, CmsImageTransform>>({});
 
-/** Sinkron viewer dengan carousel CSS (waktu sistem mod siklus). */
-function heroSlideIndexFromClock(): number {
-  const n = heroSlideSources.length;
-  if (n < 2) return 0;
-  if (
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  ) {
-    return 0;
-  }
-  const cycleMs = n * HERO_SLIDE_INTERVAL_MS;
-  const elapsed = Date.now() % cycleMs;
-  return Math.min(n - 1, Math.floor(elapsed / HERO_SLIDE_INTERVAL_MS));
-}
-
-/** Lapisan gambar hero + viewer slide yang sedang aktif di siklus. */
-export function HeroSectionBackground() {
-  const titleId = useId();
-  const [viewerSlideIdx, setViewerSlideIdx] = useState(0);
-  const [viewerOpen, setViewerOpen] = useState(false);
-  const isBrowser = useIsBrowser();
-
-  const openViewer = useCallback(() => {
-    setViewerSlideIdx(heroSlideIndexFromClock());
-    setViewerOpen(true);
+  const baseSlides =
+    props?.slides && props.slides.length > 0 ? props.slides : heroSlideSources;
+  useEffect(() => {
+    const onPreview = (ev: Event) => {
+      const ce = ev as CustomEvent<{ path?: string; url?: string }>;
+      const path = ce.detail?.path;
+      const url = ce.detail?.url;
+      if (!path?.startsWith("hero.slides.") || !url) return;
+      setPreviewSlides((prev) => ({ ...prev, [path]: url }));
+      setInstantPreviewSrc(url);
+    };
+    const onPreviewReset = (ev: Event) => {
+      const ce = ev as CustomEvent<{ path?: string }>;
+      const path = ce.detail?.path;
+      if (!path?.startsWith("hero.slides.")) return;
+      setPreviewSlides((prev) => {
+        const next = { ...prev };
+        delete next[path];
+        if (Object.keys(next).length === 0) setInstantPreviewSrc(null);
+        return next;
+      });
+    };
+    window.addEventListener("cms-image-preview", onPreview as EventListener);
+    window.addEventListener("cms-image-preview-reset", onPreviewReset as EventListener);
+    return () => {
+      window.removeEventListener("cms-image-preview", onPreview as EventListener);
+      window.removeEventListener("cms-image-preview-reset", onPreviewReset as EventListener);
+    };
   }, []);
 
-  const closeViewer = useCallback(() => setViewerOpen(false), []);
+  useEffect(() => {
+    const onTfPreview = (ev: Event) => {
+      const ce = ev as CustomEvent<{ path?: string; transform?: CmsImageTransform }>;
+      const path = ce.detail?.path;
+      const tf = ce.detail?.transform;
+      const m = path?.match(/^hero\.slides\.(\d+)$/);
+      if (!m || !tf) return;
+      const idx = Number(m[1]);
+      setSlideTransformPreview((prev) => ({ ...prev, [idx]: tf }));
+    };
+    const onTfReset = (ev: Event) => {
+      const ce = ev as CustomEvent<{ path?: string }>;
+      const path = ce.detail?.path;
+      const m = path?.match(/^hero\.slides\.(\d+)$/);
+      if (!m) return;
+      const idx = Number(m[1]);
+      setSlideTransformPreview((prev) => {
+        const next = { ...prev };
+        delete next[idx];
+        return next;
+      });
+    };
+    window.addEventListener(CMS_IMAGE_TRANSFORM_PREVIEW, onTfPreview as EventListener);
+    window.addEventListener(CMS_IMAGE_TRANSFORM_PREVIEW_RESET, onTfReset as EventListener);
+    return () => {
+      window.removeEventListener(CMS_IMAGE_TRANSFORM_PREVIEW, onTfPreview as EventListener);
+      window.removeEventListener(CMS_IMAGE_TRANSFORM_PREVIEW_RESET, onTfReset as EventListener);
+    };
+  }, []);
 
-  const [bindFabButton, activateFabTap] = useTouchSafeButtonActivate(openViewer);
-  const [bindBackdropTap, activateBackdropTap] = useTouchSafeButtonActivate(openViewer);
+  useEffect(() => {
+    if (!cms?.stagedMediaByPath) return;
+    setPreviewSlides((prev) => {
+      const next = { ...prev };
+      for (const key of Object.keys(next)) {
+        if (!key.startsWith("hero.slides.")) continue;
+        if (!cms.stagedMediaByPath[key]) delete next[key];
+      }
+      if (Object.keys(next).length === 0) setInstantPreviewSrc(null);
+      return next;
+    });
+  }, [cms?.stagedMediaByPath]);
 
-  const slide = heroSlideSources[viewerSlideIdx] ?? heroSlideSources[0];
-  const slideAlt = slide ? `Gambar latar beranda — slide ${viewerSlideIdx + 1}` : "";
-
-  const fabPortal =
-    isBrowser && typeof document !== "undefined"
-      ? createPortal(
-          <button
-            ref={bindFabButton}
-            type="button"
-            onClick={activateFabTap}
-            aria-haspopup="dialog"
-            aria-label="Lihat gambar latar beranda"
-            className="touch-manipulation fixed bottom-28 right-4 z-[120] flex size-11 cursor-pointer items-center justify-center rounded-xl border border-white/25 bg-black/45 text-white shadow-[0_4px_24px_rgba(0,0,0,0.35)] backdrop-blur-md transition-[opacity,transform,border-color,background-color] hover:border-white/40 hover:bg-black/55 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:right-5 md:bottom-10 md:right-8 md:size-12"
-          >
-            <GalleryIcon className="size-[1.375rem] opacity-95 md:size-6" />
-          </button>,
-          document.body,
-        )
-      : null;
+  const slides = useMemo(
+    () =>
+      baseSlides.map((s, i) => {
+        const key = `hero.slides.${i}.src`;
+        const staged = cms?.stagedMediaByPath?.[key];
+        const preview = previewSlides[key];
+        const src = preview ?? staged ?? s.src;
+        const pv = slideTransformPreview[i];
+        return pv ? { ...s, ...pv, src } : { ...s, src };
+      }),
+    [baseSlides, cms?.stagedMediaByPath, previewSlides, slideTransformPreview],
+  );
+  const video = props?.backgroundVideo;
+  const disableVideo = props?.disableVideoBackground === true;
+  const showVideo =
+    Boolean(video) && isHeroBackgroundVideoSrc(video?.src) && !disableVideo;
+  /** Poster eksplisit, atau frame cadangan dari slide pertama — bukan warna solid dummy. */
+  const videoPoster =
+    showVideo && video
+      ? (video.poster?.trim() || slides[0]?.src || undefined)
+      : undefined;
 
   return (
     <>
-      <HeroBackgroundSlider />
-      <button
-        ref={bindBackdropTap}
-        type="button"
-        tabIndex={-1}
-        onClick={activateBackdropTap}
-        aria-label="Lihat gambar latar beranda"
-        className="absolute inset-0 z-[8] cursor-pointer touch-manipulation border-0 bg-transparent p-0 [&:focus]:outline-none"
-      />
-      {fabPortal}
-      {viewerOpen && slide ? (
-        <SiteCopyrightImageLightbox
-          src={slide.src}
-          alt={slideAlt}
-          titleId={titleId}
-          onClose={closeViewer}
-          srHeading="Tampilan gambar latar beranda"
-        />
-      ) : null}
+      {showVideo && video ? (
+        <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden>
+          {/* eslint-disable-next-line jsx-a11y/media-has-caption -- dekoratif */}
+          <video
+            key={video.src}
+            src={video.src}
+            poster={videoPoster}
+            muted={video.muted ?? true}
+            playsInline
+            autoPlay
+            loop
+            preload="auto"
+            className="absolute inset-0 h-full w-full object-cover object-center"
+          />
+          {/* Samakan vignette dengan HeroBackgroundSlider (satu gambar). */}
+          <div
+            className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_100%_92%_at_50%_44%,transparent_22%,rgba(5,11,24,0.38)_62%,rgba(5,11,24,0.62)_100%)]"
+            aria-hidden
+          />
+          <div
+            className="pointer-events-none absolute inset-0 z-[2] shadow-[inset_0_-60px_80px_-20px_rgba(5,11,24,0.35),inset_0_0_60px_rgba(5,11,24,0.18)]"
+            aria-hidden
+          />
+        </div>
+      ) : (
+        <>
+          <HeroBackgroundSlider sources={slides} />
+          {cmsHeroEdit && instantPreviewSrc ? (
+            <div
+              className="pointer-events-none absolute inset-0 z-[2] opacity-100 transition-opacity duration-300 ease-out"
+              aria-hidden
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element -- lightweight CMS preview overlay */}
+              <img
+                src={instantPreviewSrc}
+                alt=""
+                width={1920}
+                height={1080}
+                draggable={false}
+                className="pointer-events-none absolute inset-0 h-full w-full touch-manipulation select-none object-cover object-center [-webkit-touch-callout:none]"
+                loading="eager"
+                decoding="async"
+              />
+            </div>
+          ) : null}
+        </>
+      )}
     </>
   );
 }

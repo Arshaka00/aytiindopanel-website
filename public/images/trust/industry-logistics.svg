@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 56" fill="none" aria-hidden="true">
+  <rect width="160" height="56" rx="10" fill="#eff6ff"/>
+  <path stroke="#1d4ed8" stroke-width="2" fill="none" d="M28 34h88M34 34l10-12h72l10 12"/>
+  <circle cx="48" cy="38" r="4" fill="#2563eb"/>
+  <circle cx="112" cy="38" r="4" fill="#2563eb"/>
+  <path stroke="#38bdf8" stroke-width="1.5" fill="none" d="M52 28h56" opacity="0.85"/>
+  <text x="80" y="50" text-anchor="middle" fill="#1e40af" font-family="system-ui,sans-serif" font-size="8" font-weight="700">LOGISTICS</text>
+</svg>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 56" role="img">
+  <title>Invotech</title>
+  <rect width="280" height="56" fill="transparent" />
+  <text
+    x="140"
+    y="37"
+    text-anchor="middle"
+    font-family="system-ui, -apple-system, Segoe UI, sans-serif"
+    font-weight="700"
+    font-size="23"
+    letter-spacing="0.08em"
+    fill="#1e3a5f"
+  >
+    INVOTECH
+  </text>
+</svg>

@@ -1,0 +1,33 @@
+---
+description: Cleanup/refactor tanpa menghapus media produksi; verifikasi sebelum/sesudah
+alwaysApply: true
+---
+
+# Repository cleanup — keselamatan media
+
+Saat cleanup, optimisasi, atau refactor: **jangan hapus atau kosongkan aset produksi**.
+
+## Lindungi (jangan hapus / jangan “bersihkan” isi)
+
+- Foto produk, thumbnail, logo, favicon, branding
+- Gallery CMS, hero images/video, upload user/admin dari CMS
+- Folder dan pohon yang dipakai situs ini, termasuk (minimal): `public/images/**`, `public/media/**`, serta nama umum `uploads`, `media`, `gallery`, `storage` asset jika ada di repo
+
+Aset CMS umumnya di **`public/media/`** (upload API) dan **`public/images/`** (mis. `gambar_hero`, `gambar_produk`, `gallery`, `cms`, `layanan`). Rujukan upload: `app/api/site-media/upload`, konstanta di `lib/site-media-constants.ts`.
+
+## Sebelum cleanup
+
+1. Backup folder media (`public/images`, `public/media`, dan path upload lain yang dipakai).
+2. Verifikasi path yang direferensikan JSON/CMS/kode (grep atau manifest seperti `site-image-upload-dates.generated.ts`).
+3. Cek sumber upload CMS (`/api/site-media/upload`) supaya tidak menghapus prefix/target yang masih dipakai.
+
+## Yang boleh dibersihkan (bukan media situs)
+
+- Cache build (mis. `.next/`), file temp, log development yang tidak perlu
+- Backup/data lama yang **disengaja** dibuang (mis. rotasi `data/site-content/backups/`, `audit-log`, dump analytics) — hanya setelah konfirmasi tidak dibutuhkan deployment/UAT
+
+## Setelah cleanup
+
+Verifikasi: gambar halaman utama/produk, video hero, library media CMS, tidak ada broken image/link untuk URL `/images/...` dan `/media/...`.
+
+**Prinsip:** repo lebih rapi **tanpa** kehilangan media website; bila ragu, jangan hapus — backup dulu.

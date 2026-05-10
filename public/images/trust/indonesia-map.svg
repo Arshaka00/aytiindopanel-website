@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" fill="#ffffff" aria-hidden="true">
+  <title>Siluet wilayah Indonesia</title>
+  <!-- Disederhanakan untuk dipakai sebagai tekstur background -->
+  <path opacity="0.9" d="M52 68 L128 54 L148 92 L138 196 L86 218 L48 158 Z" />
+  <path opacity="0.85" d="M142 198 L228 188 L246 232 L178 252 Z" />
+  <path opacity="0.9" d="M258 36 L438 30 L472 168 L398 208 L268 182 Z" />
+  <path opacity="0.88" d="M486 44 L538 38 L556 128 L524 228 L482 208 L462 112 Z" />
+  <path opacity="0.82" d="M572 48 L752 40 L792 156 L758 268 L612 244 L548 132 Z" />
+  <path opacity="0.55" d="M308 210 L392 202 L418 248 L332 268 Z" />
+  <path opacity="0.5" d="M620 112 L702 108 L728 168 L676 196 Z" />
+</svg>

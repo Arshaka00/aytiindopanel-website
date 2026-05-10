@@ -6,6 +6,8 @@
  * --bg-main, --text-main, --card-bg, --card-border: canonical surfaces & text.
  */
 :root {
+  /* Diisi runtime oleh SiteHeader (tinggi bar toolbar + safe area); fallback sampai ukuran pertama */
+  --site-header-height: 4.25rem;
   --bg-main: #ffffff;
   --text-main: #111827;
   --card-bg: #ffffff;
@@ -26,6 +28,17 @@
   --hero-from: var(--primary);
   --hero-to: var(--accent);
   --header-surface: rgb(255 255 255 / 0.93);
+  /* Navbar mengambang — kaca gelap korporat / menyatu hero */
+  --header-glass-fill: rgba(255, 255, 255, 0.62);
+  --header-glass-fill-solid: rgba(252, 252, 253, 0.88);
+  --header-glass-border: rgba(148, 163, 184, 0.26);
+  --header-glass-edge: rgba(255, 255, 255, 0.38);
+  --header-glass-inner: inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  --header-glass-shadow:
+    0 10px 36px -14px rgba(15, 23, 42, 0.14),
+    0 4px 14px -6px rgba(15, 23, 42, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+  --header-glass-glow: 0 0 42px -20px rgba(14, 165, 233, 0.16);
   --image-placeholder: color-mix(in srgb, var(--border) 55%, var(--muted) 45%);
   --badge-bg: var(--accent-soft);
   --badge-border: color-mix(in srgb, var(--accent) 22%, var(--border));
@@ -36,6 +49,19 @@
   /* Banner gelap dengan teks putih — tidak mengikuti --primary (yang berubah di dark mode). */
   --cta-mid-from: #0f172a;
   --cta-mid-to: #1e40af;
+  /*
+   * Navigasi menu → hash section: jarak di atas tepi section sehingga konten tidak
+   * bertumpang dengan area header sticky atau ujung section di atasnya.
+   */
+  --section-nav-pass: max(8rem, calc(env(safe-area-inset-top, 0px) + 6.75rem));
+  /* Micro-interaction: cinematic / enterprise (scroll & hover konsisten komponen) */
+  --ease-premium-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-premium-soft: cubic-bezier(0.33, 1, 0.68, 1);
+  /* Fade section di mobile — sedikit lebih panjang + easing out agar terasa halus */
+  --mobile-scroll-reveal-duration: 380ms;
+  --mobile-micro-transition-duration: 320ms;
+  /* Section #layanan mobile — satu sumber durasi dengan TS `MOBILE_REVEAL_MS` */
+  --layanan-mobile-reveal-duration: 580ms;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -60,6 +86,17 @@
     --hero-from: #020617;
     --hero-to: #1e40af;
     --header-surface: rgb(15 23 42 / 0.88);
+    --header-glass-fill: rgba(5, 11, 24, 0.42);
+    --header-glass-fill-solid: rgba(7, 13, 28, 0.78);
+    --header-glass-border: rgba(125, 211, 252, 0.12);
+    --header-glass-edge: rgba(56, 189, 248, 0.18);
+    --header-glass-inner: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    --header-glass-shadow:
+      0 14px 44px -18px rgba(0, 0, 0, 0.58),
+      0 6px 18px -10px rgba(0, 0, 0, 0.38),
+      inset 0 1px 0 rgba(255, 255, 255, 0.07),
+      inset 0 0 0 1px rgba(56, 189, 248, 0.05);
+    --header-glass-glow: 0 0 52px -22px rgba(56, 189, 248, 0.14);
     --image-placeholder: color-mix(in srgb, var(--card) 70%, var(--border));
     --badge-bg: color-mix(in srgb, var(--accent-soft) 55%, var(--card));
     --badge-border: color-mix(in srgb, var(--accent) 35%, var(--border));
@@ -76,6 +113,8 @@
   --color-background: var(--bg);
   --color-foreground: var(--text);
   --color-muted: var(--muted);
+  /* Dipakai komponen sebagai `text-muted-foreground` — sama sekunder dengan `--muted`, ikut light/dark. */
+  --color-muted-foreground: var(--muted);
   --color-card: var(--card);
   --color-border: var(--border);
   --color-bg-main: var(--bg-main);
@@ -104,10 +143,46 @@ html {
   color-scheme: light dark;
 }
 
+/*
+ * CMS — baseline tampilan gambar (focal/zoom di-override lewat inline style dari editor).
+ * Class cadangan: id unik v4m1qz jika perlu target spesifik di DevTools.
+ */
+#v4m1qz.cms-media-fit-anchor,
+.cms-media-fit-anchor {
+  object-fit: cover;
+  object-position: center center;
+}
+
+/*
+ * CMS — isi bingkai responsif (sama semantik dengan #9tqk2m img; id yang diawali angka
+ * memakai attribute selector agar PostCSS tidak memparse #9… sebagai token invalid).
+ * Gunakan class di banyak instance; id hanya untuk satu slot uji di DevTools.
+ */
+[id="9tqk2m"] img,
+.cms-media-responsive-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Anchor / scroll programmatic terasa halus; gesture sentuh tetap native (reload lock sudah di JS). */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 body {
   background: var(--bg-main);
   color: var(--text-main);
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /*
@@ -139,6 +214,12 @@ body {
 }
 
 @media (max-width: 767px) {
+  html,
+  body {
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
+  }
+
   .hero-stats-section .card-stats-tile {
     border-color: rgba(255, 255, 255, 0.072) !important;
     box-shadow:
@@ -163,7 +244,49 @@ body {
 }
 
 .hero-stats-section .card-stats__hint {
-  color: rgba(255, 255, 255, 0.72) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Hero stats — ringkas di landscape (hemat tinggi), termasuk layar lebar + sm: */
+@media (orientation: landscape) and (max-height: 520px) {
+  .hero-stats-section .hero-stats-tiles-shell {
+    padding: 0.2rem;
+    border-radius: 0.4rem;
+  }
+
+  .hero-stats-section .card-stats-tile {
+    padding: 0.25rem 0.3rem !important;
+    border-radius: 0.45rem !important;
+  }
+
+  .hero-stats-section .card-stats__value.stats-number {
+    font-size: clamp(0.6875rem, 2.8vmin, 1rem) !important;
+    min-height: 0.75em;
+  }
+
+  .hero-stats-section .card-stats__label {
+    font-size: 0.59375rem !important;
+    max-width: 6.75rem !important;
+    line-height: 1.32 !important;
+    letter-spacing: 0.018em !important;
+  }
+
+  .hero-stats-section .card-stats__hint {
+    font-size: 0.5625rem !important;
+    max-width: 6.5rem !important;
+    line-height: 1.42 !important;
+  }
+
+  .hero-stats-section .card-stats-area-map {
+    max-width: 3.125rem !important;
+    margin-top: 0.125rem;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 520px) and (min-width: 768px) {
+  .hero-stats-section .hero-stats-tiles {
+    gap: 0.4rem;
+  }
 }
 
 /* Layanan ringkas — kartu glass mengikuti tema sistem */
@@ -193,6 +316,26 @@ body {
       inset 0 1px 0 rgba(255, 255, 255, 0.95),
       0 16px 40px -18px rgba(15, 23, 42, 0.1),
       0 8px 24px -12px rgba(15, 23, 42, 0.06);
+  }
+}
+
+/*
+ * Mobile: matikan hover-lift pada kartu (WebKit / tap stabil).
+ */
+@media (max-width: 767px) {
+  #layanan .layanan-glass-card--tap-safe {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  #layanan .layanan-glass-card--tap-safe:hover,
+  #layanan .layanan-glass-card--tap-safe:active {
+    transform: none !important;
+  }
+
+  #layanan .layanan-glass-card--tap-safe .layanan-card-shimmer-overlay::before {
+    animation: none !important;
+    opacity: 0 !important;
   }
 }
 
@@ -236,6 +379,98 @@ body {
     transparent
   );
   pointer-events: none;
+}
+
+/* Panel pembungkus grid — lapisan halus, konsisten light / dark */
+.layanan-grid-shell {
+  background-color: color-mix(in srgb, var(--card-bg) 86%, transparent);
+  background-image:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--card-bg) 94%, transparent) 0%,
+      transparent 46%
+    ),
+    radial-gradient(ellipse 120% 85% at 100% 0%, rgba(56, 189, 248, 0.07), transparent 52%);
+}
+
+@media (prefers-color-scheme: dark) {
+  .layanan-grid-shell {
+    background-color: color-mix(in srgb, #0a1220 82%, transparent);
+    background-image:
+      linear-gradient(
+        135deg,
+        rgba(15, 23, 42, 0.55) 0%,
+        transparent 48%
+      ),
+      radial-gradient(ellipse 120% 85% at 100% 0%, rgba(56, 189, 248, 0.09), transparent 52%);
+  }
+}
+
+/* Isi kartu layanan — satu skala font dengan judul, baca nyaman, rata kiri */
+.layanan-card-body {
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 0.9375rem;
+  line-height: 1.68;
+  letter-spacing: -0.01em;
+  text-align: start;
+  text-rendering: optimizeLegibility;
+}
+
+@media (min-width: 768px) {
+  .layanan-card-body {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+}
+
+/* Mobile scroll-panel: isi paragraf sedikit lebih besar & longgar untuk keterbacaan */
+@media (max-width: 767px) {
+  #layanan .layanan-card-description .layanan-card-body {
+    font-size: 1rem;
+    line-height: 1.75;
+    letter-spacing: -0.008em;
+  }
+}
+
+/* Judul kartu layanan ringkas — satu ukuran pasti untuk keenam kartu (semua viewport) */
+.layanan-card-title {
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.42;
+  letter-spacing: -0.012em;
+  text-align: center;
+}
+
+/* Kutipan premium — garis atas lebih lebar & terpusat (teks blockquote center) */
+.layanan-quote-panel.layanan-quote-panel--premium::before {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  width: min(14rem, 78%);
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(56, 189, 248, 0.38) 22%,
+    rgba(125, 211, 252, 0.55) 50%,
+    rgba(56, 189, 248, 0.38) 78%,
+    transparent
+  );
+}
+
+@media (prefers-color-scheme: dark) {
+  .layanan-quote-panel.layanan-quote-panel--premium::before {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(125, 211, 252, 0.28) 22%,
+      rgba(56, 189, 248, 0.42) 50%,
+      rgba(125, 211, 252, 0.28) 78%,
+      transparent
+    );
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -388,13 +623,1008 @@ html {
   overflow-x: clip;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  scroll-padding-top: calc(3.5rem + env(safe-area-inset-top, 0px));
+  /* Tinggi toolbar header (mobile ~58px, desktop ~64px) + safe-area atas + sedikit napas. */
+  scroll-padding-top: max(4.5rem, calc(env(safe-area-inset-top, 0px) + 3.75rem));
   -webkit-tap-highlight-color: transparent;
+}
+
+@media (min-width: 768px) {
+  html {
+    scroll-padding-top: max(5rem, calc(env(safe-area-inset-top, 0px) + 4rem));
+  }
 }
 
 /* Hero (#beranda): selalu mode gelap — tidak mengikuti prefers-color-scheme perangkat */
 .hero-section-fixed-dark {
   color-scheme: dark;
+}
+
+/*
+ * Hero premium — satu palet (#050B18 + sky): overlay diagonal / vertikal / glow / bottom
+ * diselaraskan agar foto slider dan gradien terasa satu kesatuan (bukan “tempelan”).
+ */
+#beranda.hero.hero-section-fixed-dark {
+  --hero-canvas: #050b18;
+  --hero-overlay-diag: linear-gradient(
+    118deg,
+    rgba(5, 11, 24, 0.84) 0%,
+    rgba(7, 19, 46, 0.52) 34%,
+    rgba(11, 30, 68, 0.34) 68%,
+    rgba(5, 11, 24, 0.22) 100%
+  );
+  --hero-overlay-vert: linear-gradient(
+    180deg,
+    rgba(2, 7, 18, 0.4) 0%,
+    rgba(4, 12, 28, 0.18) 44%,
+    rgba(2, 6, 17, 0.48) 100%
+  );
+  --hero-overlay-glow: radial-gradient(
+      ellipse 58% 44% at 17% 15%,
+      rgba(89, 216, 255, 0.078),
+      transparent 63%
+    ),
+    radial-gradient(ellipse 50% 36% at 83% 69%, rgba(56, 132, 255, 0.048), transparent 61%),
+    radial-gradient(circle at 52% 90%, rgba(127, 231, 255, 0.03), transparent 58%);
+  --hero-overlay-bottom: linear-gradient(
+    to top,
+    rgba(2, 6, 17, 0.56) 0%,
+    rgba(5, 11, 24, 0.14) 46%,
+    transparent 100%
+  );
+  --hero-overlay-bottom-soft: linear-gradient(to top, rgba(3, 9, 23, 0.34) 0%, transparent 100%);
+  --hero-overlay-rail: linear-gradient(
+      100deg,
+      rgba(3, 10, 24, 0.76) 0%,
+      rgba(5, 17, 42, 0.34) 40%,
+      rgba(5, 11, 24, 0.1) 66%,
+      rgba(2, 6, 16, 0.18) 100%
+    ),
+    linear-gradient(180deg, transparent 54%, rgba(2, 6, 16, 0.13) 100%);
+}
+
+@media (max-width: 767.98px) {
+  #beranda.hero.hero-section-fixed-dark {
+    --hero-overlay-diag: linear-gradient(
+      118deg,
+      rgba(5, 11, 24, 0.8) 0%,
+      rgba(7, 18, 44, 0.52) 38%,
+      rgba(10, 28, 62, 0.38) 100%
+    );
+    --hero-overlay-vert: linear-gradient(
+      180deg,
+      rgba(2, 7, 18, 0.44) 0%,
+      rgba(3, 10, 26, 0.22) 42%,
+      rgba(2, 6, 17, 0.52) 100%
+    );
+    --hero-overlay-glow: radial-gradient(
+        ellipse 62% 46% at 18% 16%,
+        rgba(89, 216, 255, 0.068),
+        transparent 64%
+      ),
+      radial-gradient(ellipse 52% 38% at 82% 68%, rgba(56, 132, 255, 0.042), transparent 62%),
+      radial-gradient(circle at 52% 88%, rgba(127, 231, 255, 0.032), transparent 58%);
+    --hero-overlay-bottom: linear-gradient(
+      to top,
+      rgba(2, 6, 17, 0.5) 0%,
+      rgba(5, 11, 24, 0.12) 44%,
+      transparent 100%
+    );
+    --hero-overlay-bottom-soft: linear-gradient(to top, rgba(3, 9, 23, 0.32) 0%, transparent 100%);
+  }
+}
+
+#beranda.hero .hero-overlay-diagonal {
+  background: var(--hero-overlay-diag);
+}
+
+#beranda.hero .hero-overlay-vertical {
+  background: var(--hero-overlay-vert);
+}
+
+#beranda.hero .hero-overlay-glow {
+  background: var(--hero-overlay-glow);
+}
+
+#beranda.hero .hero-overlay-bottom {
+  background: var(--hero-overlay-bottom);
+}
+
+#beranda.hero .hero-overlay-bottom-soft {
+  background: var(--hero-overlay-bottom-soft);
+}
+
+#beranda.hero .hero-overlay-desktop-rail {
+  background: var(--hero-overlay-rail);
+}
+
+#beranda.hero .hero-overlay-top-hairline {
+  background: linear-gradient(to right, transparent, rgba(186, 230, 253, 0.22), transparent);
+}
+
+/* Hero Android (≤797px) — padding #beranda DIKUNCI (jangan ubah untuk penyelaras teks):
+
+   • padding-top:    max(7.625rem, calc(env(safe-area-inset-top, 0px) + 6rem))
+   • padding-bottom: default Tailwind `#beranda` di section-top; ua-android ≤797px menimpa pakai blok di bawah
+     (minimal 8rem, +5.25rem di atas env(safe-area-inset-bottom) untuk gesture bar)
+
+   Naikkan/turunkan blok intro + alur kerja secara seragam, sesuaikan HANYA:
+
+   • html.ua-android #beranda.hero .hero-content-stack { transform: translateY(...) }
+
+   CTA WhatsApp — khusus Android; penyelaras iPhone ada di blok `ua-iphone` (jangan ubah nilai di sini hanya untuk iPhone).
+
+   • html.ua-android #beranda.hero .hero-cta-group { transform: translateY(...) }
+
+   (Nilai disetel untuk tata letak tanpa kartu capaian hero — sesuaikan jika konten hero ditambah lagi.)
+
+   Pakai translateY — bukan margin-top negatif — supaya blok tidak memendahkan seluruh section hero pada
+   min-height:auto di Android (lihat section-top.tsx).
+
+   Ini mempertahankan offset header/notch pada padding terkunci; transformlah yang menyetel ritme vertikal.
+
+*/
+
+@media (max-width: 797px) {
+  html.ua-android #beranda.hero {
+    height: auto !important;
+    min-height: auto !important;
+    padding-top: max(7.625rem, calc(env(safe-area-inset-top, 0px) + 6rem)) !important;
+    /* Rebuild hero layout: compact bottom spacing tanpa dead zone (+ruang bawah lebih besar) */
+    padding-bottom: max(9.75rem, calc(env(safe-area-inset-bottom, 0px) + 4rem)) !important;
+  }
+
+  /* Naikkan blok hero di Android (+ geser dari section-top); jangan timpa iPhone (.ua-iphone di bawah). */
+  html.ua-android #beranda.hero .hero-content-stack {
+    transform: translateY(-4.75rem);
+  }
+
+  html.ua-android #beranda.hero .hero-cta-group {
+    transform: translateY(-3.25rem);
+  }
+}
+
+/* Hero iPhone (UA berisi "iPhone", lebar ≤797px):
+   — Kolom hero (judul + intro + alur kerja): tetap mengikuti posisi default section-top
+   — Baris CTA (`hero-hubungi-cta`, `hero-lihat-produk-cta`) — skala tombol ringkas iPhone
+   Kelas `ua-iphone`: app/layout.tsx. */
+@media (max-width: 797px) {
+  /* Rebuild hero layout: iPhone compact + toolbar-safe */
+  html.ua-iphone #beranda.hero {
+    padding-bottom: max(9rem, calc(env(safe-area-inset-bottom, 0px) + 3.25rem)) !important;
+  }
+
+  html.ua-iphone #beranda.hero .hero-cta-group {
+    gap: 0.625rem;
+    box-sizing: border-box;
+    align-self: center;
+    width: calc(100% - 1.5rem);
+    max-width: calc(100% - 1.5rem);
+    margin-inline: auto;
+    margin-top: 0.75rem;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  /* Lebih ringcil; sedikit lebih sempit dari lebar kolom penuh (~12px tiap sisi) */
+  html.ua-iphone #beranda.hero .hero-hubungi-cta,
+  html.ua-iphone #beranda.hero .hero-lihat-produk-cta {
+    width: 100%;
+    max-width: 100%;
+    min-height: 2.625rem;
+    padding: 0.625rem 0.9375rem;
+    border-radius: 0.6875rem;
+    font-size: clamp(0.7375rem, 0.71rem + 0.72vw, 0.79375rem);
+    line-height: 1.28;
+    letter-spacing: 0.028em;
+    gap: 0.375rem;
+    margin-inline: 0;
+  }
+
+  html.ua-iphone #beranda.hero .hero-hubungi-cta svg {
+    width: 0.9375rem;
+    height: 0.9375rem;
+  }
+}
+
+/* Judul hero: spasi antara baris tanpa node teks di JSX (hindari baris kosong saat dua span jadi block di UA) */
+#beranda.hero #hero-heading .hero-heading-line2::before,
+#beranda.hero #hero-heading .hero-heading-glass-line2::before {
+  content: " ";
+}
+
+/* Judul hero (≤767px = `max-md`): +3px dari clamp dasar & dua baris (Android/iPhone) — mirror clamp #hero-heading di section-top.tsx */
+@media (max-width: 767px) {
+  html.ua-android #beranda.hero #hero-heading,
+  html.ua-iphone #beranda.hero #hero-heading {
+    font-size: calc(3px + clamp(0.875rem, calc(0.78rem + 1.45vw), 1.125rem));
+  }
+
+  html.ua-android #beranda.hero #hero-heading .hero-heading-line2::before,
+  html.ua-iphone #beranda.hero #hero-heading .hero-heading-line2::before,
+  html.ua-android #beranda.hero #hero-heading .hero-heading-glass-line2::before,
+  html.ua-iphone #beranda.hero #hero-heading .hero-heading-glass-line2::before {
+    content: none;
+  }
+
+  html.ua-android #beranda.hero #hero-heading .hero-heading-line1,
+  html.ua-android #beranda.hero #hero-heading .hero-heading-line2,
+  html.ua-iphone #beranda.hero #hero-heading .hero-heading-line1,
+  html.ua-iphone #beranda.hero #hero-heading .hero-heading-line2,
+  html.ua-android #beranda.hero #hero-heading .hero-heading-glass-line1,
+  html.ua-android #beranda.hero #hero-heading .hero-heading-glass-line2,
+  html.ua-android #beranda.hero #hero-heading .hero-heading-glass-middle,
+  html.ua-iphone #beranda.hero #hero-heading .hero-heading-glass-line1,
+  html.ua-iphone #beranda.hero #hero-heading .hero-heading-glass-line2,
+  html.ua-iphone #beranda.hero #hero-heading .hero-heading-glass-middle {
+    display: block;
+  }
+}
+
+/*
+ * Crystal ice typography — `hero.headingMiddle` (“PENDINGIN”).
+ * Performa: tanpa animasi background pada teks (repaint mahal); kilau = opacity di ::after saja.
+ * Desktop: filter SVG ringan; mobile: tanpa SVG filter (GPU teks).
+ */
+#beranda.hero #hero-heading .hero-heading-crystal-wrap {
+  position: relative;
+  isolation: isolate;
+  text-shadow: none;
+}
+
+/* Bloom dingin rapat — tanpa spot ekstra di kanan yang terasa “sinar” */
+#beranda.hero #hero-heading .hero-heading-crystal-wrap::before {
+  content: "";
+  position: absolute;
+  left: -6%;
+  right: -6%;
+  top: -14%;
+  bottom: -4%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 72% 68% at 48% 42%,
+      rgba(103, 232, 249, 0.11) 0%,
+      transparent 52%
+    ),
+    radial-gradient(
+      ellipse 68% 64% at 50% 46%,
+      rgba(14, 165, 233, 0.22) 0%,
+      rgba(56, 189, 248, 0.14) 42%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 58% 56% at 50% 100%,
+      rgba(52, 138, 190, 0.16) 0%,
+      transparent 76%
+    );
+  opacity: 1;
+}
+
+/* Kilau halus — hanya opacity yang beranimasi (kompositor, murah) */
+#beranda.hero #hero-heading .hero-heading-crystal-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  border-radius: inherit;
+  background-image: radial-gradient(
+    ellipse 58% 46% at 44% 36%,
+    rgba(240, 253, 255, 0.38) 0%,
+    rgba(165, 243, 252, 0.22) 38%,
+    rgba(56, 189, 248, 0.14) 52%,
+    transparent 74%
+  );
+  background-size: 112% 96%;
+  background-position: 46% 38%;
+  mix-blend-mode: soft-light;
+  opacity: 0.34;
+  animation: hero-crystal-gloss-soft 14s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #beranda.hero #hero-heading .hero-heading-crystal-wrap::after {
+    animation: none;
+    opacity: 0.34;
+  }
+}
+
+@media (prefers-reduced-data: reduce) {
+  #beranda.hero #hero-heading .hero-heading-crystal-wrap::after {
+    animation: none;
+  }
+}
+
+@keyframes hero-crystal-gloss-soft {
+  0%,
+  100% {
+    opacity: 0.26;
+    background-position: 44% 40%;
+  }
+
+  50% {
+    opacity: 0.44;
+    background-position: 48% 36%;
+  }
+}
+
+#beranda.hero #hero-heading .hero-heading-crystal {
+  position: relative;
+  z-index: 1;
+  text-shadow: none;
+  filter: url(#heroCrystalIceRefraction)
+    drop-shadow(-0.5px -0.55px 0 rgba(255, 255, 255, 0.92))
+    drop-shadow(0 0.55px 0 rgba(186, 230, 253, 0.55))
+    drop-shadow(0.55px 1.05px 0 rgba(4, 20, 52, 0.88))
+    drop-shadow(0 2px 4px rgba(2, 12, 36, 0.52))
+    drop-shadow(0 0 10px rgba(56, 189, 248, 0.14))
+    drop-shadow(0 0 22px rgba(103, 232, 249, 0.09));
+  -webkit-text-stroke: 0.55px rgba(207, 250, 254, 0.88);
+  paint-order: stroke fill;
+  background-image:
+    repeating-linear-gradient(
+      -14deg,
+      transparent 0px,
+      transparent 7px,
+      rgba(165, 243, 252, 0.038) 7px,
+      rgba(165, 243, 252, 0.038) 8px,
+      transparent 8px,
+      transparent 15px,
+      rgba(125, 211, 252, 0.022) 15px,
+      rgba(125, 211, 252, 0.022) 16px
+    ),
+    radial-gradient(
+      ellipse 96% 84% at 46% 54%,
+      rgba(2, 28, 72, 0.72) 0%,
+      rgba(12, 92, 148, 0.44) 40%,
+      rgba(4, 52, 108, 0.58) 56%,
+      transparent 78%
+    ),
+    linear-gradient(
+      156deg,
+      rgba(236, 254, 255, 1) 0%,
+      rgba(125, 211, 252, 0.72) 12%,
+      rgba(34, 158, 214, 0.62) 28%,
+      rgba(14, 165, 233, 0.52) 42%,
+      rgba(3, 52, 98, 0.72) 56%,
+      rgba(56, 189, 248, 0.48) 72%,
+      rgba(207, 250, 254, 0.98) 100%
+    ),
+    radial-gradient(
+      ellipse 52% 38% at 40% 34%,
+      rgba(255, 255, 255, 0.42) 0%,
+      rgba(56, 189, 248, 0.2) 48%,
+      transparent 78%
+    ),
+    radial-gradient(
+      ellipse 38% 28% at 62% 58%,
+      rgba(165, 243, 252, 0.26) 0%,
+      transparent 74%
+    );
+  /* Layer statis + bg-size kompak — minimise repaint (tanpa animasi posisi) */
+  background-size:
+    100% 100%,
+    112% 108%,
+    112% 110%,
+    118% 102%,
+    112% 100%;
+  background-position:
+    0 0,
+    48% 50%,
+    50% 44%,
+    46% 42%,
+    54% 54%;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Tanpa filter SVG: mobile, hemat data, atau reduced motion — ringan di GPU */
+@media (max-width: 767.98px), (prefers-reduced-data: reduce), (prefers-reduced-motion: reduce) {
+  #beranda.hero #hero-heading .hero-heading-crystal {
+    filter: drop-shadow(-0.5px -0.55px 0 rgba(255, 255, 255, 0.92))
+      drop-shadow(0 0.55px 0 rgba(186, 230, 253, 0.55))
+      drop-shadow(0.55px 1.05px 0 rgba(4, 20, 52, 0.88))
+      drop-shadow(0 2px 4px rgba(2, 12, 36, 0.52))
+      drop-shadow(0 0 12px rgba(56, 189, 248, 0.16))
+      drop-shadow(0 0 24px rgba(103, 232, 249, 0.1));
+  }
+}
+
+/*
+ * Ikon — aksen dingin ringan (selaras crystal hero).
+ * Hanya drop-shadow tipis; tanpa ubah box/size utility pada SVG.
+ */
+.ayti-icon-cold {
+  filter: drop-shadow(0 0 0.45px rgba(186, 230, 253, 0.5))
+    drop-shadow(0 0 2px rgba(56, 175, 215, 0.12));
+}
+
+@media (max-width: 767.98px) {
+  .ayti-icon-cold {
+    filter: drop-shadow(0 0 1px rgba(56, 175, 215, 0.18));
+  }
+}
+
+@media (prefers-reduced-motion: reduce), (prefers-reduced-data: reduce) {
+  .ayti-icon-cold {
+    filter: drop-shadow(0 0 0.5px rgba(125, 211, 252, 0.32));
+  }
+}
+
+/*
+ * CTA — pinggiran dingin ringan (outline, tidak timpa box-shadow / filter hover).
+ */
+.ayti-cta-cold {
+  outline: 1px solid rgba(165, 243, 252, 0.24);
+  outline-offset: 1px;
+}
+
+.dark .ayti-cta-cold {
+  outline-color: rgba(125, 211, 252, 0.22);
+}
+
+@media (max-width: 767.98px) {
+  .ayti-cta-cold {
+    outline-offset: 0;
+    outline-width: 0.5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce), (prefers-reduced-data: reduce) {
+  .ayti-cta-cold {
+    outline-color: rgba(125, 211, 252, 0.16);
+  }
+}
+
+/*
+ * Kartu / panel — rim dingin inset (outline; tidak timpa box-shadow).
+ */
+.ayti-card-cold {
+  outline: 1px solid rgba(165, 243, 252, 0.1);
+  outline-offset: -1px;
+}
+
+.dark .ayti-card-cold {
+  outline-color: rgba(125, 211, 252, 0.11);
+}
+
+/*
+ * Foto / video — tepi dingin pada pembungkus media (ringan, tanpa blur).
+ */
+.ayti-media-cold {
+  outline: 1px solid rgba(186, 230, 253, 0.11);
+  outline-offset: -1px;
+}
+
+.dark .ayti-media-cold {
+  outline-color: rgba(125, 211, 252, 0.1);
+}
+
+@media (max-width: 767.98px) {
+  .ayti-card-cold,
+  .ayti-media-cold {
+    outline-width: 0.5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce), (prefers-reduced-data: reduce) {
+  .ayti-card-cold {
+    outline-color: rgba(125, 211, 252, 0.07);
+  }
+
+  .ayti-media-cold {
+    outline-color: rgba(125, 211, 252, 0.08);
+  }
+}
+
+/*
+ * Judul (h1–h4) — kilau dingin ringan, selaras ikon / crystal hero.
+ * `.ayti-title-cold-scope` pada `<body>` (layout). Hero beranda `#hero-heading`
+ * dikecualikan (sudah filter crystal / glass).
+ * `<summary>` FAQ: tambahkan kelas `ayti-title-cold` via `mergeAytiTitleClass`.
+ */
+.ayti-title-cold-scope
+  :where(h1, h2, h3, h4):not(#hero-heading),
+.ayti-title-cold {
+  filter: drop-shadow(0 0 0.45px rgba(186, 230, 253, 0.42))
+    drop-shadow(0 0 9px rgba(56, 175, 215, 0.064));
+}
+
+.dark .ayti-title-cold-scope :where(h1, h2, h3, h4):not(#hero-heading),
+.dark .ayti-title-cold {
+  filter: drop-shadow(0 0 0.45px rgba(125, 211, 252, 0.3))
+    drop-shadow(0 0 12px rgba(56, 189, 248, 0.07));
+}
+
+@media (max-width: 767.98px) {
+  .ayti-title-cold-scope :where(h1, h2, h3, h4):not(#hero-heading),
+  .ayti-title-cold {
+    filter: drop-shadow(0 0 0.75px rgba(56, 175, 215, 0.2));
+  }
+}
+
+@media (prefers-reduced-motion: reduce), (prefers-reduced-data: reduce) {
+  .ayti-title-cold-scope :where(h1, h2, h3, h4):not(#hero-heading),
+  .ayti-title-cold {
+    filter: drop-shadow(0 0 0.5px rgba(125, 211, 252, 0.26));
+  }
+}
+
+/* Fallback pendek untuk viewport rendah apa pun UA */
+@media (max-height: 700px) and (max-width: 500px) {
+  #beranda.hero {
+    height: auto !important;
+    min-height: auto !important;
+    padding-bottom: max(8.25rem, calc(env(safe-area-inset-bottom, 0px) + 2.25rem)) !important;
+  }
+}
+
+/*
+ * Alur kerja (`ProsesKerjaFlow`): garis alur premium — dash lembut, fade ujung, glow halus (hero),
+ * animasi tenang & loop seamless; reduced-motion → trek statis tetap rapi.
+ */
+@keyframes proses-flow-line-x {
+  to {
+    background-position: 18px 0;
+  }
+}
+
+@keyframes proses-flow-line-y {
+  to {
+    background-position: 0 14px;
+  }
+}
+
+/* Panah: hanya transform + container query unit → kompositor halus, easing lembut */
+@keyframes proses-flow-arrow-march-x {
+  0% {
+    transform: translate3d(0, -50%, 0);
+  }
+
+  100% {
+    transform: translate3d(calc(100cqi - 100%), -50%, 0);
+  }
+}
+
+@keyframes proses-flow-arrow-march-y {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(-50%, calc(100cqb - 100%), 0);
+  }
+}
+
+.proses-flow-line--hero-h {
+  background-color: transparent !important;
+  border-radius: 9999px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    transparent 1px,
+    rgb(255 255 255 / 0.1) 2px,
+    rgb(255 255 255 / 0.42) 4px,
+    rgb(255 255 255 / 0.62) 7px,
+    rgb(255 255 255 / 0.42) 10px,
+    rgb(255 255 255 / 0.1) 12px,
+    transparent 14px,
+    transparent 18px
+  );
+  background-size: 18px 100%;
+  background-repeat: repeat-x;
+  animation: proses-flow-line-x 1.65s linear infinite;
+  will-change: background-position;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 14%,
+    #000 86%,
+    transparent
+  );
+  mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+  filter: drop-shadow(0 0 10px rgb(56 189 248 / 0.28)) drop-shadow(0 0 4px rgb(255 255 255 / 0.12))
+    drop-shadow(0 0 1px rgb(255 255 255 / 0.1));
+  backface-visibility: hidden;
+}
+
+.proses-flow-line--light-h {
+  background-color: transparent !important;
+  border-radius: 9999px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    transparent 1px,
+    color-mix(in srgb, var(--accent) 22%, transparent) 2px,
+    color-mix(in srgb, var(--accent) 52%, transparent) 5px,
+    color-mix(in srgb, var(--accent) 58%, transparent) 8px,
+    color-mix(in srgb, var(--accent) 52%, transparent) 11px,
+    color-mix(in srgb, var(--accent) 22%, transparent) 14px,
+    transparent 15px,
+    transparent 18px
+  );
+  background-size: 18px 100%;
+  background-repeat: repeat-x;
+  animation: proses-flow-line-x 1.65s linear infinite;
+  will-change: background-position;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 15%, transparent));
+  backface-visibility: hidden;
+}
+
+.proses-flow-line--light-v {
+  background-color: transparent !important;
+  border-radius: 9999px;
+  background-image: repeating-linear-gradient(
+    180deg,
+    transparent 0px,
+    transparent 1px,
+    color-mix(in srgb, var(--accent) 20%, transparent) 2px,
+    color-mix(in srgb, var(--accent) 48%, transparent) 5px,
+    color-mix(in srgb, var(--accent) 52%, transparent) 7px,
+    color-mix(in srgb, var(--accent) 48%, transparent) 10px,
+    color-mix(in srgb, var(--accent) 20%, transparent) 13px,
+    transparent 14px
+  );
+  background-size: 100% 14px;
+  background-repeat: repeat-y;
+  animation: proses-flow-line-y 1.55s linear infinite;
+  will-change: background-position;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--accent) 12%, transparent));
+  backface-visibility: hidden;
+}
+
+/* Pembungkus konektor: panah di luar mask garis; `cqi`/`cqb` untuk panah berbasis transform */
+.proses-flow-connector--hero-h,
+.proses-flow-connector--light-h {
+  overflow: visible;
+  container-type: inline-size;
+}
+
+.proses-flow-connector--light-v {
+  overflow: visible;
+  container-type: size;
+}
+
+/* Panah runcing bergerak sepanjang trek (seirama dash ~1.65s / 1.55s) */
+.proses-flow-arrow-march--hero-h {
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  z-index: 2;
+  width: 10px;
+  height: 13px;
+  background: linear-gradient(
+    90deg,
+    rgb(125 211 252 / 0.55),
+    rgb(255 255 255 / 0.98)
+  );
+  clip-path: polygon(0 14%, 0 86%, 100% 50%);
+  filter: drop-shadow(0 0 8px rgb(56 189 248 / 0.45)) drop-shadow(0 0 2px rgb(255 255 255 / 0.35));
+  animation: proses-flow-arrow-march-x 1.65s cubic-bezier(0.33, 0, 0.2, 1) infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.proses-flow-arrow-march--light-h {
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  z-index: 2;
+  width: 10px;
+  height: 13px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent) 38%, transparent),
+    color-mix(in srgb, var(--accent) 72%, transparent)
+  );
+  clip-path: polygon(0 14%, 0 86%, 100% 50%);
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 28%, transparent));
+  animation: proses-flow-arrow-march-x 1.65s cubic-bezier(0.33, 0, 0.2, 1) infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.proses-flow-arrow-march--light-v {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 2;
+  width: 13px;
+  height: 10px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent) 42%, transparent),
+    color-mix(in srgb, var(--accent) 78%, transparent)
+  );
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  filter: drop-shadow(0 2px 4px color-mix(in srgb, var(--accent) 22%, transparent));
+  animation: proses-flow-arrow-march-y 1.55s cubic-bezier(0.33, 0, 0.2, 1) infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Panah lebih kecil saat konektor “mobile” (<1024 = `lg`) */
+/* Panah alur: kecil di tablet; lebih kecil lagi di ponsel (≤767px) */
+@media (max-width: 1023px) {
+  .proses-flow-arrow-march--hero-h,
+  .proses-flow-arrow-march--light-h {
+    width: 6px;
+    height: 8px;
+  }
+
+  .proses-flow-arrow-march--hero-h {
+    filter: drop-shadow(0 0 6px rgb(56 189 248 / 0.35)) drop-shadow(0 0 2px rgb(255 255 255 / 0.22));
+  }
+
+  .proses-flow-arrow-march--light-h {
+    filter: drop-shadow(0 0 2px color-mix(in srgb, var(--accent) 20%, transparent));
+  }
+
+  .proses-flow-arrow-march--light-v {
+    width: 8px;
+    height: 6px;
+    filter: drop-shadow(0 1px 2px color-mix(in srgb, var(--accent) 16%, transparent));
+  }
+}
+
+@media (max-width: 767px) {
+  .proses-flow-arrow-march--hero-h,
+  .proses-flow-arrow-march--light-h {
+    width: 5px;
+    height: 6px;
+  }
+
+  .proses-flow-arrow-march--hero-h {
+    filter: drop-shadow(0 0 5px rgb(56 189 248 / 0.32)) drop-shadow(0 0 1px rgb(255 255 255 / 0.2));
+  }
+
+  .proses-flow-arrow-march--light-h {
+    filter: drop-shadow(0 0 2px color-mix(in srgb, var(--accent) 18%, transparent));
+  }
+
+  .proses-flow-arrow-march--light-v {
+    width: 6px;
+    height: 5px;
+    filter: drop-shadow(0 1px 1px color-mix(in srgb, var(--accent) 14%, transparent));
+  }
+}
+
+/* Tanpa `cqi`/`cqb`: panah tetap halus (ease) dengan animasi left/top */
+@keyframes proses-flow-arrow-march-x-fallback {
+  0% {
+    left: 0;
+    transform: translateY(-50%);
+  }
+
+  100% {
+    left: 100%;
+    transform: translate(-100%, -50%);
+  }
+}
+
+@keyframes proses-flow-arrow-march-y-fallback {
+  0% {
+    top: 0;
+    transform: translateX(-50%);
+  }
+
+  100% {
+    top: 100%;
+    transform: translate(-50%, -100%);
+  }
+}
+
+@supports not (width: 1cqi) {
+  .proses-flow-arrow-march--hero-h,
+  .proses-flow-arrow-march--light-h {
+    animation-name: proses-flow-arrow-march-x-fallback;
+    will-change: left, transform;
+  }
+}
+
+@supports not (height: 1cqb) {
+  .proses-flow-arrow-march--light-v {
+    animation-name: proses-flow-arrow-march-y-fallback;
+    will-change: top, transform;
+  }
+}
+
+/* Layar sempit: Safari/WebKit kadang salah menghitung `cqi` dalam @keyframes pada grid — fallback halus. */
+@media (max-width: 1023.98px) and (prefers-reduced-motion: no-preference) {
+  .proses-flow-arrow-march--hero-h,
+  .proses-flow-arrow-march--light-h {
+    animation-name: proses-flow-arrow-march-x-fallback;
+    will-change: left, transform;
+  }
+
+  .proses-flow-arrow-march--light-v {
+    animation-name: proses-flow-arrow-march-y-fallback;
+    will-change: top, transform;
+  }
+}
+
+/*
+ * Centang hanya pada kartu tahap terakhir:
+ * diam beberapa detik → satu putaran → tahan tampil → pudar → ulang ("berjalan lagi").
+ */
+@keyframes proses-step-check-final {
+  0%,
+  30% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.28) rotate(-45deg);
+  }
+
+  31% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.88) rotate(0deg);
+  }
+
+  40% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) rotate(360deg);
+  }
+
+  72% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) rotate(360deg);
+  }
+
+  82%,
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.92) rotate(360deg);
+  }
+}
+
+.proses-step-check {
+  pointer-events: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 5;
+  display: flex;
+  width: 56%;
+  height: 56%;
+  align-items: center;
+  justify-content: center;
+}
+
+.proses-step-check--final {
+  animation: proses-step-check-final 10s linear infinite;
+}
+
+/* Kartu terakhir: sembunyikan glyph tahap saat centang tampil (siklus sama 10s) */
+@keyframes proses-step-glyph-final {
+  0%,
+  30% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  31%,
+  82% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+
+  83%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.proses-step-glyph--final {
+  animation: proses-step-glyph-final 10s linear infinite;
+}
+
+.proses-step-check__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.proses-step-check--hero .proses-step-check__svg {
+  color: rgb(209 250 229); /* emerald-100 — kontras kuat di kartu akhir */
+  filter: drop-shadow(0 0 10px rgb(52 211 153 / 0.55)) drop-shadow(0 0 4px rgb(167 243 208 / 0.45));
+}
+
+.proses-step-check--light .proses-step-check__svg {
+  color: var(--accent);
+  filter: drop-shadow(0 0 3px color-mix(in srgb, var(--accent) 38%, transparent));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .proses-step-check {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  .proses-step-glyph--final {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .proses-flow-line--hero-h {
+    animation: none;
+    filter: none;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    background-image: linear-gradient(
+      90deg,
+      rgb(255 255 255 / 0.06),
+      rgb(255 255 255 / 0.22) 45%,
+      rgb(255 255 255 / 0.28) 50%,
+      rgb(255 255 255 / 0.22) 55%,
+      rgb(255 255 255 / 0.06)
+    ) !important;
+    background-size: 100% 100% !important;
+    background-repeat: no-repeat !important;
+  }
+
+  .proses-flow-line--light-h {
+    animation: none;
+    filter: none;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    background-image: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--accent) 14%, transparent),
+      color-mix(in srgb, var(--accent) 38%, transparent) 48%,
+      color-mix(in srgb, var(--accent) 34%, var(--border) 66%) 100%
+    ) !important;
+    background-size: 100% 100% !important;
+    background-repeat: no-repeat !important;
+  }
+
+  .proses-flow-line--light-v {
+    animation: none;
+    filter: none;
+    -webkit-mask-image: linear-gradient(180deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(180deg, transparent, #000 8%, #000 92%, transparent);
+    background-image: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent) 18%, transparent),
+      color-mix(in srgb, var(--accent) 32%, transparent) 50%,
+      var(--surface-muted)
+    ) !important;
+    background-size: 100% 100% !important;
+    background-repeat: no-repeat !important;
+  }
+
+  .proses-flow-arrow-march--hero-h {
+    animation: none;
+    filter: none;
+    left: auto;
+    right: 0;
+    transform: translateY(-50%);
+  }
+
+  .proses-flow-arrow-march--light-h {
+    animation: none;
+    filter: none;
+    left: auto;
+    right: 0;
+    transform: translateY(-50%);
+  }
+
+  .proses-flow-arrow-march--light-v {
+    animation: none;
+    filter: none;
+    top: auto;
+    bottom: 0;
+    transform: translateX(-50%);
+  }
 }
 
 @keyframes fadeUpSoft {
@@ -408,9 +1638,242 @@ html {
   }
 }
 
+/** CMS modal — halus, bukan “pop” agresif */
+@keyframes cmsFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cmsScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/**
+ * Hero intro tagline — mobile/tablet (≤1023px): HANYA transform + opacity keyframe dijaga 1 via CSS.
+ * Desktop: blur halus + transform (tanpa opacity 0 agar tidak flash vs konten statis pra-mount).
+ */
+@keyframes hero-intro-tagline-m-rise {
+  from {
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes hero-intro-tagline-m-arc {
+  from {
+    transform: translate3d(10px, 18px, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes hero-intro-tagline-m-sweep-l {
+  from {
+    transform: translate3d(26px, 10px, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes hero-intro-tagline-m-sweep-r {
+  from {
+    transform: translate3d(-26px, 10px, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes hero-intro-tagline-m-vault {
+  from {
+    transform: translate3d(0, 16px, 0) rotateZ(-2deg) scale3d(0.98, 0.98, 1);
+  }
+  to {
+    transform: translate3d(0, 0, 0) rotateZ(0deg) scale3d(1, 1, 1);
+  }
+}
+
+/**
+ * Tap / klik: putaran acak — hanya `transform` (border + teks ikut satu blok `.hero-intro-tagline-chrome`).
+ * Empat varian: ±1× atau ±2× putaran penuh.
+ */
+@keyframes hero-intro-tagline-touch-spin-cw {
+  from {
+    transform: translateZ(0) rotate3d(0, 0, 1, 0deg);
+  }
+  to {
+    transform: translateZ(0) rotate3d(0, 0, 1, 360deg);
+  }
+}
+
+@keyframes hero-intro-tagline-touch-spin-ccw {
+  from {
+    transform: translateZ(0) rotate3d(0, 0, 1, 0deg);
+  }
+  to {
+    transform: translateZ(0) rotate3d(0, 0, 1, -360deg);
+  }
+}
+
+@keyframes hero-intro-tagline-touch-spin-2cw {
+  from {
+    transform: translateZ(0) rotate3d(0, 0, 1, 0deg);
+  }
+  to {
+    transform: translateZ(0) rotate3d(0, 0, 1, 720deg);
+  }
+}
+
+@keyframes hero-intro-tagline-touch-spin-2ccw {
+  from {
+    transform: translateZ(0) rotate3d(0, 0, 1, 0deg);
+  }
+  to {
+    transform: translateZ(0) rotate3d(0, 0, 1, -720deg);
+  }
+}
+
+/** Aksen “premium” sekali setelah masuk (hanya desktop lebar — mobile hemat) */
+@keyframes hero-intro-tagline-sheen {
+  0% {
+    opacity: 0;
+    background-position: 120% 50%;
+  }
+  18% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    background-position: -40% 50%;
+  }
+}
+
+/** Hero — marquee kartu statistik: bergulir otomatis ke kiri (setengah lebar track = satu siklus) */
+@keyframes hero-achievement-marquee-left {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/** Jeda “showcase”: variasi animasi masuk per kartu (dipilih acak dari JS) */
+@keyframes hero-achievement-showcase-pop {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+    transform: translate3d(0, 14px, 0) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes hero-achievement-showcase-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 26px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes hero-achievement-showcase-in-left {
+  from {
+    opacity: 0;
+    transform: translate3d(36px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes hero-achievement-showcase-in-right {
+  from {
+    opacity: 0;
+    transform: translate3d(-36px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes hero-achievement-showcase-zoom {
+  from {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+  68% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes hero-achievement-showcase-tilt {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) rotate(-6deg) scale(0.93);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0) scale(1);
+  }
+}
+
+@keyframes hero-achievement-showcase-bounce {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0) scale(0.88);
+  }
+  58% {
+    opacity: 1;
+    transform: translate3d(0, -6px, 0) scale(1.03);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.hero-achievement-marquee-viewport {
+  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+}
+
+.hero-achievement-marquee-viewport--showcase {
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
 /*
  * Global `transition` includes transform; on mobile WebKit that can break stable
- * compositing untuk elemen fixed / animasi.
+ * compositing untuk beberapa elemen fixed / animasi.
  */
 @media (prefers-reduced-motion: no-preference) {
   *,
@@ -459,6 +1922,19 @@ html {
       box-shadow 0.25s ease;
   }
 
+  /*
+   * Logo Our Customer / Our Partner: transisi `transform` global (lihat * di atas) — di
+   * Safari iOS sering membuat keyframe translateX berhenti/tertahan; samakan dengan #layanan.
+   */
+  #customers-partners,
+  #customers-partners * {
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
   /* Hero stats — sama seperti #layanan: jangan transisi opacity/transform global vs Framer Motion */
   .hero-stats-section * {
     transition:
@@ -484,6 +1960,79 @@ html {
     transition: none !important;
   }
 
+  /* Hero achievement marquee — sama seperti hero image marquee */
+  #beranda .hero-achievement-marquee-viewport,
+  #beranda .hero-achievement-marquee-viewport * {
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  #beranda .hero-achievement-marquee-track--running {
+    transition: none !important;
+    animation: hero-achievement-marquee-left 32s linear infinite;
+    will-change: transform;
+  }
+
+  #beranda .hero-achievement-marquee-track--idle {
+    transition: none !important;
+    animation: none;
+    transform: translate3d(0, 0, 0);
+    will-change: auto;
+  }
+
+  #beranda .hero-achievement-showcase-grid,
+  #beranda .hero-achievement-showcase-grid * {
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  #beranda .hero-achievement-showcase-card {
+    animation-duration: 0.58s;
+    animation-fill-mode: both;
+    animation-iteration-count: 1;
+  }
+
+  #beranda .hero-achievement-showcase-card--pop {
+    animation-name: hero-achievement-showcase-pop;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  #beranda .hero-achievement-showcase-card--rise {
+    animation-name: hero-achievement-showcase-rise;
+    animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  #beranda .hero-achievement-showcase-card--in-left {
+    animation-name: hero-achievement-showcase-in-left;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  #beranda .hero-achievement-showcase-card--in-right {
+    animation-name: hero-achievement-showcase-in-right;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  #beranda .hero-achievement-showcase-card--zoom {
+    animation-name: hero-achievement-showcase-zoom;
+    animation-timing-function: cubic-bezier(0.33, 1.2, 0.55, 1);
+  }
+
+  #beranda .hero-achievement-showcase-card--tilt {
+    animation-name: hero-achievement-showcase-tilt;
+    animation-timing-function: cubic-bezier(0.28, 0.9, 0.32, 1);
+  }
+
+  #beranda .hero-achievement-showcase-card--bounce {
+    animation-name: hero-achievement-showcase-bounce;
+    animation-timing-function: cubic-bezier(0.34, 1.15, 0.6, 1);
+  }
+
   #beranda .hero-content-enter {
     opacity: 0;
     animation: fadeUpSoft 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
@@ -492,6 +2041,161 @@ html {
       color 0.25s ease,
       border-color 0.25s ease,
       box-shadow 0.25s ease;
+  }
+
+  /* Intro tagline: animasi transform — hindari transisi transform global (konflik di mobile WebKit). */
+  #beranda .hero-intro-tagline-wrap {
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  /* Chrome (border + blur + teks): putar saat tap/klik — tanpa transisi `transform` global. */
+  #beranda .hero-intro-tagline-wrap .hero-intro-tagline-chrome {
+    transform-origin: 50% 50%;
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  #beranda
+    .hero-intro-tagline-wrap
+    .hero-intro-tagline-chrome.hero-intro-tagline-spin-active.hero-intro-tagline-spin--cw {
+    animation: hero-intro-tagline-touch-spin-cw var(--tagline-spin-dur, 680ms)
+      cubic-bezier(0.2, 1, 0.36, 1) both;
+    will-change: transform;
+  }
+
+  #beranda
+    .hero-intro-tagline-wrap
+    .hero-intro-tagline-chrome.hero-intro-tagline-spin-active.hero-intro-tagline-spin--ccw {
+    animation: hero-intro-tagline-touch-spin-ccw var(--tagline-spin-dur, 680ms)
+      cubic-bezier(0.2, 1, 0.36, 1) both;
+    will-change: transform;
+  }
+
+  #beranda
+    .hero-intro-tagline-wrap
+    .hero-intro-tagline-chrome.hero-intro-tagline-spin-active.hero-intro-tagline-spin--2cw {
+    animation: hero-intro-tagline-touch-spin-2cw var(--tagline-spin-dur, 720ms)
+      cubic-bezier(0.2, 1, 0.36, 1) both;
+    will-change: transform;
+  }
+
+  #beranda
+    .hero-intro-tagline-wrap
+    .hero-intro-tagline-chrome.hero-intro-tagline-spin-active.hero-intro-tagline-spin--2ccw {
+    animation: hero-intro-tagline-touch-spin-2ccw var(--tagline-spin-dur, 720ms)
+      cubic-bezier(0.2, 1, 0.36, 1) both;
+    will-change: transform;
+  }
+
+  #beranda .hero-intro-tagline-chrome:focus-visible {
+    outline: 2px solid rgb(125 211 252 / 0.65);
+    outline-offset: 3px;
+    border-radius: 0.75rem;
+  }
+
+  /*
+   * Intro tagline: varian acak + --tagline-enter-dur / --tagline-enter-delay dari JS.
+   * Semua keyframe: transform saja (teks tidak di-blur); desktop + sheen ::after.
+   */
+  @media (max-width: 1023px) {
+    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"].hero-intro-tagline-wrap--rise {
+      opacity: 1 !important;
+      animation: hero-intro-tagline-m-rise var(--tagline-enter-dur, 680ms)
+        cubic-bezier(0.16, 1, 0.32, 1) var(--tagline-enter-delay, 0s) both !important;
+    }
+
+    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"].hero-intro-tagline-wrap--arc {
+      opacity: 1 !important;
+      animation: hero-intro-tagline-m-arc var(--tagline-enter-dur, 680ms)
+        cubic-bezier(0.16, 1, 0.32, 1) var(--tagline-enter-delay, 0s) both !important;
+    }
+
+    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"].hero-intro-tagline-wrap--sweep-l {
+      opacity: 1 !important;
+      animation: hero-intro-tagline-m-sweep-l var(--tagline-enter-dur, 680ms)
+        cubic-bezier(0.16, 1, 0.32, 1) var(--tagline-enter-delay, 0s) both !important;
+    }
+
+    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"].hero-intro-tagline-wrap--sweep-r {
+      opacity: 1 !important;
+      animation: hero-intro-tagline-m-sweep-r var(--tagline-enter-dur, 680ms)
+        cubic-bezier(0.16, 1, 0.32, 1) var(--tagline-enter-delay, 0s) both !important;
+    }
+
+    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"].hero-intro-tagline-wrap--vault {
+      opacity: 1 !important;
+      animation: hero-intro-tagline-m-vault var(--tagline-enter-dur, 720ms)
+        cubic-bezier(0.19, 1, 0.35, 1) var(--tagline-enter-delay, 0s) both !important;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    /*
+     * Desktop memakai keyframe transform yang sama dengan mobile (teks tetap tajam);
+     * beda “premium” = durasi acak + sheen ::after.
+     */
+    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"].hero-intro-tagline-wrap--rise {
+      opacity: 1 !important;
+      animation: hero-intro-tagline-m-rise var(--tagline-enter-dur, 740ms)
+        cubic-bezier(0.16, 1, 0.32, 1) var(--tagline-enter-delay, 0s) both !important;
+    }
+
+    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"].hero-intro-tagline-wrap--arc {
+      opacity: 1 !important;
+      animation: hero-intro-tagline-m-arc var(--tagline-enter-dur, 740ms)
+        cubic-bezier(0.16, 1, 0.32, 1) var(--tagline-enter-delay, 0s) both !important;
+    }
+
+    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"].hero-intro-tagline-wrap--sweep-l {
+      opacity: 1 !important;
+      animation: hero-intro-tagline-m-sweep-l var(--tagline-enter-dur, 740ms)
+        cubic-bezier(0.16, 1, 0.32, 1) var(--tagline-enter-delay, 0s) both !important;
+    }
+
+    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"].hero-intro-tagline-wrap--sweep-r {
+      opacity: 1 !important;
+      animation: hero-intro-tagline-m-sweep-r var(--tagline-enter-dur, 740ms)
+        cubic-bezier(0.16, 1, 0.32, 1) var(--tagline-enter-delay, 0s) both !important;
+    }
+
+    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"].hero-intro-tagline-wrap--vault {
+      opacity: 1 !important;
+      animation: hero-intro-tagline-m-vault var(--tagline-enter-dur, 780ms)
+        cubic-bezier(0.19, 1, 0.35, 1) var(--tagline-enter-delay, 0s) both !important;
+    }
+
+    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"] .hero-intro-tagline-chrome::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      border-radius: inherit;
+      pointer-events: none;
+      opacity: 0;
+      mix-blend-mode: overlay;
+      background: linear-gradient(
+        118deg,
+        transparent 38%,
+        rgba(186, 230, 253, 0.22) 48%,
+        rgba(56, 189, 248, 0.1) 52%,
+        transparent 62%
+      );
+      background-size: 220% 100%;
+      background-position: 120% 50%;
+      animation: hero-intro-tagline-sheen 2.65s cubic-bezier(0.22, 1, 0.38, 1) 0.45s 1 forwards;
+    }
+
+    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"] .hero-intro-tagline-chrome > * {
+      position: relative;
+      z-index: 2;
+    }
   }
 }
 
@@ -527,6 +2231,15 @@ html {
     opacity: 1 !important;
     animation: footer-content-in-mobile 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
   }
+
+  /*
+   * Hero (#beranda): hindari opacity di keyframe masuk (Safari/Chrome mobile + transisi global)
+   * agar konten tidak “tertahan” semi-transparan.
+   */
+  #beranda .hero-content-enter {
+    opacity: 1 !important;
+    animation: product-card-in-mobile 0.52s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+  }
 }
 
 @media (max-width: 767px) and (prefers-reduced-motion: reduce) {
@@ -549,16 +2262,39 @@ html {
     opacity: 1 !important;
   }
 
-  #beranda .hero-marquee-track {
+  #beranda .hero-intro-tagline-wrap {
+    animation: none !important;
+    opacity: 1 !important;
+    will-change: auto !important;
+  }
+
+  #beranda .hero-intro-tagline-wrap .hero-intro-tagline-chrome::after {
+    content: none !important;
+    animation: none !important;
+  }
+
+  #beranda .hero-intro-tagline-chrome {
+    animation: none !important;
+    will-change: auto !important;
+  }
+
+  #beranda .hero-achievement-marquee-track--running {
     animation: none !important;
     transform: translate3d(0, 0, 0) !important;
     will-change: auto !important;
   }
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
+  #beranda .hero-achievement-showcase-card {
+    animation: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+  }
+
+  #beranda .hero-marquee-track {
+    animation: none !important;
+    transform: translate3d(0, 0, 0) !important;
+    will-change: auto !important;
   }
 }
 
@@ -574,11 +2310,12 @@ html {
 }
 
 .animate-product-card-in {
-  opacity: 0;
+  opacity: 1;
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .animate-product-card-in {
+    opacity: 0;
     animation: product-card-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
 }
@@ -602,11 +2339,12 @@ html {
 }
 
 .animate-footer-content-in {
-  opacity: 0;
+  opacity: 1;
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .animate-footer-content-in {
+    opacity: 0;
     animation: footer-content-in 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
 }
@@ -620,19 +2358,31 @@ html {
 
 @keyframes partner-marquee-ltr {
   from {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
+/* Marquee logo: clip + fade pinggir; WebKit + standar; touch = gulir halaman vertikal di mobile */
 .partner-marquee-mask {
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  touch-action: pan-y;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 8%,
+    black 92%,
+    transparent
+  );
   mask-image: linear-gradient(
     to right,
     transparent,
-    black 6%,
-    black 94%,
+    black 8%,
+    black 92%,
     transparent
   );
 }
@@ -643,8 +2393,20 @@ html {
 
 @media (prefers-reduced-motion: no-preference) {
   .partner-marquee-track {
-    animation: partner-marquee-ltr 42s linear infinite;
+    animation: partner-marquee-ltr 20s linear infinite;
     will-change: transform;
+  }
+
+  /*
+   * Pause hanya untuk input hover nyata (desktop). Tanpa ini, iOS bisa menyimpan
+   * :hover / :focus-within setelah tap sehingga marquee tetap paused di HP.
+   */
+  @media (hover: hover) and (pointer: fine) {
+    .partner-marquee-track:hover,
+    .partner-marquee-track:focus-within,
+    .partner-marquee-track:active {
+      animation-play-state: paused;
+    }
   }
 }
 
@@ -657,10 +2419,10 @@ html {
 
 @keyframes customer-marquee-rtl {
   from {
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
   }
   to {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -668,10 +2430,29 @@ html {
   transition: none !important;
 }
 
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .customer-marquee-track {
-    animation: customer-marquee-rtl 36s linear infinite;
+    animation: customer-marquee-rtl 20s linear infinite;
     will-change: transform;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .customer-marquee-track:hover,
+    .customer-marquee-track:focus-within,
+    .customer-marquee-track:active {
+      animation-play-state: paused;
+    }
   }
 }
 
@@ -680,4 +2461,654 @@ html {
     animation: none;
     transform: none;
   }
+}
+
+/* Gallery project card — empat arah (duplikat konten = -50% pada sumbu animasi) */
+@keyframes gallery-photo-marquee-y-up {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
+  }
+  28% {
+    transform: translate3d(0, -50%, 0) scale(1) rotateZ(0deg);
+  }
+  31% {
+    transform: translate3d(0, -50%, 0) scale(0.978) rotateZ(0.42deg);
+  }
+  35% {
+    transform: translate3d(0, -50%, 0) scale(1) rotateZ(-0.38deg);
+  }
+  39% {
+    transform: translate3d(0, -50%, 0) scale(0.986) rotateZ(0.22deg);
+  }
+  44% {
+    transform: translate3d(0, -50%, 0) scale(1) rotateZ(0deg);
+  }
+  70% {
+    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
+  }
+  73% {
+    transform: translate3d(0, 0, 0) scale(0.977) rotateZ(-0.4deg);
+  }
+  77% {
+    transform: translate3d(0, 0, 0) scale(1) rotateZ(0.34deg);
+  }
+  82% {
+    transform: translate3d(0, 0, 0) scale(1) rotateZ(-0.08deg);
+  }
+  92% {
+    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
+  }
+}
+
+@keyframes gallery-photo-marquee-y-down {
+  0% {
+    transform: translate3d(0, -50%, 0) scale(1) rotateZ(0deg);
+  }
+  28% {
+    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
+  }
+  31% {
+    transform: translate3d(0, 0, 0) scale(0.978) rotateZ(-0.42deg);
+  }
+  35% {
+    transform: translate3d(0, 0, 0) scale(1) rotateZ(0.38deg);
+  }
+  39% {
+    transform: translate3d(0, 0, 0) scale(0.986) rotateZ(-0.22deg);
+  }
+  44% {
+    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
+  }
+  70% {
+    transform: translate3d(0, -50%, 0) scale(1) rotateZ(0deg);
+  }
+  73% {
+    transform: translate3d(0, -50%, 0) scale(0.977) rotateZ(0.4deg);
+  }
+  77% {
+    transform: translate3d(0, -50%, 0) scale(1) rotateZ(-0.34deg);
+  }
+  82% {
+    transform: translate3d(0, -50%, 0) scale(1) rotateZ(0.08deg);
+  }
+  92% {
+    transform: translate3d(0, -50%, 0) scale(1) rotateZ(0deg);
+  }
+  100% {
+    transform: translate3d(0, -50%, 0) scale(1) rotateZ(0deg);
+  }
+}
+
+@keyframes gallery-photo-marquee-x-left {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
+  }
+  28% {
+    transform: translate3d(-50%, 0, 0) scale(1) rotateZ(0deg);
+  }
+  31% {
+    transform: translate3d(-50%, 0, 0) scale(0.978) rotateZ(-0.42deg);
+  }
+  35% {
+    transform: translate3d(-50%, 0, 0) scale(1) rotateZ(0.38deg);
+  }
+  39% {
+    transform: translate3d(-50%, 0, 0) scale(0.986) rotateZ(-0.22deg);
+  }
+  44% {
+    transform: translate3d(-50%, 0, 0) scale(1) rotateZ(0deg);
+  }
+  70% {
+    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
+  }
+  73% {
+    transform: translate3d(0, 0, 0) scale(0.977) rotateZ(0.4deg);
+  }
+  77% {
+    transform: translate3d(0, 0, 0) scale(1) rotateZ(-0.34deg);
+  }
+  82% {
+    transform: translate3d(0, 0, 0) scale(1) rotateZ(0.08deg);
+  }
+  92% {
+    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
+  }
+}
+
+@keyframes gallery-photo-marquee-x-right {
+  0% {
+    transform: translate3d(-50%, 0, 0) scale(1) rotateZ(0deg);
+  }
+  28% {
+    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
+  }
+  31% {
+    transform: translate3d(0, 0, 0) scale(0.978) rotateZ(0.42deg);
+  }
+  35% {
+    transform: translate3d(0, 0, 0) scale(1) rotateZ(-0.38deg);
+  }
+  39% {
+    transform: translate3d(0, 0, 0) scale(0.986) rotateZ(0.22deg);
+  }
+  44% {
+    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
+  }
+  70% {
+    transform: translate3d(-50%, 0, 0) scale(1) rotateZ(0deg);
+  }
+  73% {
+    transform: translate3d(-50%, 0, 0) scale(0.977) rotateZ(-0.4deg);
+  }
+  77% {
+    transform: translate3d(-50%, 0, 0) scale(1) rotateZ(0.34deg);
+  }
+  82% {
+    transform: translate3d(-50%, 0, 0) scale(1) rotateZ(-0.08deg);
+  }
+  92% {
+    transform: translate3d(-50%, 0, 0) scale(1) rotateZ(0deg);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0) scale(1) rotateZ(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .gallery-photo-marquee-track {
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    will-change: transform;
+  }
+}
+
+.gallery-photo-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-photo-marquee-track {
+    animation: none !important;
+    transform: none;
+  }
+}
+
+/* Transisi route App Router — opacity saja, tanpa geser layout */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes premium-page-reveal {
+    from {
+      opacity: 0.93;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes premium-page-reveal {
+    from,
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+/* Mobile scroll panels — fade halus + stagger pendek (tanpa transform panjang). */
+@media (max-width: 767px) {
+  .mobile-measured-reveal[data-expanded="false"] .premium-reveal-stage {
+    opacity: 0;
+    transform: none;
+    transition: opacity 220ms var(--ease-premium-out);
+    transition-delay: 0ms;
+  }
+
+  .mobile-measured-reveal[data-expanded="true"] .premium-reveal-stage {
+    opacity: 1;
+    transform: none;
+    transition: opacity var(--mobile-micro-transition-duration) var(--ease-premium-out);
+  }
+
+  .mobile-measured-reveal[data-expanded="true"] .premium-reveal-stage--1 {
+    transition-delay: 40ms;
+  }
+
+  .mobile-measured-reveal[data-expanded="true"] .premium-reveal-stage--2 {
+    transition-delay: 80ms;
+  }
+
+  .mobile-measured-reveal[data-expanded="true"] .premium-reveal-stage--3 {
+    transition-delay: 120ms;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .premium-reveal-stage {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+  }
+}
+
+/* Featured produk — sorot aktif: transisi halus opacity + bayangan (tanpa filter di transition). */
+@media (max-width: 767px) {
+  #produk-utama[data-featured-scroll],
+  #produk-solusi[data-featured-scroll],
+  #accessories[data-featured-scroll] {
+    transition:
+      opacity var(--mobile-micro-transition-duration) var(--ease-premium-out),
+      box-shadow 380ms var(--ease-premium-out) !important;
+  }
+
+  #produk-utama[data-featured-scroll="idle"],
+  #produk-solusi[data-featured-scroll="idle"],
+  #accessories[data-featured-scroll="idle"] {
+    opacity: 0.99;
+    filter: brightness(0.993);
+  }
+
+  #produk-utama[data-featured-scroll="active"],
+  #produk-solusi[data-featured-scroll="active"],
+  #accessories[data-featured-scroll="active"] {
+    opacity: 1;
+    filter: brightness(1.018);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, rgb(56 189 248 / 1) 10%, transparent),
+      0 14px 40px -20px color-mix(in srgb, rgb(15 23 42 / 1) 12%, transparent);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #produk-utama[data-featured-scroll="active"],
+    #produk-solusi[data-featured-scroll="active"],
+    #accessories[data-featured-scroll="active"] {
+      filter: brightness(1.022);
+      box-shadow:
+        0 0 0 1px color-mix(in srgb, rgb(125 211 252 / 1) 11%, transparent),
+        0 16px 42px -18px color-mix(in srgb, rgb(0 0 0 / 1) 42%, transparent);
+    }
+
+    #produk-utama[data-featured-scroll="idle"],
+    #produk-solusi[data-featured-scroll="idle"],
+    #accessories[data-featured-scroll="idle"] {
+      filter: brightness(0.991);
+    }
+  }
+
+}
+
+/* Service & maintenance — kartu mobile: transisi halus (opacity + bayangan + border). */
+@media (max-width: 767px) {
+  #service-maintenance [data-service-maintenance-scroll] {
+    transition:
+      opacity var(--mobile-micro-transition-duration) var(--ease-premium-out),
+      box-shadow 380ms var(--ease-premium-out),
+      border-color var(--mobile-micro-transition-duration) var(--ease-premium-out) !important;
+  }
+
+  #service-maintenance [data-service-maintenance-scroll="idle"] {
+    opacity: 0.99;
+    filter: brightness(0.993);
+  }
+
+  #service-maintenance [data-service-maintenance-scroll="active"] {
+    opacity: 1;
+    filter: brightness(1.018);
+    border-color: color-mix(in srgb, rgb(14 165 233 / 1) 24%, rgb(226 232 240 / 1)) !important;
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, rgb(56 189 248 / 1) 10%, transparent),
+      0 14px 40px -20px color-mix(in srgb, rgb(15 23 42 / 1) 12%, transparent);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #service-maintenance [data-service-maintenance-scroll="active"] {
+      filter: brightness(1.022);
+      border-color: color-mix(in srgb, rgb(56 189 248 / 1) 22%, rgba(255 255 255 / 0.12)) !important;
+      box-shadow:
+        0 0 0 1px color-mix(in srgb, rgb(125 211 252 / 1) 11%, transparent),
+        0 16px 42px -18px color-mix(in srgb, rgb(0 0 0 / 1) 42%, transparent);
+    }
+
+    #service-maintenance [data-service-maintenance-scroll="idle"] {
+      filter: brightness(0.991);
+    }
+  }
+
+}
+
+/* ============================================================================
+ * Premium scroll reveal — section & card stagger (lihat ScrollRevealSection)
+ * Desktop/tablet: opacity + translateY. Mobile (≤767.98px): opacity saja (durasi `--mobile-scroll-reveal-duration`), tanpa geser.
+ * Reduced-motion + `data-performance-no-anim` → konten langsung tampil tanpa transisi.
+ * ============================================================================ */
+.scroll-reveal-section,
+.scroll-reveal-card,
+.scroll-reveal-image {
+  opacity: 0;
+  /* translate3d → kompositor murni, hindari subpixel reflow di Safari mobile */
+  transform: translate3d(0, 16px, 0);
+  /* Wajib bagi mobile WebKit agar transform tidak menarik tata letak induk */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: opacity, transform;
+  transition:
+    opacity 520ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.scroll-reveal-card {
+  transform: translate3d(0, 14px, 0);
+  transition:
+    opacity 460ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 460ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Image/video reveal — translateY ringan + scale sangat subtle (0.985 → 1).
+   Hindari aggressive zoom yang bikin halaman terasa "loncat". */
+.scroll-reveal-image {
+  transform: translate3d(0, 10px, 0) scale(0.985);
+  /* Pastikan transform-origin di tengah agar scale tidak menarik tata letak ke salah satu sisi */
+  transform-origin: 50% 50%;
+  transition:
+    opacity 560ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (max-width: 767.98px) {
+  .scroll-reveal-section,
+  .scroll-reveal-card,
+  .scroll-reveal-image {
+    opacity: 0;
+    transform: none;
+    will-change: opacity;
+    transition: opacity var(--mobile-scroll-reveal-duration) var(--ease-premium-out);
+    backface-visibility: visible;
+    -webkit-backface-visibility: visible;
+  }
+
+  .scroll-reveal-section.is-revealed,
+  .scroll-reveal-card.is-revealed,
+  .scroll-reveal-image.is-revealed {
+    opacity: 1;
+    transform: none;
+    will-change: auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .scroll-reveal-section {
+    transform: translate3d(0, 22px, 0);
+    transition:
+      opacity 720ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .scroll-reveal-card {
+    transform: translate3d(0, 16px, 0);
+    transition:
+      opacity 540ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 540ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .scroll-reveal-image {
+    transform: translate3d(0, 14px, 0) scale(0.985);
+    transition:
+      opacity 720ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+@media (min-width: 1024px) {
+  .scroll-reveal-section {
+    transform: translate3d(0, 24px, 0);
+    transition:
+      opacity 820ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 820ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .scroll-reveal-card {
+    transform: translate3d(0, 18px, 0);
+    transition:
+      opacity 600ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .scroll-reveal-image {
+    transform: translate3d(0, 16px, 0) scale(0.985);
+    transition:
+      opacity 820ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+.scroll-reveal-section.is-revealed,
+.scroll-reveal-card.is-revealed,
+.scroll-reveal-image.is-revealed {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+  /* Bebaskan GPU layer setelah animasi selesai (hindari memory pressure). */
+  will-change: auto;
+}
+
+/*
+ * Setelah transisi reveal selesai, lepaskan GPU layer secara permanen.
+ * Ditandai oleh JS via `data-reveal-complete="1"` (lihat ScrollRevealSection
+ * → onTransitionEnd). `transform: none` membuat browser melepas compositor
+ * layer yang sebelumnya dibuat oleh `translate3d(...)`. Sangat membantu di
+ * iPhone Safari ketika ada banyak section/card di halaman panjang.
+ */
+.scroll-reveal-section.is-revealed[data-reveal-complete="1"],
+.scroll-reveal-card.is-revealed[data-reveal-complete="1"],
+.scroll-reveal-image.is-revealed[data-reveal-complete="1"] {
+  transform: none;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
+}
+
+/* Mobile: timpa `.is-revealed` global (translate3d + scale) — tetap tanpa transform untuk fade ringan. */
+@media (max-width: 767.98px) {
+  .scroll-reveal-section.is-revealed,
+  .scroll-reveal-card.is-revealed,
+  .scroll-reveal-image.is-revealed {
+    transform: none;
+  }
+}
+
+/* ============================================================================
+ * Mobile scroll perf overrides
+ *  - Header: turunkan blur saat layar mobile. backdrop-filter pada element
+ *    `position: fixed` adalah salah satu sumber jank scroll terbesar di
+ *    Safari iOS dan Chrome Android (recomposite tiap frame). Turunkan dari
+ *    24px (`backdrop-blur-xl`) → 6px dan saturate 150% → 110% untuk hemat fillrate.
+ *  - Pause hero marquee saat #beranda keluar viewport (ditandai oleh JS via
+ *    `data-hero-visible="0"`). Layer GPU dilepas dan tidak terus dianimasikan
+ *    saat tidak terlihat.
+ *  - `content-visibility: auto` pada section reveal yang sudah tampil →
+ *    skip render saat di luar viewport (boost paint cost saat scroll cepat).
+ * ============================================================================ */
+/* --- Floating premium navbar (SiteHeader) --- */
+.site-header-shell {
+  background:
+    linear-gradient(165deg, rgba(255, 255, 255, 0.09) 0%, transparent 42%),
+    linear-gradient(to bottom, var(--header-glass-fill), color-mix(in srgb, var(--header-glass-fill) 96%, rgba(15, 23, 42, 0.06)));
+  border: 1px solid color-mix(in srgb, var(--header-glass-border) 92%, transparent);
+  box-shadow:
+    var(--header-glass-inner),
+    var(--header-glass-shadow),
+    var(--header-glass-glow);
+  backdrop-filter: blur(14px) saturate(135%);
+  -webkit-backdrop-filter: blur(14px) saturate(135%);
+  transition:
+    background 420ms var(--ease-premium-soft),
+    box-shadow 520ms var(--ease-premium-soft),
+    border-color 420ms var(--ease-premium-soft),
+    backdrop-filter 520ms var(--ease-premium-soft);
+}
+
+@media (prefers-color-scheme: dark) {
+  .site-header-shell {
+    background:
+      linear-gradient(165deg, rgba(56, 189, 248, 0.07) 0%, transparent 46%),
+      linear-gradient(to bottom, var(--header-glass-fill), color-mix(in srgb, var(--header-glass-fill) 94%, #030712));
+  }
+}
+
+.site-header-shell[data-header-scrolled="true"] {
+  background:
+    linear-gradient(165deg, rgba(255, 255, 255, 0.06) 0%, transparent 40%),
+    color-mix(in srgb, var(--header-glass-fill-solid) 94%, transparent);
+  backdrop-filter: blur(18px) saturate(128%);
+  -webkit-backdrop-filter: blur(18px) saturate(128%);
+  border-color: color-mix(in srgb, var(--header-glass-border) 88%, rgba(148, 163, 184, 0.08));
+  box-shadow:
+    var(--header-glass-inner),
+    var(--header-glass-shadow),
+    var(--header-glass-glow),
+    0 0 60px -28px rgba(56, 189, 248, 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+  .site-header-shell[data-header-scrolled="true"] {
+    background:
+      linear-gradient(165deg, rgba(56, 189, 248, 0.05) 0%, transparent 42%),
+      color-mix(in srgb, var(--header-glass-fill-solid) 96%, transparent);
+    box-shadow:
+      var(--header-glass-inner),
+      var(--header-glass-shadow),
+      var(--header-glass-glow),
+      0 0 72px -30px rgba(56, 189, 248, 0.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header-shell {
+    transition-duration: 80ms;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .site-header-shell {
+    backdrop-filter: blur(6px) saturate(125%);
+    -webkit-backdrop-filter: blur(6px) saturate(125%);
+  }
+  .site-header-shell[data-header-scrolled="true"] {
+    backdrop-filter: blur(8px) saturate(118%);
+    -webkit-backdrop-filter: blur(8px) saturate(118%);
+  }
+}
+
+#beranda[data-hero-visible="0"] .hero-marquee-track,
+#beranda[data-hero-visible="0"] .hero-achievement-marquee-track--running {
+  animation-play-state: paused !important;
+  will-change: auto !important;
+}
+
+/* ============================================================================
+ * Mobile scroll perf — kurangi animasi/filter berat pada layar mobile
+ * (≤ 767.98px). Partner/gallery marquee & backdrop blur diturunkan; alur kerja
+ * memakai animasi dash + panah dengan glow garis dimatikan saja.
+ *
+ * Strategi:
+ *   - Alur kerja (`proses-flow-*`) tetap dianimasikan di mobile (UX); glow pada
+ *     garis dihilangkan di bawah lewat override ringan agar scroll tetap mulus.
+ *   - Logo partner/industri (`partner-marquee-track` / `customer-marquee-track`)
+ *     tetap beranimasi di mobile; mask pakai `touch-action: pan-y` agar scroll vertikal
+ *     halaman tidak tertahan.
+ *   - `gallery-photo-marquee-*` → pause (animasi card thumbnail).
+ *   - `layanan-glass-card` & hero stats tile → blur 14/12px → 6px.
+ *
+ * Tetap berlaku global di:
+ *   - `prefers-reduced-motion: reduce`
+ *   - `data-performance-no-anim="1"` / `data-performance-lightweight="1"`
+ * ============================================================================ */
+@media (max-width: 767.98px) {
+  /* Garis alur kerja: animasi dash tetap jalan; tanpa drop-shadow agar tidak menahan paint berat. */
+  .proses-flow-line--hero-h,
+  .proses-flow-line--light-h,
+  .proses-flow-line--light-v {
+    filter: none !important;
+  }
+
+  [class*="gallery-photo-marquee"],
+  [class*="hero-achievement-marquee-track"] {
+    animation-play-state: paused !important;
+    will-change: auto !important;
+  }
+
+  .layanan-glass-card {
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+  }
+
+  .hero-stats-section .card-stats-tile {
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+  }
+}
+
+/* Saat performance toggle diaktifkan dari CMS, matikan total semua animasi
+   infinite di seluruh halaman (mobile & desktop). Ini "tombol panik" untuk
+   device kelas low-end di mana animasi continuous tetap berat walau di
+   compositor thread. */
+html[data-performance-no-anim="1"] .proses-flow-line--hero-h,
+html[data-performance-no-anim="1"] .proses-flow-line--light-h,
+html[data-performance-no-anim="1"] .proses-flow-line--light-v,
+html[data-performance-no-anim="1"] .partner-marquee-track,
+html[data-performance-no-anim="1"] .customer-marquee-track,
+html[data-performance-no-anim="1"] [class*="gallery-photo-marquee"],
+html[data-performance-no-anim="1"] [class*="hero-achievement-marquee-track"],
+html[data-performance-no-anim="1"] .hero-marquee-track,
+html[data-performance-no-anim="1"] .proses-step-check--final,
+html[data-performance-no-anim="1"] .proses-step-glyph--final,
+html[data-performance-lightweight="1"] .proses-flow-line--hero-h,
+html[data-performance-lightweight="1"] .proses-flow-line--light-h,
+html[data-performance-lightweight="1"] .proses-flow-line--light-v,
+html[data-performance-lightweight="1"] .partner-marquee-track,
+html[data-performance-lightweight="1"] .customer-marquee-track,
+html[data-performance-lightweight="1"] [class*="gallery-photo-marquee"],
+html[data-performance-lightweight="1"] [class*="hero-achievement-marquee-track"],
+html[data-performance-lightweight="1"] .hero-marquee-track,
+html[data-performance-lightweight="1"] .proses-step-check--final,
+html[data-performance-lightweight="1"] .proses-step-glyph--final {
+  animation: none !important;
+  will-change: auto !important;
+  transform: none !important;
+}
+
+html[data-performance-no-anim="1"] .proses-flow-arrow-march--hero-h,
+html[data-performance-no-anim="1"] .proses-flow-arrow-march--light-h,
+html[data-performance-no-anim="1"] .proses-flow-arrow-march--light-v,
+html[data-performance-lightweight="1"] .proses-flow-arrow-march--hero-h,
+html[data-performance-lightweight="1"] .proses-flow-arrow-march--light-h,
+html[data-performance-lightweight="1"] .proses-flow-arrow-march--light-v {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal-section,
+  .scroll-reveal-card,
+  .scroll-reveal-image {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    will-change: auto !important;
+  }
+}
+
+/* CMS performance toggle: matikan animasi reveal saat lightweight / no-anim aktif. */
+html[data-performance-no-anim="1"] .scroll-reveal-section,
+html[data-performance-no-anim="1"] .scroll-reveal-card,
+html[data-performance-no-anim="1"] .scroll-reveal-image,
+html[data-performance-lightweight="1"] .scroll-reveal-section,
+html[data-performance-lightweight="1"] .scroll-reveal-card,
+html[data-performance-lightweight="1"] .scroll-reveal-image {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+  will-change: auto !important;
 }
