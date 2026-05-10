@@ -630,7 +630,7 @@ export function SiteHeader({
           className={`pointer-events-auto relative mx-auto min-w-0 w-full max-w-6xl px-0 pb-2 pt-[max(0.375rem,env(safe-area-inset-top))] sm:pb-2.5 md:max-w-none md:px-0 md:pb-0 ${scrollCompact ? "md:pt-[max(0.2rem,env(safe-area-inset-top))]" : "md:pt-[max(0.35rem,env(safe-area-inset-top))]"}`}
         >
           <div
-            className="site-header-shell relative overflow-hidden rounded-[1.125rem] md:rounded-none"
+            className={`site-header-shell relative rounded-[1.125rem] md:rounded-none ${menuOpen ? "overflow-visible" : "overflow-hidden"}`}
             data-header-scrolled={scrolled ? "true" : "false"}
             data-header-compact={scrollCompact ? "true" : "false"}
           >
