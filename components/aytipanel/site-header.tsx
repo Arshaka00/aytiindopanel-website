@@ -201,11 +201,9 @@ const headerIconBtnBase =
   "inline-flex cursor-pointer items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.04] text-foreground/88 shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] backdrop-blur-sm transition-[border-color,box-shadow,background-color,transform,color] duration-[380ms] [transition-timing-function:var(--ease-premium-soft)] hover:border-sky-400/28 hover:bg-white/[0.07] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.45),0_6px_22px_-14px_rgba(56,189,248,0.22)] motion-safe:active:scale-[0.97] dark:border-white/[0.1] dark:bg-white/[0.04] dark:text-white/90 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] dark:hover:border-sky-400/35 dark:hover:bg-white/[0.07]";
 
 const mobileLinkBase =
-  "flex min-h-[46px] w-full items-center rounded-lg border-l-[3px] border-transparent bg-white/[0.16] py-2.5 pl-3.5 pr-3.5 text-[0.9375rem] font-bold leading-snug tracking-[0.015em] text-slate-950/92 shadow-[inset_0_1px_0_rgba(255,255,255,0.28)] transition-[border-color,background-color,color] duration-[260ms] [transition-timing-function:var(--ease-premium-soft)] [-webkit-tap-highlight-color:transparent] active:bg-muted-bg/55 dark:bg-white/[0.095] dark:text-white/94 dark:[text-shadow:0_1px_16px_rgba(0,0,0,0.48)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent motion-reduce:transition-none";
+  "flex min-h-[46px] w-full items-center rounded-lg border-l-[3px] border-transparent py-2.5 pl-3.5 pr-3.5 text-[0.9375rem] font-bold leading-snug tracking-[0.015em] text-slate-950/92 transition-[border-color,background-color,color] duration-[260ms] [transition-timing-function:var(--ease-premium-soft)] [-webkit-tap-highlight-color:transparent] active:bg-muted-bg/35 dark:text-white/94 dark:[text-shadow:0_1px_16px_rgba(0,0,0,0.48)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent motion-reduce:transition-none";
 const mobileLinkActive =
   "border-accent bg-accent-soft/68 text-sky-800 dark:bg-accent-soft/38 dark:text-sky-50";
-const mobileGalleryLinkSpecial =
-  "";
 
 export function SiteHeader({
   header = FALLBACK_HEADER,
@@ -780,8 +778,7 @@ export function SiteHeader({
             <ul className="mx-auto flex max-w-6xl flex-col gap-1">
               {visibleMobileNavItems.map((item) => {
                 const isActive = isNavItemActive(item.href, pathname, active);
-                const isGalleryCta = item.id === "nav-gallery-proyek";
-                const cls = `${mobileLinkBase} ${isActive ? mobileLinkActive : ""} ${isGalleryCta ? mobileGalleryLinkSpecial : ""}`;
+                const cls = `${mobileLinkBase} ${isActive ? mobileLinkActive : ""}`;
                 const idx = navItems.findIndex((n) => n.id === item.id);
                 if (idx < 0) return null;
                 return (
