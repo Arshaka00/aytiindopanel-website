@@ -2,6 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { cache } from "react";
 
+import { getSiteContentFileStoragePort } from "@/lib/cms-storage";
 import { createDefaultSiteContent } from "@/lib/site-content-defaults";
 import { deepMergeSitePatch, validateSiteContentMinimal } from "@/lib/site-content-merge";
 import { normalizeSiteContent } from "@/lib/site-content-normalize";
@@ -109,19 +110,9 @@ export function validateSiteContentPayload(content: unknown): {
 }
 
 async function migrateLegacyOverridesIfNeeded(defaults: SiteContent): Promise<SiteContent | null> {
-  const livePath = path.join(process.cwd(), "data", "site-content", "live.json");
-  const draftPath = path.join(process.cwd(), "data", "site-content", "draft.json");
-  const [liveExists, draftExists] = await Promise.all([
-    fs
-      .access(livePath)
-      .then(() => true)
-      .catch(() => false),
-    fs
-      .access(draftPath)
-      .then(() => true)
-      .catch(() => false),
-  ]);
-  if (liveExists || draftExists) return null;
+  const port = getSiteContentFileStoragePort();
+  const [liveRaw, draftRaw] = await Promise.all([port.readRawByMode("live"), port.readRawByMode("draft")]);
+  if (liveRaw !== null || draftRaw !== null) return null;
   const overrides = await readSiteContentOverrides();
   const merged = mergeDefaultsWithOverrides(defaults, overrides);
   const normalized = normalizeSiteContent(merged);

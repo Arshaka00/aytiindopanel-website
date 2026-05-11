@@ -1,0 +1,20 @@
+{
+  "lastAttemptAt": "2026-05-11T12:32:47.864Z",
+  "lastSuccessAt": "2026-05-11T12:32:47.883Z",
+  "lastFailedAt": null,
+  "lastError": null,
+  "lastPhase": "done",
+  "lastDeployHookStatus": "skipped",
+  "lastDeployHookHttpStatus": null,
+  "lastDeployHookMessage": "Deploy hook belum dikonfigurasi (set CMS_DEPLOY_HOOK_URL atau VERCEL_DEPLOY_HOOK_URL, hanya https).",
+  "lastDeployHookAttempts": null,
+  "deployHookInProgress": false,
+  "lastDeployHookTriggeredAt": null,
+  "lastDeployHookSettledAt": null,
+  "vercelDeploymentUid": null,
+  "vercelDeploymentReadyState": null,
+  "vercelDeploymentInspectorUrl": null,
+  "vercelDeploymentErrorMessage": null,
+  "vercelDeploymentTrackedAt": null,
+  "storageVersionAfter": "3c9b3000-4bfb-441e-a52b-bc661a03f002:1778502767877"
+}

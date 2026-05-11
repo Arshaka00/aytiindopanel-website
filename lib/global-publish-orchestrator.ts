@@ -1,6 +1,10 @@
 import { randomUUID } from "node:crypto";
 
-import { resolveDeployHookUrl, triggerDeployHookIfConfigured } from "@/lib/global-publish-deploy-hook";
+import {
+  resolveDeployHookResolution,
+  triggerDeployHookIfConfigured,
+  type DeployHookPublicMeta,
+} from "@/lib/global-publish-deploy-hook";
 import {
   resolveVercelApiToken,
   resolveVercelDeploymentAfterHook,
@@ -119,7 +123,8 @@ export async function executeGlobalPublish(params: {
     statusSnapshot = mergeStatus(await readGlobalPublishStatus(), { lastPhase: "deploy_hook" });
     await writeGlobalPublishStatus(statusSnapshot);
 
-    const url = resolveDeployHookUrl();
+    const hookDeploy = resolveDeployHookResolution();
+    const url = hookDeploy.url;
     let hook: Awaited<ReturnType<typeof triggerDeployHookIfConfigured>>;
 
     if (!url) {
@@ -163,12 +168,11 @@ export async function executeGlobalPublish(params: {
     let vercelReady: string | null = null;
     let vercelInspector: string | null = null;
     let vercelErr: string | null = null;
-    const hookUrl = resolveDeployHookUrl();
     const apiTok = resolveVercelApiToken();
-    if (hook.status === "ok" && hook.responseBody && apiTok && hookUrl) {
+    if (hook.status === "ok" && hook.responseBody && apiTok && url) {
       try {
         const v = await resolveVercelDeploymentAfterHook({
-          hookUrl,
+          hookUrl: url,
           hookResponseBody: hook.responseBody,
           token: apiTok,
           teamId: resolveVercelTeamId(),
@@ -259,6 +263,8 @@ export async function getGlobalPublishStatusPayload(): Promise<{
   status: GlobalPublishStatus;
   draftLiveHint: Awaited<ReturnType<typeof getDraftLiveMtimeHint>>;
   deployHookConfigured: boolean;
+  /** Diagnostik aman (tanpa URL); sama dengan `resolveDeployHookResolution().meta`. */
+  deployHookMeta: DeployHookPublicMeta;
   vercelBuildMonitor: {
     supported: boolean;
     deploymentUid: string | null;
@@ -267,14 +273,14 @@ export async function getGlobalPublishStatusPayload(): Promise<{
     errorMessage: string | null;
   };
 }> {
-  const { resolveDeployHookUrl } = await import("@/lib/global-publish-deploy-hook");
   const [status, draftLiveHint] = await Promise.all([readGlobalPublishStatus(), getDraftLiveMtimeHint()]);
-  const hookUrl = resolveDeployHookUrl();
+  const { url: hookUrl, meta: deployHookMeta } = resolveDeployHookResolution();
   const supported = vercelBuildMonitoringSupported(hookUrl ?? "");
   return {
     status,
     draftLiveHint,
-    deployHookConfigured: Boolean(hookUrl),
+    deployHookConfigured: deployHookMeta.configured,
+    deployHookMeta,
     vercelBuildMonitor: {
       supported,
       deploymentUid: status.vercelDeploymentUid,

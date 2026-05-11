@@ -1,10 +1,15 @@
 import { open, readFile, unlink } from "node:fs/promises";
 import path from "node:path";
 
+import { cmsKvKey, isProductionStorage } from "@/lib/cms-storage/env";
+import { getCmsKv } from "@/lib/cms-storage/kv-client";
+
 const DATA_DIR = path.join(process.cwd(), "data", "site-content");
 const LOCK_PATH = path.join(DATA_DIR, ".global-publish.lock");
+const LOCK_KV_KEY = cmsKvKey("global-publish-lock");
 /** Kunci dianggap stale jika proses crash (serverless/instance mati). */
 const STALE_MS = 4 * 60 * 1000;
+const LOCK_TTL_S = Math.ceil(STALE_MS / 1000);
 
 export type GlobalPublishLockHandle = {
   release: () => Promise<void>;
@@ -38,10 +43,24 @@ async function tryRemoveStaleLock(): Promise<boolean> {
 }
 
 /**
- * Kunci eksklusif file (best-effort satu node / satu filesystem).
- * Jika kunci aktif dan belum stale → `null` (jangan jalankan publish paralel).
+ * Kunci eksklusif publish global.
+ * Lokal: file lock. Production (Blob+KV): Redis SET NX + TTL (aman serverless).
  */
 export async function acquireGlobalPublishLock(actorId: string): Promise<GlobalPublishLockHandle | null> {
+  if (isProductionStorage()) {
+    const kv = getCmsKv();
+    const payload = JSON.stringify({ actorId, since: Date.now() });
+    const ok = await kv.set(LOCK_KV_KEY, payload, { nx: true, ex: LOCK_TTL_S });
+    if (ok === "OK") {
+      return {
+        release: async () => {
+          await kv.del(LOCK_KV_KEY).catch(() => {});
+        },
+      };
+    }
+    return null;
+  }
+
   await ensureDataDir();
   try {
     await writeLockFile(actorId);

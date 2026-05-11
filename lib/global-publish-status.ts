@@ -2,8 +2,12 @@ import { randomUUID } from "node:crypto";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
+import { cmsKvKey, isProductionStorage } from "@/lib/cms-storage/env";
+import { getCmsKv } from "@/lib/cms-storage/kv-client";
+
 const DATA_DIR = path.join(process.cwd(), "data", "site-content");
 const STATUS_PATH = path.join(DATA_DIR, "global-publish-status.json");
+const STATUS_KV_KEY = cmsKvKey("global-publish-status");
 /** Jika proses crash saat deploy, flag in-progress dianggap stale. */
 const STALE_IN_PROGRESS_MS = 6 * 60 * 1000;
 
@@ -110,7 +114,7 @@ function normalizeStatus(raw: unknown): GlobalPublishStatus {
   return healStaleInProgress(base);
 }
 
-async function atomicWriteJson(filePath: string, data: unknown): Promise<void> {
+async function atomicWriteJsonFs(filePath: string, data: unknown): Promise<void> {
   await fs.mkdir(DATA_DIR, { recursive: true });
   const tempPath = `${filePath}.tmp-${Date.now()}-${randomUUID()}`;
   await fs.writeFile(tempPath, JSON.stringify(data, null, 2), "utf8");
@@ -118,6 +122,15 @@ async function atomicWriteJson(filePath: string, data: unknown): Promise<void> {
 }
 
 export async function readGlobalPublishStatus(): Promise<GlobalPublishStatus> {
+  if (isProductionStorage()) {
+    try {
+      const raw = await getCmsKv().get<string>(STATUS_KV_KEY);
+      if (!raw || typeof raw !== "string") return { ...DEFAULT_GLOBAL_PUBLISH_STATUS };
+      return healStaleInProgress(normalizeStatus(JSON.parse(raw) as unknown));
+    } catch {
+      return { ...DEFAULT_GLOBAL_PUBLISH_STATUS };
+    }
+  }
   try {
     const raw = await fs.readFile(STATUS_PATH, "utf8");
     return healStaleInProgress(normalizeStatus(JSON.parse(raw) as unknown));
@@ -127,5 +140,9 @@ export async function readGlobalPublishStatus(): Promise<GlobalPublishStatus> {
 }
 
 export async function writeGlobalPublishStatus(next: GlobalPublishStatus): Promise<void> {
-  await atomicWriteJson(STATUS_PATH, next);
+  if (isProductionStorage()) {
+    await getCmsKv().set(STATUS_KV_KEY, JSON.stringify(next));
+    return;
+  }
+  await atomicWriteJsonFs(STATUS_PATH, next);
 }

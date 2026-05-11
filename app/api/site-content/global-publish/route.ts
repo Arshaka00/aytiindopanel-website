@@ -7,6 +7,10 @@ import { executeGlobalPublish } from "@/lib/global-publish-orchestrator";
 import { hasValidAdminSessionFromRequest, isAllowedAdminDevice, hasValidDeviceBindingCookie } from "@/lib/gallery-admin-auth";
 import { siteSettingsGateAuthorized, siteSettingsGateForbiddenResponse } from "@/lib/site-settings-gate";
 
+/** Pastikan `process.env` deploy hook = runtime Vercel, bukan Edge. */
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   if (!isAllowedAdminDevice(req.headers, req.cookies) || !hasValidAdminSessionFromRequest(req)) {
     return NextResponse.json({ error: "Akses admin diperlukan." }, { status: 401 });

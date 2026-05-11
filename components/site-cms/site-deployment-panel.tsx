@@ -67,6 +67,18 @@ type GlobalPublishStatusView = {
     likelyDraftAheadOfLive: boolean | null;
   };
   deployHookConfigured: boolean;
+  deployHookMeta?: {
+    configured: boolean;
+    source: string | null;
+    protocol: string | null;
+    rejectReason: string;
+    rawCmsKeyPresent: boolean;
+    rawVercelKeyPresent: boolean;
+    cmsCandidateNonEmpty: boolean;
+    vercelCandidateNonEmpty: boolean;
+    hostLength: number | null;
+    pathnameLength: number | null;
+  };
   vercelBuildMonitor: {
     supported: boolean;
     deploymentUid: string | null;
@@ -100,6 +112,22 @@ function formatRelativeShort(isoMs: number, nowMs: number): string {
   if (diffSec < 172_800) return "Kemarin";
   const d = Math.floor(diffSec / 86_400);
   return `${d} h lalu`;
+}
+
+function formatDeployHookRuntimeHint(
+  meta: GlobalPublishStatusView["deployHookMeta"] | undefined,
+): string | null {
+  if (!meta) return null;
+  const parts = [
+    `reject=${meta.rejectReason}`,
+    meta.source ? `source=${meta.source}` : null,
+    meta.protocol ? `protocol=${meta.protocol}` : null,
+    `keys CMS=${meta.rawCmsKeyPresent} VERCEL_HOOK=${meta.rawVercelKeyPresent}`,
+    `nonEmpty CMS=${meta.cmsCandidateNonEmpty} VERCEL=${meta.vercelCandidateNonEmpty}`,
+    meta.hostLength != null ? `hostLen=${meta.hostLength}` : null,
+    meta.pathnameLength != null ? `pathLen=${meta.pathnameLength}` : null,
+  ].filter(Boolean);
+  return parts.join(" · ");
 }
 
 function clipDetail(s: string | null | undefined, max = 96): string | undefined {
@@ -338,10 +366,14 @@ function DeployProductionStrip({
 }) {
   const s = gp?.status;
   const mon = gp?.vercelBuildMonitor;
+  const hookMetaHint = formatDeployHookRuntimeHint(gp?.deployHookMeta);
   const inProgress = Boolean(globalPublishBusy || s?.deployHookInProgress);
   let tone: "amber" | "emerald" | "rose" | "slate" = "slate";
   let title = "Siap";
   let detail = "Tekan Publish Global untuk menerbitkan konten, memperbarui cache, dan memicu deployment production (jika hook HTTPS di-set).";
+  if (!gp?.deployHookConfigured && hookMetaHint) {
+    detail = `${detail} · Runtime: ${hookMetaHint}`;
+  }
 
   if (inProgress) {
     tone = "amber";
@@ -364,7 +396,9 @@ function DeployProductionStrip({
     tone = "slate";
     title = "Deploy hook tidak dijalankan";
     detail = !gp?.deployHookConfigured
-      ? "Deploy hook belum dikonfigurasi (wajib https:// di env). Publish & cache tetap berhasil."
+      ? `Deploy hook tidak terbaca valid di runtime server (wajib https://). Publish & cache tetap berhasil.${
+          hookMetaHint ? ` · ${hookMetaHint}` : ""
+        }`
       : (s.lastDeployHookMessage ?? "Dilewati.").slice(0, 220);
   }
 
@@ -734,7 +768,7 @@ export function SiteDeploymentPanel({
                   : gpSnapshot?.status.lastDeployHookStatus === "skipped"
                     ? gpSnapshot.deployHookConfigured
                       ? "Dilewati (cooldown / pesan server)"
-                      : "Belum dikonfigurasi (HTTPS)"
+                      : `Off · ${formatDeployHookRuntimeHint(gpSnapshot.deployHookMeta) ?? "periksa env Production"}`
                     : "—"}
             </dd>
           </div>
