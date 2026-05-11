@@ -1,10 +1,11 @@
 /**
- * CMS remote storage: aktif hanya di deployment Vercel **dan** env Blob + KV lengkap.
- * Tanpa env → fallback filesystem (dev / lokal / Vercel tanpa integrasi).
+ * CMS file storage di Vercel: pakai Blob jika `BLOB_READ_WRITE_TOKEN` ada.
+ * Tanpa Blob di Vercel, fallback filesystem gagal menulis (`EROFS` di `/var/task`).
+ * KV tidak disyaratkan di sini — dipakai terpisah untuk lock/status (`hasVercelKvEnv()`).
  */
 export function isProductionStorage(): boolean {
   if (process.env.VERCEL !== "1") return false;
-  return hasVercelBlobEnv() && hasVercelKvEnv();
+  return hasVercelBlobEnv();
 }
 
 export function hasVercelBlobEnv(): boolean {
