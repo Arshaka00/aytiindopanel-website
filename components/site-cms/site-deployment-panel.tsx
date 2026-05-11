@@ -841,12 +841,6 @@ export function SiteDeploymentPanel({
         </div>
       </header>
 
-      <SitePublicationSettingsCard
-        gateToken={gateToken}
-        onGateInvalid={onGateInvalid}
-        onSaved={() => void loadContext()}
-      />
-
       <section
         id="deployment-center"
         aria-labelledby="deployment-center-heading"
@@ -860,7 +854,8 @@ export function SiteDeploymentPanel({
               Status &amp; aksi
             </h2>
             <p className="max-w-2xl text-sm leading-relaxed text-slate-400">
-              Publish global, revalidate, deploy hook, monitoring build — tanpa form konfigurasi di halaman ini.
+              Publish global, revalidate, deploy hook, monitoring build. Pengaturan tayang &amp; maintenance pengunjung ada
+              di kartu di bawah.
             </p>
           </div>
           {isDeployHookConfigured(gpSnapshot) ? (
@@ -1009,6 +1004,12 @@ export function SiteDeploymentPanel({
           </button>
         </div>
       </section>
+
+      <SitePublicationSettingsCard
+        gateToken={gateToken}
+        onGateInvalid={onGateInvalid}
+        onSaved={() => void loadContext()}
+      />
     </div>
   );
 }
