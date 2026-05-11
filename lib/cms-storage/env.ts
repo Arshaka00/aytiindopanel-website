@@ -14,16 +14,19 @@ export function hasVercelBlobEnv(): boolean {
 
 /**
  * Tingkat akses Blob untuk file CMS (`live.json`, draft, audit, …).
- * - `private` (default): store harus mendukung blob private (disarankan untuk keamanan).
- * - `public`: untuk store Vercel yang **hanya** public — wajib jika error
- *   "Cannot use private access on a public store". Path JSON tetap tidak dipublikasikan UI;
- *   gunakan `CMS_BLOB_PREFIX` yang tidak mudah ditebak atau pertimbangkan store terpisah.
+ * - **Lokal** tanpa `CMS_BLOB_ACCESS`: default **private** (aman untuk dev).
+ * - **Vercel** tanpa `CMS_BLOB_ACCESS`: default **public** — menghindari build gagal saat store
+ *   hanya mendukung blob publik (error "Cannot use private access on a public store").
+ *   Pakai store dengan akses private? Set **`CMS_BLOB_ACCESS=private`** di semua env (Production + Preview).
+ * - `CMS_BLOB_ACCESS=public` / `1` / `true`: pakai blob publik eksplisit.
  */
 export type CmsBlobAccessMode = "private" | "public";
 
 export function getCmsBlobAccessMode(): CmsBlobAccessMode {
   const v = process.env.CMS_BLOB_ACCESS?.trim().toLowerCase();
   if (v === "public" || v === "1" || v === "true" || v === "yes") return "public";
+  if (v === "private" || v === "0" || v === "false" || v === "no") return "private";
+  if (process.env.VERCEL === "1") return "public";
   return "private";
 }
 
