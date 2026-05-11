@@ -362,8 +362,9 @@ export function SiteSettingsPanel({
         <h1 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">Site Settings</h1>
         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-300/75">System configuration</p>
         <p className="mx-auto max-w-lg text-sm leading-relaxed text-slate-400">
-          Domain, brand, kontak, SEO, mode tayang, backup, dan utilitas lanjutan. Publish global &amp; monitoring deploy
-          ada di halaman terpisah:{" "}
+          Domain, brand, kontak, SEO, backup, dan utilitas lanjutan.{" "}
+          <strong className="font-semibold text-slate-300">Publikasi &amp; maintenance pengunjung</strong>, publish global
+          &amp; monitoring deploy ada di{" "}
           <Link className="font-medium text-violet-200/90 hover:text-violet-100 hover:underline" href="/site-admin/deployment">
             Deployment Center
           </Link>
@@ -399,15 +400,16 @@ export function SiteSettingsPanel({
             Konfigurasi situs
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">
-            Form konfigurasi situs: identitas, kontak, SEO, tayang, cadangan, dan utilitas manual. Untuk publish global
-            &amp; status deployment buka{" "}
+            Form konfigurasi situs: identitas, kontak, SEO, cadangan, dan utilitas manual. Untuk{" "}
+            <strong className="font-semibold text-slate-300">Published / maintenance</strong>, publish global &amp; status
+            deployment buka{" "}
             <Link className="font-medium text-violet-200/85 hover:text-violet-100 hover:underline" href="/site-admin/deployment">
               Deployment Center
             </Link>
             .
           </p>
           <p className="mt-3 text-xs leading-relaxed text-slate-400">
-            <span className="font-semibold text-slate-500">Mode tayang (dari pengaturan):</span>{" "}
+            <span className="font-semibold text-slate-500">Ringkasan mode tayang (diset di Deployment Center):</span>{" "}
             <span className="text-slate-100">{sitePublishStateLabel(settings)}</span>
           </p>
         </div>
@@ -683,96 +685,6 @@ export function SiteSettingsPanel({
               type="text"
               value={settings.officeHours}
               onChange={(e) => update({ officeHours: e.target.value })}
-              className="mt-2 w-full rounded-xl border border-white/15 bg-slate-950/50 px-3 py-2.5 text-sm text-white outline-none focus:border-sky-400/40 focus:ring-2 focus:ring-sky-500/25"
-            />
-          </div>
-        </div>
-      </section>
-
-      <div className={divider} />
-
-      <section className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 shadow-lg backdrop-blur-md">
-        <h2 className="text-base font-semibold text-white">Publikasi</h2>
-        <p className="mt-2 text-xs text-slate-400">
-          Nonaktifkan publish untuk menampilkan halaman maintenance ke pengunjung (admin tetap akses).
-        </p>
-        <div className="mt-4 space-y-3">
-          <label className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-slate-900/35 px-3 py-2.5">
-            <span className="text-sm font-medium text-slate-100">Published</span>
-            <input
-              type="checkbox"
-              checked={settings.published}
-              disabled={busy}
-              onChange={(e) => {
-                const published = e.target.checked;
-                update({
-                  published,
-                  ...(published ? { maintenanceMode: false } : {}),
-                });
-              }}
-              className="h-4 w-4 rounded border-slate-500 bg-slate-900 text-sky-500"
-            />
-          </label>
-          <label className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-slate-900/35 px-3 py-2.5">
-            <span className="text-sm font-medium text-slate-100">Maintenance mode</span>
-            <input
-              type="checkbox"
-              checked={settings.maintenanceMode}
-              disabled={busy}
-              onChange={(e) => {
-                const maintenanceMode = e.target.checked;
-                update({
-                  maintenanceMode,
-                  published: maintenanceMode ? false : settings.published,
-                });
-              }}
-              className="h-4 w-4 rounded border-slate-500 bg-slate-900 text-amber-500"
-            />
-          </label>
-        </div>
-        <div className="mt-4 grid gap-3">
-          <div>
-            <FieldLabel>Judul maintenance</FieldLabel>
-            <input
-              type="text"
-              value={settings.maintenanceHeadline}
-              onChange={(e) => update({ maintenanceHeadline: e.target.value })}
-              className="mt-2 w-full rounded-xl border border-white/15 bg-slate-950/50 px-3 py-2.5 text-sm text-white outline-none focus:border-sky-400/40 focus:ring-2 focus:ring-sky-500/25"
-            />
-          </div>
-          <div>
-            <FieldLabel>Teks penjelasan maintenance</FieldLabel>
-            <textarea
-              value={settings.maintenanceSubtext}
-              onChange={(e) => update({ maintenanceSubtext: e.target.value })}
-              rows={3}
-              className="mt-2 w-full rounded-xl border border-white/15 bg-slate-950/50 px-3 py-2.5 text-sm text-white outline-none focus:border-sky-400/40 focus:ring-2 focus:ring-sky-500/25"
-            />
-          </div>
-          <label className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-slate-900/35 px-3 py-2.5">
-            <span className="text-sm font-medium text-slate-100">Tampilkan tombol WhatsApp</span>
-            <input
-              type="checkbox"
-              checked={settings.maintenanceShowWhatsApp}
-              onChange={(e) => update({ maintenanceShowWhatsApp: e.target.checked })}
-              className="h-4 w-4 rounded border-slate-500 bg-slate-900 text-emerald-500"
-            />
-          </label>
-          <div>
-            <FieldLabel>Label tombol WhatsApp</FieldLabel>
-            <input
-              type="text"
-              value={settings.maintenanceWhatsAppLabel}
-              onChange={(e) => update({ maintenanceWhatsAppLabel: e.target.value })}
-              className="mt-2 w-full rounded-xl border border-white/15 bg-slate-950/50 px-3 py-2.5 text-sm text-white outline-none focus:border-sky-400/40 focus:ring-2 focus:ring-sky-500/25"
-            />
-          </div>
-          <div>
-            <FieldLabel>Pesan WhatsApp</FieldLabel>
-            <textarea
-              value={settings.maintenanceWhatsAppMessage}
-              onChange={(e) => update({ maintenanceWhatsAppMessage: e.target.value })}
-              rows={4}
               className="mt-2 w-full rounded-xl border border-white/15 bg-slate-950/50 px-3 py-2.5 text-sm text-white outline-none focus:border-sky-400/40 focus:ring-2 focus:ring-sky-500/25"
             />
           </div>

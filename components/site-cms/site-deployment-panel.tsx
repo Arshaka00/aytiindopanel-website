@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { isOutdatedDeployHookSkippedMessage } from "@/lib/global-publish-deploy-hook";
 import type { SiteContent } from "@/lib/site-content-model";
 import { getSiteSettingsGateHeaderName } from "@/lib/site-settings-gate";
+import { SitePublicationSettingsCard } from "@/components/site-cms/site-publication-settings-card";
 
 function getCookie(name: string): string {
   if (typeof document === "undefined") return "";
@@ -817,7 +818,8 @@ export function SiteDeploymentPanel({
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-200/80">CMS · operations</p>
         <h1 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">Deployment Center</h1>
         <p className="mx-auto max-w-lg text-sm leading-relaxed text-slate-400">
-          Mission control untuk publish global, status deploy, cache, dan monitoring. Pengaturan domain &amp; SEO ada di{" "}
+          Mission control untuk tayang/maintenance pengunjung, publish global, deploy production, cache, dan monitoring.
+          Domain &amp; SEO ada di{" "}
           <Link className="font-medium text-cyan-300/90 hover:text-cyan-200 hover:underline" href="/site-admin/site-settings">
             Site Settings
           </Link>
@@ -838,6 +840,12 @@ export function SiteDeploymentPanel({
           </Link>
         </div>
       </header>
+
+      <SitePublicationSettingsCard
+        gateToken={gateToken}
+        onGateInvalid={onGateInvalid}
+        onSaved={() => void loadContext()}
+      />
 
       <section
         id="deployment-center"
