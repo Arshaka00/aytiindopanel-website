@@ -2,9 +2,11 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { useSiteCmsOptional } from "@/components/site-cms/site-cms-provider";
+import { isSiteCmsChromeSurfaceAllowed } from "@/lib/cms-chrome-gate";
 
 const HomeSectionPanel = dynamic(
   () => import("@/components/site-cms/home-section-panel").then((m) => m.HomeSectionPanel),
@@ -13,9 +15,22 @@ const HomeSectionPanel = dynamic(
 
 export function SiteCmsChrome() {
   const cms = useSiteCmsOptional();
+  const pathname = usePathname();
   const [homeOpen, setHomeOpen] = useState(false);
+  const [surfaceAllowed, setSurfaceAllowed] = useState(false);
 
-  if (!cms?.eligible) return null;
+  useEffect(() => {
+    const refresh = () => setSurfaceAllowed(isSiteCmsChromeSurfaceAllowed());
+    refresh();
+    window.addEventListener("storage", refresh);
+    window.addEventListener("ayti-cms-chrome-session", refresh);
+    return () => {
+      window.removeEventListener("storage", refresh);
+      window.removeEventListener("ayti-cms-chrome-session", refresh);
+    };
+  }, [pathname]);
+
+  if (!cms?.eligible || !surfaceAllowed) return null;
 
   const saveLabel =
     cms.saveState === "saving"
