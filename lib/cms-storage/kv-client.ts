@@ -4,7 +4,7 @@ import { hasVercelKvEnv } from "@/lib/cms-storage/env";
 
 let client: VercelKV | null = null;
 
-/** Hanya dipakai saat `isProductionStorage()` true. */
+/** Pakai saat `hasVercelKvEnv()` true (lock/status bisa KV tanpa Blob). */
 export function getCmsKv(): VercelKV {
   if (!client) {
     if (!hasVercelKvEnv()) {
