@@ -1,5 +1,6 @@
 import { del, get, head, list, put } from "@vercel/blob";
 
+import { getCmsBlobAccessMode } from "@/lib/cms-storage/env";
 import { captureException } from "@/lib/observability";
 import type {
   BackupRow,
@@ -38,17 +39,21 @@ function modePathname(mode: CmsStorageMode): string {
   return mode === "live" ? pathLive() : pathDraft();
 }
 
-const putJsonOpts = {
-  access: "private" as const,
-  allowOverwrite: true,
-  contentType: "application/json; charset=utf-8",
-};
+function putJsonOpts() {
+  return {
+    access: getCmsBlobAccessMode(),
+    allowOverwrite: true as const,
+    contentType: "application/json; charset=utf-8",
+  };
+}
 
-const putNdjsonOpts = {
-  access: "private" as const,
-  allowOverwrite: true,
-  contentType: "application/x-ndjson; charset=utf-8",
-};
+function putNdjsonOpts() {
+  return {
+    access: getCmsBlobAccessMode(),
+    allowOverwrite: true as const,
+    contentType: "application/x-ndjson; charset=utf-8",
+  };
+}
 
 function concatUint8Chunks(chunks: Uint8Array[]): Uint8Array {
   let len = 0;
@@ -75,19 +80,20 @@ async function readStreamAsUtf8(stream: ReadableStream<Uint8Array>): Promise<str
   return new TextDecoder().decode(concatUint8Chunks(chunks));
 }
 
-async function getPrivateText(pathname: string): Promise<string | null> {
+async function getCmsBlobText(pathname: string): Promise<string | null> {
   const token = blobToken();
+  const access = getCmsBlobAccessMode();
   try {
-    const res = await get(pathname, { access: "private", token });
+    const res = await get(pathname, { access, token });
     if (!res || res.statusCode !== 200 || !res.stream) return null;
     return await readStreamAsUtf8(res.stream);
   } catch (error) {
-    void captureException(error, { area: "vercel-blob-site-content-storage.getPrivateText", pathname });
+    void captureException(error, { area: "vercel-blob-site-content-storage.getCmsBlobText", pathname });
     return null;
   }
 }
 
-async function putPrivateText(pathname: string, body: string, opts: typeof putJsonOpts): Promise<void> {
+async function putCmsBlobText(pathname: string, body: string, opts: ReturnType<typeof putJsonOpts>): Promise<void> {
   const token = blobToken();
   await put(pathname, body, { ...opts, token });
 }
@@ -118,7 +124,7 @@ function parseStateJson(text: string): SiteContentStateFile | null {
 export function createVercelBlobSiteContentStorage(): SiteContentFileStoragePort {
   return {
     async readJsonByMode(mode: CmsStorageMode): Promise<unknown | null> {
-      const text = await getPrivateText(modePathname(mode));
+      const text = await getCmsBlobText(modePathname(mode));
       if (text === null) return null;
       try {
         return JSON.parse(text) as unknown;
@@ -134,30 +140,30 @@ export function createVercelBlobSiteContentStorage(): SiteContentFileStoragePort
       if (typeof parsed !== "object" || parsed === null) {
         throw new Error("Write validation gagal: data bukan object.");
       }
-      await putPrivateText(modePathname(mode), body, putJsonOpts);
+      await putCmsBlobText(modePathname(mode), body, putJsonOpts());
     },
 
     async readRawByMode(mode: CmsStorageMode): Promise<string | null> {
-      return getPrivateText(modePathname(mode));
+      return getCmsBlobText(modePathname(mode));
     },
 
     async readState(): Promise<SiteContentStateFile | null> {
-      const text = await getPrivateText(pathState());
+      const text = await getCmsBlobText(pathState());
       if (text === null) return null;
       return parseStateJson(text);
     },
 
     async writeState(state: SiteContentStateFile): Promise<void> {
-      await putPrivateText(pathState(), JSON.stringify(state, null, 2), putJsonOpts);
+      await putCmsBlobText(pathState(), JSON.stringify(state, null, 2), putJsonOpts());
     },
 
     async appendAuditLogLine(line: string): Promise<void> {
-      const prev = (await getPrivateText(pathAudit())) ?? "";
-      await putPrivateText(pathAudit(), `${prev}${line}`, putNdjsonOpts);
+      const prev = (await getCmsBlobText(pathAudit())) ?? "";
+      await putCmsBlobText(pathAudit(), `${prev}${line}`, putNdjsonOpts());
     },
 
     async readAuditLogRaw(): Promise<string> {
-      return (await getPrivateText(pathAudit())) ?? "";
+      return (await getCmsBlobText(pathAudit())) ?? "";
     },
 
     async listBackups(): Promise<BackupRow[]> {
@@ -183,12 +189,12 @@ export function createVercelBlobSiteContentStorage(): SiteContentFileStoragePort
 
     async readBackupFile(file: string): Promise<string | null> {
       assertSafeBackupFile(file);
-      return getPrivateText(pathBackup(file));
+      return getCmsBlobText(pathBackup(file));
     },
 
     async writeBackupRaw(file: string, raw: string): Promise<void> {
       assertSafeBackupFile(file);
-      await putPrivateText(pathBackup(file), raw, putJsonOpts);
+      await putCmsBlobText(pathBackup(file), raw, putJsonOpts());
     },
 
     async pruneBackups(maxBackups: number): Promise<void> {
