@@ -47,9 +47,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, code: result.code, error: result.message }, { status });
   }
 
+  /** Jangan kirim `content` penuh — JSON bisa terlalu besar untuk respons serverless (413/500). UI memakai router.refresh + API site-content. */
   return NextResponse.json({
     ok: true,
-    content: result.content,
     mode: "live" as const,
     revalidated: result.revalidated,
     deployHook: result.deployHook,

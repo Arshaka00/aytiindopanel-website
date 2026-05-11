@@ -23,6 +23,7 @@ import {
 import { runAfterSiteContentLiveUpdated } from "@/lib/site-content-after-publish";
 import { getSiteContentVersionToken, publishSiteContentDraft } from "@/lib/site-content";
 import type { SiteContent } from "@/lib/site-content-model";
+import { captureException } from "@/lib/observability";
 import { appendAuditLog, type AuditEntry } from "@/lib/site-content-storage";
 
 /** Antara dua publish global sukses (debounce server; cegah double-klik / burst). */
@@ -214,23 +215,30 @@ export async function executeGlobalPublish(params: {
       }),
     );
 
-    await appendAuditLog({
-      id: randomUUID(),
-      at: successAt,
-      action: "global_publish",
-      actorRole: params.actorRole,
-      actorId: params.actorId,
-      ip: params.ip,
-      userAgent: params.userAgent,
-      deviceBound: params.deviceBound,
-      detail: {
-        revalidated,
-        deployHook: hook.status,
-        deployHookHttpStatus: hook.httpStatus,
-        deployHookAttempts: hook.attempts,
-        vercelDeploymentUid: vercelUid,
-      },
-    });
+    try {
+      await appendAuditLog({
+        id: randomUUID(),
+        at: successAt,
+        action: "global_publish",
+        actorRole: params.actorRole,
+        actorId: params.actorId,
+        ip: params.ip,
+        userAgent: params.userAgent,
+        deviceBound: params.deviceBound,
+        detail: {
+          revalidated,
+          deployHook: hook.status,
+          deployHookHttpStatus: hook.httpStatus,
+          deployHookAttempts: hook.attempts,
+          vercelDeploymentUid: vercelUid,
+        },
+      });
+    } catch (auditErr) {
+      void captureException(auditErr instanceof Error ? auditErr : new Error(String(auditErr)), {
+        area: "global-publish-orchestrator",
+        reason: "appendAuditLog failed after successful publish (live sudah tersimpan)",
+      });
+    }
 
     return {
       ok: true,
