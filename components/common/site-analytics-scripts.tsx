@@ -64,7 +64,7 @@ export function SiteAnalyticsScripts({ analytics }: { analytics: SiteAnalyticsSe
     if (typeof window.requestIdleCallback === "function") {
       idleExtra = window.requestIdleCallback(loadExtras, { timeout: 8000 });
     }
-    const t = window.setTimeout(loadExtras, 3200);
+    const t = window.setTimeout(loadExtras, 4500);
     return () => {
       cancelled = true;
       window.clearTimeout(t);
@@ -111,7 +111,7 @@ gtag('js', new Date()); gtag('config', '${googleAnalyticsId.replace(/'/g, "\\'")
       {shouldLoadExtras && metaPixelId ? (
         <Script
           id="meta-pixel"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           dangerouslySetInnerHTML={{
             __html: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
@@ -124,7 +124,7 @@ t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,do
       {shouldLoadExtras && microsoftClarityId ? (
         <Script
           id="ms-clarity"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           dangerouslySetInnerHTML={{
             __html: `(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
 t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;

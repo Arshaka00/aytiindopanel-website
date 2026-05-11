@@ -6,10 +6,14 @@ const MQ = "(max-width: 767.98px)";
 
 /**
  * true = viewport “mobile” (≤767.98px), selaras breakpoint `max-md` Tailwind.
- * Sebelum mount (SSR) mengembalikan false agar konsisten dengan server.
+ *
+ * `initialMatch` dari server (User-Agent) menyelaraskan crop/transform hero SSR dengan
+ * klien pertama — kurangi CLS saat hydrasi. Tanpa argumen: sama seperti sebelumnya (`false` di SSR).
  */
-export function useCmsViewportIsMobile(): boolean {
-  const [mobile, setMobile] = useState(false);
+export function useCmsViewportIsMobile(initialMatch?: boolean): boolean {
+  const [mobile, setMobile] = useState(() =>
+    typeof initialMatch === "boolean" ? initialMatch : false,
+  );
 
   useEffect(() => {
     const mql = window.matchMedia(MQ);

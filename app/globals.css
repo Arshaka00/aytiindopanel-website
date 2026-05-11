@@ -3199,6 +3199,11 @@ html {
   will-change: auto !important;
 }
 
+/* Kurangi reflow lintas sibling hero — tanpa mengubah ukuran visual (contain layout). */
+#beranda .hero-marquee-viewport {
+  contain: layout;
+}
+
 /* ============================================================================
  * Mobile scroll perf — kurangi animasi/filter berat pada layar mobile
  * (≤ 767.98px). Partner/gallery marquee & backdrop blur diturunkan; alur kerja

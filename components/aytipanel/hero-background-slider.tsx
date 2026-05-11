@@ -16,6 +16,12 @@ import {
 
 export type HeroSlideSource = HeroSlideEntry;
 
+export type HeroBackgroundSliderProps = {
+  sources?: readonly HeroSlideSource[];
+  /** Dari SSR (`User-Agent`) — selaras hydrasi transform gambar mobile vs desktop. */
+  initialViewportIsMobile?: boolean;
+};
+
 /** `sizes`: mobile ~lebar viewport; tablet/desktop cap 1920px decode (cukup untuk full-bleed hero). */
 const HERO_SLIDE_SIZES = "(max-width: 767px) 100vw, min(100vw, 1920px)";
 
@@ -83,9 +89,9 @@ function useDeferNonPrimaryHeroSlides(slideCount: number) {
     };
     const idleId =
       typeof window.requestIdleCallback === "function"
-        ? window.requestIdleCallback(unlock, { timeout: 1600 })
+        ? window.requestIdleCallback(unlock, { timeout: 2200 })
         : undefined;
-    const timeoutId = window.setTimeout(unlock, 1900);
+    const timeoutId = window.setTimeout(unlock, 2800);
     return () => {
       cancelled = true;
       if (idleId !== undefined && typeof window.cancelIdleCallback === "function") {
@@ -166,9 +172,12 @@ function HeroSlideFrame({
 /**
  * Carousel hero tanpa timer JS — `transform` + keyframes bertahap (andalan untuk mobile).
  */
-export function HeroBackgroundSlider({ sources }: { sources?: readonly HeroSlideSource[] }) {
+export function HeroBackgroundSlider({
+  sources,
+  initialViewportIsMobile,
+}: HeroBackgroundSliderProps) {
   useHeroVisibilityPause();
-  const isMobile = useCmsViewportIsMobile();
+  const isMobile = useCmsViewportIsMobile(initialViewportIsMobile);
   const slides = sources && sources.length > 0 ? sources : heroSlideSources;
   const count = slides.length;
   const nonPrimaryMediaReady = useDeferNonPrimaryHeroSlides(count);

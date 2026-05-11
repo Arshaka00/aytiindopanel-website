@@ -30,6 +30,8 @@ export function HeroSectionBackground(props?: {
   backgroundVideo?: HeroBgVideo;
   /** Jika true (Site Settings), pakai slider gambar menggantikan video. */
   disableVideoBackground?: boolean;
+  /** SSR: tebakan viewport mobile dari User-Agent — kurangi CLS hydrasi hero. */
+  initialViewportIsMobile?: boolean;
 }) {
   const cms = useSiteCmsOptional();
   const cmsHeroEdit = Boolean(cms?.eligible && cms.editMode);
@@ -177,7 +179,10 @@ export function HeroSectionBackground(props?: {
         </div>
       ) : (
         <>
-          <HeroBackgroundSlider sources={slides} />
+          <HeroBackgroundSlider
+            sources={slides}
+            initialViewportIsMobile={props?.initialViewportIsMobile}
+          />
           {cmsHeroEdit && instantPreviewSrc ? (
             <div
               className="pointer-events-none absolute inset-0 z-[2] opacity-100 transition-opacity duration-300 ease-out"

@@ -14,10 +14,13 @@ const heroIntroBodyClass =
 export function SectionTop({
   hero,
   disableVideoBackground = false,
+  initialViewportIsMobile,
 }: {
   hero: SiteContent["hero"];
   /** Dari Site Settings — jika true, hero memakai slider gambar, bukan video. */
   disableVideoBackground?: boolean;
+  /** SSR: selaras hydrasi crop/transform hero (mobile vs desktop). */
+  initialViewportIsMobile?: boolean;
 }) {
   return (
     <>
@@ -31,6 +34,7 @@ export function SectionTop({
           slides={hero.slides}
           backgroundVideo={hero.backgroundVideo}
           disableVideoBackground={disableVideoBackground}
+          initialViewportIsMobile={initialViewportIsMobile}
         />
         <CmsHeroSlidesEditor slides={hero.slides} />
         <CmsHeroBackgroundControls hero={hero} />

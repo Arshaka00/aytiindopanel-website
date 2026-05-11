@@ -48,6 +48,8 @@ type Props = {
   content: SiteContent;
   /** Digit WhatsApp utama untuk tautan wa.me di blok kontak. */
   waPhoneDigits: string;
+  /** SSR: tebakan mobile dari User-Agent untuk hydrasi hero. */
+  initialViewportIsMobile?: boolean;
 };
 
 /**
@@ -61,7 +63,11 @@ type Props = {
  * Section di bawah hero dimuat lewat `dynamic()` agar chunk JS client terpecah
  * (SSR tetap aktif — HTML & SEO tidak dikorbankan).
  */
-export function HomeMainSections({ content, waPhoneDigits }: Props) {
+export function HomeMainSections({
+  content,
+  waPhoneDigits,
+  initialViewportIsMobile,
+}: Props) {
   const layout = content.homeLayout ?? DEFAULT_HOME_LAYOUT;
   const hidden = new Set(layout.hiddenSections ?? []);
   const order = layout.sectionOrder?.length ? layout.sectionOrder : DEFAULT_HOME_LAYOUT.sectionOrder;
@@ -71,6 +77,7 @@ export function HomeMainSections({ content, waPhoneDigits }: Props) {
       <SectionTop
         hero={content.hero}
         disableVideoBackground={content.siteSettings.performanceMode.disableVideoBackground}
+        initialViewportIsMobile={initialViewportIsMobile}
       />
     ),
     tentang: (
