@@ -11,6 +11,22 @@ import {
 
 const PUBLIC_FILE = /\.(.*)$/;
 
+function requestHostname(req: NextRequest): string {
+  const xf = req.headers.get("x-forwarded-host");
+  const raw = (xf?.split(",")[0]?.trim() ?? req.headers.get("host") ?? "").trim();
+  return raw.split(":")[0]?.toLowerCase() ?? "";
+}
+
+/**
+ * Menutup akses ke URL default Vercel (`*.vercel.app`) — hanya domain canonical (mis. www) yang dipakai publik.
+ * Set `ALLOW_VERCEL_DEPLOYMENT_HOST=1` di env Vercel bila QA butuh membuka hostname deployment.
+ */
+function blockVercelDeploymentHost(hostname: string): boolean {
+  if (process.env.ALLOW_VERCEL_DEPLOYMENT_HOST === "1") return false;
+  if (process.env.VERCEL !== "1") return false;
+  return hostname.endsWith(".vercel.app");
+}
+
 function shouldBypass(pathname: string): boolean {
   if (pathname === "/maintenance") return true;
   if (pathname.startsWith("/site-admin")) return true;
@@ -26,6 +42,21 @@ function shouldBypass(pathname: string): boolean {
 }
 
 export default async function middleware(req: NextRequest) {
+  const hostname = requestHostname(req);
+  if (blockVercelDeploymentHost(hostname)) {
+    return new NextResponse(
+      "Host deployment Vercel tidak melayani lalu lintas publik. Gunakan domain resmi situs.",
+      {
+        status: 403,
+        headers: {
+          "content-type": "text/plain; charset=utf-8",
+          "cache-control": "no-store",
+          "x-robots-tag": "noindex, nofollow, noarchive",
+        },
+      },
+    );
+  }
+
   const { pathname } = req.nextUrl;
   if (shouldBypass(pathname)) return NextResponse.next();
 
