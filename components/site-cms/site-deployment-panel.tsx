@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { isOutdatedDeployHookSkippedMessage } from "@/lib/global-publish-deploy-hook";
 import type { SiteContent } from "@/lib/site-content-model";
 import { getSiteSettingsGateHeaderName } from "@/lib/site-settings-gate";
 
@@ -67,6 +68,8 @@ type GlobalPublishStatusView = {
     likelyDraftAheadOfLive: boolean | null;
   };
   deployHookConfigured: boolean;
+  /** Sesuai VERCEL_ENV pada deployment ini — preview tidak memuat env Production-only. */
+  serverDeploymentEnv?: "production" | "preview" | "development" | null;
   deployHookMeta?: {
     configured: boolean;
     source: string | null;
@@ -81,6 +84,8 @@ type GlobalPublishStatusView = {
   };
   vercelBuildMonitor: {
     supported: boolean;
+    integrationUrlParsed?: boolean;
+    apiTokenConfigured?: boolean;
     deploymentUid: string | null;
     readyState: string | null;
     inspectorUrl: string | null;
@@ -112,6 +117,25 @@ function formatRelativeShort(isoMs: number, nowMs: number): string {
   if (diffSec < 172_800) return "Kemarin";
   const d = Math.floor(diffSec / 86_400);
   return `${d} h lalu`;
+}
+
+/**
+ * Hook terpasang di runtime.
+ * Pakai OR antara boolean duplikat di payload: kadang klien/hidrasi hanya mengisi salah satu;
+ * meta.configured saja bisa membuat strip “off” padahal deployHookConfigured masih true dari server.
+ */
+function isDeployHookConfigured(gp: GlobalPublishStatusView | null | undefined): boolean {
+  if (!gp) return false;
+  return Boolean(gp.deployHookConfigured || gp.deployHookMeta?.configured);
+}
+
+/** Skip + pesan lama "belum set env" padahal runtime kini mengenali hook. */
+function isStaleOrOutdatedSkippedHookCopy(
+  configured: boolean | undefined,
+  lastStatus: string | null | undefined,
+  msg: string | null | undefined,
+): boolean {
+  return Boolean(configured && lastStatus === "skipped" && isOutdatedDeployHookSkippedMessage(msg));
 }
 
 function formatDeployHookRuntimeHint(
@@ -224,7 +248,14 @@ function buildDeploymentActivityTimeline(
     rows.push({
       key: "hook-settled",
       label,
-      detail: st === "failed" ? clipDetail(s.lastDeployHookMessage, 100) : undefined,
+      detail:
+        st === "failed"
+          ? clipDetail(s.lastDeployHookMessage, 100)
+          : st === "skipped" &&
+              isDeployHookConfigured(gp) &&
+              isOutdatedDeployHookSkippedMessage(s.lastDeployHookMessage)
+            ? "Pesan lama di penyimpanan — hook sekarang terdeteksi di server."
+            : undefined,
       atMs: settledMs,
       variant,
     });
@@ -367,11 +398,15 @@ function DeployProductionStrip({
   const s = gp?.status;
   const mon = gp?.vercelBuildMonitor;
   const hookMetaHint = formatDeployHookRuntimeHint(gp?.deployHookMeta);
+  const hookOk = isDeployHookConfigured(gp);
+  const previewNoProdEnv = gp?.serverDeploymentEnv === "preview" && !hookOk;
   const inProgress = Boolean(globalPublishBusy || s?.deployHookInProgress);
   let tone: "amber" | "emerald" | "rose" | "slate" = "slate";
   let title = "Siap";
-  let detail = "Tekan Publish Global untuk menerbitkan konten, memperbarui cache, dan memicu deployment production (jika hook HTTPS di-set).";
-  if (!gp?.deployHookConfigured && hookMetaHint) {
+  let detail = hookOk
+    ? "Deploy hook HTTPS aktif di server. Publish Global → draft ke live, revalidate cache, lalu POST ke hook production."
+    : "Tekan Publish Global untuk menerbitkan konten, memperbarui cache, dan memicu deployment production (set env hook https:// bila perlu).";
+  if (!hookOk && hookMetaHint) {
     detail = `${detail} · Runtime: ${hookMetaHint}`;
   }
 
@@ -394,12 +429,26 @@ function DeployProductionStrip({
       .slice(0, 220);
   } else if (s?.lastDeployHookStatus === "skipped") {
     tone = "slate";
-    title = "Deploy hook tidak dijalankan";
-    detail = !gp?.deployHookConfigured
+    const stale = isStaleOrOutdatedSkippedHookCopy(hookOk, s.lastDeployHookStatus, s.lastDeployHookMessage);
+    title =
+      hookOk && stale
+        ? "Deploy hook siap"
+        : hookOk
+          ? "Deploy hook — publish terakhir"
+          : "Deploy hook tidak dijalankan";
+    detail = !hookOk
       ? `Deploy hook tidak terbaca valid di runtime server (wajib https://). Publish & cache tetap berhasil.${
           hookMetaHint ? ` · ${hookMetaHint}` : ""
         }`
-      : (s.lastDeployHookMessage ?? "Dilewati.").slice(0, 220);
+      : stale
+        ? "Env deploy hook sudah benar di server; teks lama di bawah dari publish sebelum env lengkap. Jalankan Publish Global lagi untuk memicu deployment production."
+        : (() => {
+            const raw = s.lastDeployHookMessage ?? "Dilewati (cooldown atau kebijakan server).";
+            if (hookOk && isOutdatedDeployHookSkippedMessage(raw)) {
+              return "Cooldown / skip server — pesan penyimpanan di bawah mungkin dari publish lama; aman diabaikan atau jalankan Publish Global lagi.";
+            }
+            return raw.slice(0, 280);
+          })();
   }
 
   const shell =
@@ -410,6 +459,9 @@ function DeployProductionStrip({
         : tone === "rose"
           ? "border-rose-400/32 bg-rose-500/[0.08] shadow-[inset_0_1px_0_rgba(251,113,133,0.1)]"
           : "border-white/[0.08] bg-white/[0.04]";
+
+  const deploymentUid = mon?.deploymentUid ?? s?.vercelDeploymentUid ?? null;
+  const vercelMonitoringLive = Boolean(mon?.supported && deploymentUid);
 
   const liveBuild =
     vercelPoll?.readyState ?? mon?.readyState ?? s?.vercelDeploymentReadyState ?? null;
@@ -434,6 +486,21 @@ function DeployProductionStrip({
 
   return (
     <div className="mt-5 space-y-3">
+      {previewNoProdEnv ? (
+        <div
+          className="rounded-xl border border-amber-400/35 bg-amber-500/[0.09] px-4 py-3 text-[11px] leading-relaxed text-amber-50/95"
+          role="status"
+        >
+          <p className="m-0 font-semibold text-amber-100">Deployment Preview — env Production tidak dipakai di sini</p>
+          <p className="m-0 mt-1.5 text-amber-50/90">
+            Host ini memakai <code className="rounded bg-black/25 px-1">VERCEL_ENV=preview</code>. Variabel yang di Vercel hanya di-scope{" "}
+            <strong>Production</strong> (mis. <code className="rounded bg-black/25 px-1">CMS_DEPLOY_HOOK_URL</code>){" "}
+            <strong>tidak terbaca</strong> di deployment preview. Buka Deployment Center dari domain production (mis.{" "}
+            <strong>www.aytiindopanel.com</strong>), atau di Vercel salin env yang sama untuk environment{" "}
+            <strong>Preview</strong> juga.
+          </p>
+        </div>
+      ) : null}
       <div
         className={`rounded-xl border px-4 py-3.5 ${shell} ${inProgress ? "motion-safe:animate-pulse" : ""}`}
         role="status"
@@ -456,7 +523,7 @@ function DeployProductionStrip({
         <p className="mt-1.5 text-xs leading-relaxed text-slate-400">{detail}</p>
       </div>
 
-      {mon?.supported ? (
+      {vercelMonitoringLive ? (
         <div
           className={`rounded-xl border px-4 py-3 ${buildShell} ${buildBusy ? "motion-safe:animate-pulse" : ""}`}
           role="status"
@@ -464,7 +531,7 @@ function DeployProductionStrip({
         >
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">Build Vercel (monitoring)</p>
           <p className="mt-1.5 font-mono text-sm font-semibold tracking-tight text-slate-100">
-            {liveBuild ?? "Menunggu UID deployment…"}
+            {liveBuild ?? "Menunggu status…"}
           </p>
           {liveErr ? <p className="mt-1 text-xs text-rose-200/90">{liveErr}</p> : null}
           <p className="mt-1.5 text-[11px] leading-relaxed text-slate-500">
@@ -484,11 +551,42 @@ function DeployProductionStrip({
             </a>
           ) : null}
         </div>
+      ) : mon?.supported && !deploymentUid ? (
+        <div className="rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-2.5 text-[11px] leading-relaxed text-slate-500">
+          <p className="m-0 font-medium text-slate-400">Monitoring Vercel siap</p>
+          <p className="m-0 mt-1.5">
+            Token &amp; format URL hook sudah cocok untuk API, tetapi belum ada UID deployment tercatat dari publish
+            terakhir. Setelah <strong>Publish Global</strong> sukses memanggil hook dan respons berisi job, status
+            BUILDING/READY akan muncul di blok ini.
+          </p>
+        </div>
+      ) : hookOk ? (
+        <div className="rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-2.5 text-[11px] leading-relaxed text-slate-500">
+          {mon?.integrationUrlParsed === false ? (
+            <p className="m-0">
+              Panel BUILDING/READY membutuhkan URL hook standar Vercel (
+              <code className="rounded bg-black/25 px-1">api.vercel.com/v1/integrations/deploy/…</code>
+              ). Hook Anda tetap dipanggil saat publish jika URL valid — cek deployment di dashboard Vercel.
+            </p>
+          ) : mon?.apiTokenConfigured === false ? (
+            <p className="m-0">
+              URL hook sudah cocok pola integrasi. Untuk status BUILDING/READY di sini, tambahkan{" "}
+              <code className="rounded bg-black/25 px-1">CMS_VERCEL_API_TOKEN</code> atau{" "}
+              <code className="rounded bg-black/25 px-1">VERCEL_API_TOKEN</code> (Production) dengan izin baca deployment.
+            </p>
+          ) : (
+            <p className="m-0">
+              Setelah publish global sukses memanggil hook, status build akan muncul di sini bila respons hook berisi job
+              deployment.
+            </p>
+          )}
+        </div>
       ) : (
         <p className="rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-2.5 text-[11px] leading-relaxed text-slate-500">
-          Monitoring build Vercel nonaktif — gunakan URL deploy hook integrasi Vercel (
-          <code className="rounded bg-black/25 px-1">api.vercel.com/v1/integrations/deploy/…</code>) + token API
-          untuk menampilkan status READY / BUILDING di sini.
+          Monitoring build Vercel nonaktif — set{" "}
+          <code className="rounded bg-black/25 px-1">CMS_DEPLOY_HOOK_URL</code> (URL{" "}
+          <code className="rounded bg-black/25 px-1">api.vercel.com/v1/integrations/deploy/…</code>) + token API untuk
+          status READY / BUILDING di panel ini.
         </p>
       )}
     </div>
@@ -657,7 +755,10 @@ export function SiteDeploymentPanel({
         return;
       }
       if (!r.ok) {
-        throw new Error(j.error ?? "Publish global gagal.");
+        const detail = [typeof j.code === "string" ? j.code : null, typeof j.error === "string" ? j.error : null]
+          .filter(Boolean)
+          .join(" · ");
+        throw new Error(detail || `Publish global gagal (HTTP ${r.status}).`);
       }
       const rev = j.revalidated === false ? " Cache halaman mungkin perlu beberapa detik." : "";
       let deployLine = "";
@@ -666,7 +767,11 @@ export function SiteDeploymentPanel({
       } else if (j.deployHook === "failed") {
         deployLine = ` Deploy production: gagal (HTTP ${j.deployHookHttpStatus ?? "—"}). Konten live aman. ${(j.deployHookMessage ?? "").slice(0, 120)}`;
       } else if (j.deployHook === "skipped") {
-        deployLine = ` Deploy: ${(j.deployHookMessage ?? "dilewati.").slice(0, 160)}`;
+        const rawSkip = j.deployHookMessage ?? "dilewati.";
+        const skipUi = isOutdatedDeployHookSkippedMessage(rawSkip)
+          ? "dilewati (pesan konfigurasi lama dari server — jika env hook sudah benar, abaikan dan cek Deployment Center)."
+          : rawSkip.slice(0, 160);
+        deployLine = ` Deploy: ${skipUi}`;
       }
       if (j.vercelDeploymentUid) {
         deployLine += ` Build Vercel dilacak (UID). Status: ${j.vercelDeploymentReadyState ?? "…"}.`;
@@ -726,7 +831,7 @@ export function SiteDeploymentPanel({
               Publish global, revalidate, deploy hook, monitoring build — tanpa form konfigurasi di halaman ini.
             </p>
           </div>
-          {gpSnapshot?.deployHookConfigured ? (
+          {isDeployHookConfigured(gpSnapshot) ? (
             <span className="shrink-0 rounded-full border border-emerald-400/30 bg-emerald-500/12 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-100/95">
               Auto-deploy aktif
             </span>
@@ -758,6 +863,14 @@ export function SiteDeploymentPanel({
               {formatIsoDateTime(gpSnapshot?.status.lastAttemptAt ?? null)}
             </dd>
           </div>
+          <div className="sm:col-span-2 lg:col-span-3">
+            <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Runtime server (diagnostik)</dt>
+            <dd className="mt-1.5 break-all font-mono text-[11px] leading-snug text-slate-400">
+              VERCEL_ENV={gpSnapshot?.serverDeploymentEnv ?? "—"} · hook=
+              {isDeployHookConfigured(gpSnapshot) ? "on" : "off"} · reject=
+              {gpSnapshot?.deployHookMeta?.rejectReason ?? "—"}
+            </dd>
+          </div>
           <div>
             <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Status deploy hook</dt>
             <dd className="mt-1.5 text-sm leading-snug text-slate-200">
@@ -766,9 +879,15 @@ export function SiteDeploymentPanel({
                 : gpSnapshot?.status.lastDeployHookStatus === "failed"
                   ? `Gagal${gpSnapshot.status.lastDeployHookHttpStatus != null ? ` · HTTP ${gpSnapshot.status.lastDeployHookHttpStatus}` : ""}`
                   : gpSnapshot?.status.lastDeployHookStatus === "skipped"
-                    ? gpSnapshot.deployHookConfigured
-                      ? "Dilewati (cooldown / pesan server)"
-                      : `Off · ${formatDeployHookRuntimeHint(gpSnapshot.deployHookMeta) ?? "periksa env Production"}`
+                    ? isStaleOrOutdatedSkippedHookCopy(
+                        isDeployHookConfigured(gpSnapshot),
+                        gpSnapshot.status.lastDeployHookStatus,
+                        gpSnapshot.status.lastDeployHookMessage,
+                      )
+                      ? "Siap (pesan lama — publish lagi)"
+                      : isDeployHookConfigured(gpSnapshot)
+                        ? "Dilewati (cooldown / pesan server)"
+                        : `Off · ${formatDeployHookRuntimeHint(gpSnapshot.deployHookMeta) ?? "periksa env Production"}`
                     : "—"}
             </dd>
           </div>

@@ -1,11 +1,13 @@
 import { randomUUID } from "node:crypto";
 
 import {
+  isOutdatedDeployHookSkippedMessage,
   resolveDeployHookResolution,
   triggerDeployHookIfConfigured,
   type DeployHookPublicMeta,
 } from "@/lib/global-publish-deploy-hook";
 import {
+  parseVercelIntegrationDeployHookUrl,
   resolveVercelApiToken,
   resolveVercelDeploymentAfterHook,
   resolveVercelTeamId,
@@ -259,30 +261,60 @@ export async function executeGlobalPublish(params: {
   }
 }
 
+function getServerDeploymentEnv(): "production" | "preview" | "development" | null {
+  const v = process.env.VERCEL_ENV;
+  if (v === "production" || v === "preview" || v === "development") return v;
+  if (process.env.VERCEL !== "1") {
+    return process.env.NODE_ENV === "development" ? "development" : null;
+  }
+  return null;
+}
+
 export async function getGlobalPublishStatusPayload(): Promise<{
   status: GlobalPublishStatus;
   draftLiveHint: Awaited<ReturnType<typeof getDraftLiveMtimeHint>>;
   deployHookConfigured: boolean;
   /** Diagnostik aman (tanpa URL); sama dengan `resolveDeployHookResolution().meta`. */
   deployHookMeta: DeployHookPublicMeta;
+  /** `preview` = deployment PR/preview — env bertanda hanya Production tidak tersedia (lihat Vercel). */
+  serverDeploymentEnv: "production" | "preview" | "development" | null;
   vercelBuildMonitor: {
     supported: boolean;
+    /** URL hook cocok pola `api.vercel.com/v1/integrations/deploy/...` (respons job JSON). */
+    integrationUrlParsed: boolean;
+    /** Token API terset di server (wajib agar `supported` true). */
+    apiTokenConfigured: boolean;
     deploymentUid: string | null;
     readyState: string | null;
     inspectorUrl: string | null;
     errorMessage: string | null;
   };
 }> {
-  const [status, draftLiveHint] = await Promise.all([readGlobalPublishStatus(), getDraftLiveMtimeHint()]);
+  const [statusRaw, draftLiveHint] = await Promise.all([readGlobalPublishStatus(), getDraftLiveMtimeHint()]);
   const { url: hookUrl, meta: deployHookMeta } = resolveDeployHookResolution();
+  const integrationUrlParsed = Boolean(hookUrl && parseVercelIntegrationDeployHookUrl(hookUrl));
+  const apiTokenConfigured = Boolean(resolveVercelApiToken());
   const supported = vercelBuildMonitoringSupported(hookUrl ?? "");
+  const status =
+    deployHookMeta.configured &&
+    statusRaw.lastDeployHookStatus === "skipped" &&
+    isOutdatedDeployHookSkippedMessage(statusRaw.lastDeployHookMessage)
+      ? {
+          ...statusRaw,
+          lastDeployHookMessage:
+            "Hook HTTPS terdeteksi di server; teks lama dari publish sebelum env lengkap disembunyikan.",
+        }
+      : statusRaw;
   return {
     status,
     draftLiveHint,
     deployHookConfigured: deployHookMeta.configured,
     deployHookMeta,
+    serverDeploymentEnv: getServerDeploymentEnv(),
     vercelBuildMonitor: {
       supported,
+      integrationUrlParsed,
+      apiTokenConfigured,
       deploymentUid: status.vercelDeploymentUid,
       readyState: status.vercelDeploymentReadyState,
       inspectorUrl: status.vercelDeploymentInspectorUrl,

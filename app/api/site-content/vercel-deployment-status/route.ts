@@ -37,6 +37,28 @@ export async function GET(req: NextRequest) {
 
   const d = await getVercelDeploymentByUid({ token, teamId: resolveVercelTeamId(), uid });
   if (!d.ok) {
+    /** UID usang / salah tim → API Vercel 404 `{"error":{"code":"not_found",...}}`; bersihkan KV agar polling berhenti. */
+    if (d.httpStatus === 404) {
+      await writeGlobalPublishStatus({
+        ...st,
+        vercelDeploymentUid: null,
+        vercelDeploymentReadyState: null,
+        vercelDeploymentInspectorUrl: null,
+        vercelDeploymentErrorMessage: null,
+        vercelDeploymentTrackedAt: null,
+      }).catch(() => {});
+      return NextResponse.json(
+        {
+          ok: true,
+          enabled: true,
+          uid: null,
+          readyState: null,
+          message:
+            "Deployment tidak ditemukan di Vercel (404) — UID tercatat mungkin usang. Status monitoring direset; jalankan Publish Global lagi setelah hook memicu build baru.",
+        },
+        { headers: { "cache-control": "no-store" } },
+      );
+    }
     return NextResponse.json(
       { ok: false, enabled: true, uid, httpStatus: d.httpStatus, error: d.error },
       { status: 502, headers: { "cache-control": "no-store" } },
