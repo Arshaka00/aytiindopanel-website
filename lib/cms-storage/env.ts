@@ -23,7 +23,7 @@ export type CmsBlobAccessMode = "private" | "public";
 
 export function getCmsBlobAccessMode(): CmsBlobAccessMode {
   const v = process.env.CMS_BLOB_ACCESS?.trim().toLowerCase();
-  if (v === "public") return "public";
+  if (v === "public" || v === "1" || v === "true" || v === "yes") return "public";
   return "private";
 }
 
