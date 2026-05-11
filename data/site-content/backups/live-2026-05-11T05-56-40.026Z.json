@@ -6,11 +6,11 @@
       {
         "id": "prod-primary",
         "label": "Utama",
-        "url": "",
+        "url": "https://www.aytiindopanel.com",
         "isPrimary": true
       }
     ],
-    "siteUrl": "",
+    "siteUrl": "https://www.aytiindopanel.com",
     "companyAddress": "Jl. Diklat Pemda No.88,\nBojong Nangka, Kec. Legok,\nKabupaten Tangerang, Banten 15810",
     "whatsappNumbers": [
       {
@@ -171,7 +171,7 @@
   },
   "hero": {
     "brandLabel": "PT AYTI INDO PANEL",
-    "headingLine1": "Solusi Sistem Pendingin",
+    "headingLine1": "SOLUSI SISTEM",
     "headingMiddle": "PENDINGIN",
     "headingLine2": "Terintegrasi",
     "intro": {
@@ -189,7 +189,7 @@
       "message": "Halo PT AYTI INDO PANEL,\nSaya ingin berkonsultasi terkait kebutuhan solusi cold storage dan refrigerasi.\nTerima kasih."
     },
     "ctaSecondary": {
-      "label": "Lihat produk utama",
+      "label": "LIHAT KATALOG PRODUK",
       "href": "#produk"
     },
     "slides": [
@@ -218,36 +218,13 @@
           "focalY": 90.34112595419847,
           "zoom": 1.44
         }
-      },
-      {
-        "src": "/images/gambar_hero/1778403836050-bce54f622823.webp",
-        "objectFit": "fill",
-        "focalX": 48.96643642703862,
-        "focalY": 12.997375954198473,
-        "zoom": 1,
-        "mobile": {
-          "objectFit": "fill",
-          "focalX": 48.77179452789699,
-          "focalY": 18.260078721374047,
-          "zoom": 1
-        }
-      },
-      {
-        "src": "/images/gambar_hero/1778403988893-42ac8bf24de5.webp",
-        "objectFit": "cover",
-        "focalX": 50,
-        "focalY": 50,
-        "zoom": 1,
-        "mobile": {
-          "zoom": 1
-        }
       }
     ],
     "backgroundVideo": null
   },
   "tentang": {
     "sectionLabel": "Tentang Kami",
-    "heading": "Mitra Produksi Sandwich Panel & Cold Storage",
+    "heading": "Sistem Pendingin Terintegrasi",
     "lead": "PT AYTI INDO PANEL adalah perusahaan yang bergerak dalam bidang fabrikasi sandwich panel, instalasi cold storage, dan sistem refrigerasi untuk kebutuhan industri bersuhu terkontrol.",
     "body": "Didukung pabrik panel milik sendiri, kami mendukung kebutuhan proyek mulai dari produksi panel,\ninstalasi, refrigeration system, hingga service dan purna jual dengan pendekatan kerja yang lebih\nterintegrasi dan terukur.",
     "valuesHeading": "Nilai Kami",
