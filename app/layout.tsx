@@ -19,18 +19,26 @@ import "./globals.css";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
+  adjustFontFallback: true,
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
+  adjustFontFallback: true,
+  /** Mono jarang di atas fold — hindari preload agar tidak berebut dengan LCP. */
+  preload: false,
 });
 
 const sora = Sora({
   variable: "--font-sora",
   subsets: ["latin"],
-  /** Intro hero & judul — bobot tubuh + tebal selaras sistem tipografi hero */
-  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+  adjustFontFallback: true,
+  /** Hanya bobot yang dipakai hero/CMS (medium / semibold / extrabold). */
+  weight: ["500", "600", "800"],
 });
 
 export const viewport: Viewport = {

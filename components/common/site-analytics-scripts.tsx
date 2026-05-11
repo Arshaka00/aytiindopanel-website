@@ -6,20 +6,20 @@ import { useEffect, useRef, useState } from "react";
 import type { SiteAnalyticsSettings } from "@/lib/site-content-model";
 
 /**
- * Tunda injeksi GTM / GA / Meta / Clarity sampai idle atau interaksi pertama,
- * supaya main thread awal lebih longgar (mobile + TBT). Setelah aktif, perilaku
- * sama seperti sebelumnya (`afterInteractive` pada mount komponen ini).
+ * Fase 1: GTM / GA saja — lebih ringan untuk main thread awal + Lighthouse.
+ * Fase 2 (idle + jeda singkat): Meta Pixel & Microsoft Clarity — tetap ter-load,
+ * tidak menghapus tracking; hanya menunda skrip non-esensial untuk skor performa.
  */
 export function SiteAnalyticsScripts({ analytics }: { analytics: SiteAnalyticsSettings }) {
   const { googleAnalyticsId, googleTagManagerId, metaPixelId, microsoftClarityId } = analytics;
   const useGaDirect = Boolean(googleAnalyticsId) && !googleTagManagerId;
-  const hasAny =
-    Boolean(googleTagManagerId) ||
-    useGaDirect ||
-    Boolean(metaPixelId) ||
-    Boolean(microsoftClarityId);
+  const hasCore =
+    Boolean(googleTagManagerId) || useGaDirect;
+  const hasExtras = Boolean(metaPixelId) || Boolean(microsoftClarityId);
+  const hasAny = hasCore || hasExtras;
 
-  const [shouldLoad, setShouldLoad] = useState(false);
+  const [shouldLoadCore, setShouldLoadCore] = useState(false);
+  const [shouldLoadExtras, setShouldLoadExtras] = useState(false);
   const firedRef = useRef(false);
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export function SiteAnalyticsScripts({ analytics }: { analytics: SiteAnalyticsSe
     const enable = () => {
       if (firedRef.current) return;
       firedRef.current = true;
-      setShouldLoad(true);
+      setShouldLoadCore(true);
       window.removeEventListener("pointerdown", enable, true);
       window.removeEventListener("scroll", enable, true);
       window.removeEventListener("keydown", enable, true);
@@ -36,9 +36,9 @@ export function SiteAnalyticsScripts({ analytics }: { analytics: SiteAnalyticsSe
 
     let idleId: number | undefined;
     if (typeof window.requestIdleCallback === "function") {
-      idleId = window.requestIdleCallback(enable, { timeout: 5200 });
+      idleId = window.requestIdleCallback(enable, { timeout: 4200 });
     }
-    const timeoutId = window.setTimeout(enable, 6200);
+    const timeoutId = window.setTimeout(enable, 5200);
     window.addEventListener("pointerdown", enable, { capture: true, passive: true });
     window.addEventListener("scroll", enable, { capture: true, passive: true });
     window.addEventListener("keydown", enable, { capture: true, passive: true });
@@ -54,7 +54,27 @@ export function SiteAnalyticsScripts({ analytics }: { analytics: SiteAnalyticsSe
     };
   }, [hasAny]);
 
-  if (!hasAny || !shouldLoad) return null;
+  useEffect(() => {
+    if (!shouldLoadCore || !hasExtras) return;
+    let cancelled = false;
+    const loadExtras = () => {
+      if (!cancelled) setShouldLoadExtras(true);
+    };
+    let idleExtra: number | undefined;
+    if (typeof window.requestIdleCallback === "function") {
+      idleExtra = window.requestIdleCallback(loadExtras, { timeout: 8000 });
+    }
+    const t = window.setTimeout(loadExtras, 3200);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(t);
+      if (idleExtra !== undefined && typeof window.cancelIdleCallback === "function") {
+        window.cancelIdleCallback(idleExtra);
+      }
+    };
+  }, [shouldLoadCore, hasExtras]);
+
+  if (!hasAny || !shouldLoadCore) return null;
 
   return (
     <>
@@ -87,7 +107,8 @@ gtag('js', new Date()); gtag('config', '${googleAnalyticsId.replace(/'/g, "\\'")
           />
         </>
       ) : null}
-      {metaPixelId ? (
+
+      {shouldLoadExtras && metaPixelId ? (
         <Script
           id="meta-pixel"
           strategy="afterInteractive"
@@ -100,7 +121,7 @@ t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,do
           }}
         />
       ) : null}
-      {microsoftClarityId ? (
+      {shouldLoadExtras && microsoftClarityId ? (
         <Script
           id="ms-clarity"
           strategy="afterInteractive"

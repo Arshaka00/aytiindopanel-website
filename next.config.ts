@@ -3,6 +3,16 @@ import type { NextConfig } from "next";
 import { SITE_APEX_HOSTNAME, SITE_PUBLIC_HOSTNAME } from "./lib/site-public-host";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    /** Kurangi bundle surface untuk import bernama besar (tree-shake lebih agresif). */
+    optimizePackageImports: [
+      "framer-motion",
+      "@dnd-kit/core",
+      "@dnd-kit/sortable",
+      "@dnd-kit/utilities",
+      "embla-carousel-react",
+    ],
+  },
   /** Apex → www agar satu host canonical (termasuk path & file statis). */
   async redirects() {
     return [

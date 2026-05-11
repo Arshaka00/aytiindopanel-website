@@ -16,7 +16,7 @@ import {
 
 export type HeroSlideSource = HeroSlideEntry;
 
-/** `sizes` men-cap lebar decode di desktop lebar; mobile = 100vw. */
+/** `sizes`: mobile ~lebar viewport; tablet/desktop cap 1920px decode (cukup untuk full-bleed hero). */
 const HERO_SLIDE_SIZES = "(max-width: 767px) 100vw, min(100vw, 1920px)";
 
 const HERO_IMG_BASELINE = { width: 1920, height: 1080 } as const;
@@ -83,9 +83,9 @@ function useDeferNonPrimaryHeroSlides(slideCount: number) {
     };
     const idleId =
       typeof window.requestIdleCallback === "function"
-        ? window.requestIdleCallback(unlock, { timeout: 2400 })
+        ? window.requestIdleCallback(unlock, { timeout: 1600 })
         : undefined;
-    const timeoutId = window.setTimeout(unlock, 2600);
+    const timeoutId = window.setTimeout(unlock, 1900);
     return () => {
       cancelled = true;
       if (idleId !== undefined && typeof window.cancelIdleCallback === "function") {
@@ -118,6 +118,8 @@ function HeroSlideFrame({
   const useNext = isHeroSlideNextImageOptimizable(slide.src);
   const isPrimary = index === 0;
   const showMedia = slideCount <= 1 || isPrimary || nonPrimaryMediaReady;
+  const primaryQ = isMobile ? 74 : 82;
+  const secondaryQ = isMobile ? 68 : 72;
 
   return (
     <div
@@ -133,7 +135,7 @@ function HeroSlideFrame({
             sizes={HERO_SLIDE_SIZES}
             draggable={false}
             priority={isPrimary}
-            quality={isPrimary ? 82 : 72}
+            quality={isPrimary ? primaryQ : secondaryQ}
             className="cms-media-fit-anchor touch-manipulation select-none [-webkit-touch-callout:none] [-webkit-user-drag:none]"
             style={imgStyle}
             decoding="async"
@@ -206,7 +208,7 @@ export function HeroBackgroundSlider({ sources }: { sources?: readonly HeroSlide
               sizes={HERO_SLIDE_SIZES}
               draggable={false}
               priority
-              quality={78}
+              quality={isMobile ? 72 : 78}
               className="cms-media-fit-anchor touch-manipulation select-none [-webkit-touch-callout:none] [-webkit-user-drag:none]"
               style={imgStyle}
               decoding="async"

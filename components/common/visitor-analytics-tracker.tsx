@@ -80,7 +80,7 @@ function VisitorAnalyticsTrackerInner() {
     if (typeof ric === "function") {
       ric(() => run(), { timeout: 2500 });
     } else {
-      globalThis.setTimeout(run, 1);
+      globalThis.setTimeout(run, 1200);
     }
   }, [pathname, searchParams]);
 
