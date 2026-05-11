@@ -122,14 +122,69 @@ function PortfolioProjectsStrip({
     };
   }, [syncStripState, projects.length]);
 
-  const scrollByOne = useCallback((dir: -1 | 1) => {
+  const getStripScrollDeltaPx = useCallback(() => {
     const root = stripRef.current;
-    if (!root || root.children.length === 0) return;
+    if (!root || root.children.length === 0) return 0;
     const firstSlide = root.children[0] as HTMLElement;
-    const gap = 20;
-    const delta = firstSlide.offsetWidth + gap;
-    root.scrollBy({ left: dir * delta, behavior: "smooth" });
+    const gapParsed = parseFloat(getComputedStyle(root).gap || "0");
+    const gapPx = Number.isFinite(gapParsed) ? gapParsed : 20;
+    const oneCard = firstSlide.offsetWidth + gapPx;
+    const isDesktop =
+      typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches;
+    return isDesktop ? oneCard * 2 : oneCard;
   }, []);
+
+  /** Mobile: satu kartu per aksi; desktop (md+): dua kartu terlihat — langkah geser/tombol = dua kartu. */
+  const scrollStrip = useCallback(
+    (dir: -1 | 1) => {
+      const root = stripRef.current;
+      if (!root) return;
+      const delta = getStripScrollDeltaPx();
+      if (!delta) return;
+      root.scrollBy({ left: dir * delta, behavior: "smooth" });
+    },
+    [getStripScrollDeltaPx],
+  );
+
+  /** Desktop: geser horizontal (trackpad) dikelompokkan per langkah dua kartu; scroll vertikal tidak di-block. */
+  useEffect(() => {
+    const root = stripRef.current;
+    if (!root || projects.length <= 1) return;
+    const mq = window.matchMedia("(min-width: 768px)");
+    let accum = 0;
+    let cooldown = false;
+    let cooldownTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const onWheel = (e: WheelEvent) => {
+      if (!mq.matches || cooldown) return;
+      const absX = Math.abs(e.deltaX);
+      const absY = Math.abs(e.deltaY);
+      if (absX < absY * 1.15) {
+        accum = 0;
+        return;
+      }
+      if (absX < 0.5) return;
+      e.preventDefault();
+      accum += e.deltaX;
+      const threshold = 55;
+      if (Math.abs(accum) < threshold) return;
+      const dir = accum > 0 ? 1 : -1;
+      accum = 0;
+      const delta = getStripScrollDeltaPx();
+      if (!delta) return;
+      cooldown = true;
+      root.scrollBy({ left: dir * delta, behavior: "smooth" });
+      cooldownTimer = window.setTimeout(() => {
+        cooldown = false;
+      }, 420);
+    };
+
+    root.addEventListener("wheel", onWheel, { passive: false });
+    return () => {
+      root.removeEventListener("wheel", onWheel);
+      if (cooldownTimer !== undefined) window.clearTimeout(cooldownTimer);
+    };
+  }, [projects.length, getStripScrollDeltaPx]);
 
   const showNav = projects.length > 1;
 
@@ -183,7 +238,7 @@ function PortfolioProjectsStrip({
           {/* Desktop: teks bantuan + tombol + penanda */}
           <div className="hidden flex-col items-center gap-2 md:flex md:gap-2.5 md:px-0">
             <p className="max-w-xl text-center text-xs leading-snug text-muted-foreground">
-              Geser ke samping atau pakai tombol untuk melihat dokumentasi proyek lainnya.
+              Geser horizontal (trackpad) atau tombol panah — di layar lebar tiap langkah memajukan dua kartu sekaligus.
             </p>
             <div className="flex items-center justify-center gap-3 md:gap-4">
               <button
@@ -191,7 +246,7 @@ function PortfolioProjectsStrip({
                 className={portfolioNavBtnClass}
                 aria-label="Proyek sebelumnya"
                 disabled={atStart}
-                onClick={() => scrollByOne(-1)}
+                onClick={() => scrollStrip(-1)}
               >
                 <ChevronLeftIcon className="size-[1.35rem]" />
               </button>
@@ -207,7 +262,7 @@ function PortfolioProjectsStrip({
                 className={portfolioNavBtnClass}
                 aria-label="Proyek berikutnya"
                 disabled={atEnd}
-                onClick={() => scrollByOne(1)}
+                onClick={() => scrollStrip(1)}
               >
                 <ChevronRightIcon className="size-[1.35rem]" />
               </button>

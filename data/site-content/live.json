@@ -194,29 +194,40 @@
     },
     "slides": [
       {
-        "src": "/images/gambar_hero/1778403318019-c1e487ec63bf.webp",
+        "src": "/images/gambar_hero/1778482431316-c5012dcbda47.webp",
         "objectFit": "contain",
-        "focalX": 50,
-        "focalY": 50,
-        "zoom": 1.98
-      },
-      {
-        "src": "/images/gambar_hero/1778403405559-020302632cbc.webp",
-        "objectFit": "contain",
-        "focalX": 50,
-        "focalY": 50,
-        "zoom": 1.58
-      },
-      {
-        "src": "/images/gambar_hero/1778403691651-5d2c17a33913.webp",
-        "objectFit": "fill",
-        "focalX": 55.61594688841201,
-        "focalY": 89.27033635496184,
-        "zoom": 1.4,
+        "focalX": 50.09958422746781,
+        "focalY": 50.26836832061068,
+        "zoom": 1.28,
         "mobile": {
-          "focalX": 47.947961373390555,
-          "focalY": 90.34112595419847,
-          "zoom": 1.44
+          "focalX": 50.00452655579399,
+          "focalY": 50.26836832061068,
+          "zoom": 1.26
+        }
+      },
+      {
+        "src": "/images/gambar_hero/1778484629686-f59f1bb84b02.webp",
+        "objectFit": "contain",
+        "focalX": 49.95322559012875,
+        "focalY": 50.08319417938932,
+        "zoom": 1.14,
+        "mobile": {
+          "objectFit": "contain",
+          "focalX": 49.89890692060086,
+          "focalY": 50.182490458015266,
+          "zoom": 1.16
+        }
+      },
+      {
+        "src": "/images/gambar_hero/1778484794241-13e3f46f6186.webp",
+        "objectFit": "fill",
+        "focalX": 55.664230150214586,
+        "focalY": 89.35621421755727,
+        "zoom": 1,
+        "mobile": {
+          "focalX": 47.74577521459227,
+          "focalY": 90.34380963740459,
+          "zoom": 1
         }
       }
     ],
@@ -369,20 +380,20 @@
     "closingCtaMessage": "Halo PT AYTI INDO PANEL,\nSaya ingin berkonsultasi terkait kebutuhan produk cold storage dan refrigerasi.\nTerima kasih.",
     "featuredImages": {
       "utama": {
-        "leftSrc": "/images/cms/produk/featured-utama-left/1778230923329-340c469e7019.webp",
-        "rightSrc": "/images/cms/produk/featured-utama-right/1778230783322-05d558b04e1a.webp",
+        "leftSrc": "/images/cms/produk/featured-utama-left/1778487877422-e2463d4635a8.webp",
+        "rightSrc": "/images/cms/produk/featured-utama-right/1778487980302-16c1cdbb3bc0.webp",
         "leftAlt": "Produk utama kiri",
         "rightAlt": "Produk utama kanan"
       },
       "solusi": {
-        "leftSrc": "/media/gallery/1778227702990-80e3ab03be13-960.webp",
-        "rightSrc": "/images/gambar_produk/produk-solusi-kanan.jpg",
+        "leftSrc": "/images/cms/produk/featured-solusi-left/1778486326772-d1a8cb0af50a.webp",
+        "rightSrc": "/images/cms/produk/featured-solusi-right/1778485509068-ccdd45b75f2f.webp",
         "leftAlt": "Produk solusi kiri",
         "rightAlt": "Produk solusi kanan"
       },
       "accessories": {
-        "leftSrc": "/media/gallery/1778227702990-80e3ab03be13-960.webp",
-        "rightSrc": "/images/gambar_produk/produk-accessories-kanan.jpg",
+        "leftSrc": "/images/cms/produk/featured-accessories-left/1778486623546-6cc3151b9e58.webp",
+        "rightSrc": "/images/cms/produk/featured-accessories-right/1778487494287-8182428508b8.webp",
         "leftAlt": "Produk accessories kiri",
         "rightAlt": "Produk accessories kanan"
       }
@@ -642,9 +653,9 @@
     "projects": [
       {
         "id": "portfolio-cold-room-regional",
-        "name": "Cold room distribusi regional",
-        "location": "Jabodetabek",
-        "workType": "Panel insulated + instalasi sistem refrigerasi",
+        "name": "Fasilitas Cold Chain Untuk Distribusi Supermarket",
+        "location": "Karawang - Jawa Barat",
+        "workType": "Cold Storage, Pembekuan Cepat (ABF), Anteroom & Loading",
         "videoSrc": "/images/gallery/WhatsApp%20Video%202026-05-07%20at%2011.02.55.mp4",
         "videoPosterSrc": "/images/layanan/instalasi-sistem-pendingin/1.jpg",
         "galleryPhotos": [
@@ -664,9 +675,9 @@
       },
       {
         "id": "portfolio-blast-freezer",
-        "name": "Fasilitas blast freezer",
-        "location": "Jawa Barat",
-        "workType": "Envelope ruang dingin + commissioning unit",
+        "name": "Pabrik Food Processing Plant",
+        "location": "Tangerang - Banten",
+        "workType": "Cold Storage, Chiller Room, Pembekuan Cepat (ABF) & Proses Area",
         "videoSrc": "/images/gallery/WhatsApp%20Video%202026-05-07%20at%2011.02.55.mp4",
         "videoPosterSrc": "/images/layanan/testing-commissioning/1.jpg",
         "galleryPhotos": [
@@ -686,9 +697,9 @@
       },
       {
         "id": "portfolio-chiller-logistik",
-        "name": "Gudang chiller logistik",
-        "location": "Nasional",
-        "workType": "Panel PU + zonasi suhu untuk SLA distribusi",
+        "name": "Rumah Pemotongan Ayam (RPA)",
+        "location": "Rembang - Jawa Tengah",
+        "workType": "Cold Storage, Pembekuan Cepat (ABF), Proses & Loading Area",
         "videoSrc": "/images/gallery/WhatsApp%20Video%202026-05-07%20at%2011.02.55.mp4",
         "videoPosterSrc": "/images/layanan/produksi-panel-pu-eps/1.jpg",
         "galleryPhotos": [
@@ -708,9 +719,9 @@
       },
       {
         "id": "portfolio-lini-fnb",
-        "name": "Lini produksi F&B",
-        "location": "Jakarta & sekitarnya",
-        "workType": "Cold room higienis + pintu industri",
+        "name": "Gudang Penyimpanan Ikan Laut 6.000 Ton",
+        "location": "Juwana - Jawa Tengah",
+        "workType": "Cold Storage, Anteroom & Loading Area",
         "videoSrc": "/images/gallery/WhatsApp%20Video%202026-05-07%20at%2011.02.55.mp4",
         "videoPosterSrc": "/images/layanan/konsultasi-desain-sistem/1.jpg",
         "galleryPhotos": [
