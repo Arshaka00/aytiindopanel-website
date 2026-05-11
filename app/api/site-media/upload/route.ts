@@ -6,7 +6,9 @@ import sharp from "sharp";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { rateLimitRequest } from "@/lib/api-rate-limit";
+import { hasVercelBlobEnv } from "@/lib/cms-storage/env";
 import { hasValidAdminSessionFromRequest, isAllowedAdminDevice } from "@/lib/gallery-admin-auth";
+import { uploadSiteMediaToPublicBlobIfConfigured } from "@/lib/site-media-blob-upload";
 import {
   MEDIA_SCOPE_TO_DIR,
   type MediaLibraryScope,
@@ -76,6 +78,52 @@ export async function POST(req: NextRequest) {
 
   const segment =
     typeof form.get("segment") === "string" ? sanitizeSegment(form.get("segment") as string) : "";
+
+  if (scope === "project" && !projectId) {
+    return NextResponse.json({ error: "projectId wajib untuk scope project." }, { status: 400 });
+  }
+
+  const scopeOk =
+    scope === "hero" ||
+    scope === "tentang" ||
+    scope === "layanan" ||
+    scope === "produk" ||
+    scope === "portfolio" ||
+    scope === "partners" ||
+    scope === "industry" ||
+    scope === "project" ||
+    scope === "gallery" ||
+    isMediaLibraryScope(scope);
+  if (!scopeOk) {
+    return NextResponse.json({ error: "Scope tidak dikenal." }, { status: 400 });
+  }
+
+  /** Dengan `BLOB_READ_WRITE_TOKEN`, simpan ke Blob **`public`** — URL langsung dipakai di production tanpa Git. */
+  try {
+    const blobResult = await uploadSiteMediaToPublicBlobIfConfigured({
+      scope,
+      segment,
+      projectId,
+      file,
+      mime,
+    });
+    if (blobResult) {
+      return NextResponse.json({ ok: true, ...blobResult, storage: "blob-public" as const });
+    }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Upload gagal.";
+    return NextResponse.json({ error: msg }, { status: 400 });
+  }
+
+  if (process.env.VERCEL === "1" && !hasVercelBlobEnv()) {
+    return NextResponse.json(
+      {
+        error:
+          "Upload di hosting ini memerlukan BLOB_READ_WRITE_TOKEN (filesystem deployment tidak bisa menyimpan berkas secara tetap).",
+      },
+      { status: 503 },
+    );
+  }
 
   if (scope === "hero") {
     destDir = path.join(process.cwd(), "public", "images", "gambar_hero");
