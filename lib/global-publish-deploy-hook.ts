@@ -168,6 +168,15 @@ function coerceHttpsDeployHookUrl(norm: string): string | null {
  * Pesan skip tersimpan saat hook belum di-set — tidak relevan setelah URL hook valid di runtime.
  * Dipakai untuk sanitasi payload status + tampilan UI.
  */
+/** Skip karena cooldown sukses sebelumnya — bukan gagal konfigurasi. */
+export function isCooldownDeployHookMessage(message: string | null | undefined): boolean {
+  if (!message) return false;
+  const t = message.normalize("NFKC").toLowerCase();
+  return (
+    /\bjeda\b/.test(t) && (/\banti\s*spam\b/.test(t) || /\bcooldown\b/.test(t) || /anti\s*jeda/.test(t))
+  );
+}
+
 export function isOutdatedDeployHookSkippedMessage(msg: string | null | undefined): boolean {
   if (!msg) return false;
   const t = msg.normalize("NFKC").toLowerCase();

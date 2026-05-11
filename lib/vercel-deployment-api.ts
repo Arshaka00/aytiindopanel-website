@@ -26,11 +26,63 @@ export function parseVercelIntegrationDeployHookUrl(hookUrl: string): { projectI
 
 export type VercelHookJob = { id: string; state: string; createdAt: number };
 
+function numOrNow(n: unknown): number {
+  return typeof n === "number" && Number.isFinite(n) ? n : Date.now();
+}
+
+/**
+ * Body respons POST deploy hook Vercel bermacam format; ambil id yang bisa dipakai GET deployment.
+ */
 export function parseVercelDeployHookJobJson(body: string): VercelHookJob | null {
+  const trimmed = body?.trim() ?? "";
+  if (!trimmed) return null;
   try {
-    const j = JSON.parse(body) as { job?: { id?: string; state?: string; createdAt?: number } };
-    if (!j.job?.id || typeof j.job.createdAt !== "number") return null;
-    return { id: j.job.id, state: typeof j.job.state === "string" ? j.job.state : "UNKNOWN", createdAt: j.job.createdAt };
+    const j = JSON.parse(trimmed) as Record<string, unknown>;
+    const job = j.job as Record<string, unknown> | undefined;
+    if (job && typeof job.id === "string" && job.id.length > 0 && typeof job.createdAt === "number") {
+      return {
+        id: job.id,
+        state: typeof job.state === "string" ? job.state : "UNKNOWN",
+        createdAt: job.createdAt,
+      };
+    }
+    const dep = j.deployment as Record<string, unknown> | undefined;
+    if (dep) {
+      const uid = typeof dep.uid === "string" ? dep.uid : typeof dep.id === "string" ? dep.id : null;
+      if (uid) {
+        return {
+          id: uid,
+          state: typeof dep.readyState === "string" ? dep.readyState : "UNKNOWN",
+          createdAt:
+            typeof dep.createdAt === "number"
+              ? dep.createdAt
+              : typeof dep.buildingAt === "number"
+                ? dep.buildingAt
+                : Date.now(),
+        };
+      }
+    }
+    const topUid = typeof j.uid === "string" ? j.uid : typeof j.deploymentId === "string" ? j.deploymentId : null;
+    const topCreated =
+      typeof j.createdAt === "number"
+        ? j.createdAt
+        : typeof j.created === "number"
+          ? j.created
+          : Date.now();
+    if (topUid) {
+      return { id: topUid, state: "UNKNOWN", createdAt: topCreated };
+    }
+    const nested = j.data as Record<string, unknown> | undefined;
+    if (nested) {
+      const id =
+        typeof nested.deploymentId === "string"
+          ? nested.deploymentId
+          : typeof nested.id === "string"
+            ? nested.id
+            : null;
+      if (id) return { id, state: "UNKNOWN", createdAt: numOrNow(nested.createdAt) };
+    }
+    return null;
   } catch {
     return null;
   }
@@ -120,6 +172,47 @@ export async function listVercelDeploymentsSince(params: {
   } catch {
     return [];
   }
+}
+
+/**
+ * Bila hook 2xx tetapi body kosong/tidak terurai, cocokkan deployment terbaru di project dari URL hook.
+ */
+export async function tryResolveLatestDeploymentUidFromProject(params: {
+  hookUrl: string;
+  token: string;
+  teamId?: string;
+}): Promise<{
+  uid: string | null;
+  readyState: string | null;
+  inspectorUrl: string | null;
+  errorMessage: string | null;
+}> {
+  const parsed = parseVercelIntegrationDeployHookUrl(params.hookUrl);
+  if (!parsed) return { uid: null, readyState: null, inspectorUrl: null, errorMessage: null };
+  const sinceMs = Date.now() - 180_000;
+  const rows = await listVercelDeploymentsSince({
+    token: params.token,
+    teamId: params.teamId,
+    projectId: parsed.projectId,
+    sinceMs,
+    limit: 8,
+  });
+  const pick = rows.sort((a, b) => b.createdAt - a.createdAt)[0];
+  if (!pick?.uid) return { uid: null, readyState: null, inspectorUrl: null, errorMessage: null };
+  const detail = await getVercelDeploymentByUid({
+    token: params.token,
+    teamId: params.teamId,
+    uid: pick.uid,
+  });
+  if (!detail.ok) {
+    return { uid: pick.uid, readyState: pick.readyState ?? null, inspectorUrl: null, errorMessage: null };
+  }
+  return {
+    uid: detail.uid,
+    readyState: detail.readyState,
+    inspectorUrl: detail.inspectorUrl,
+    errorMessage: detail.errorMessage,
+  };
 }
 
 /**

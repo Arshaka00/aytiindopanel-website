@@ -4,6 +4,7 @@ import { rateLimitRequest } from "@/lib/api-rate-limit";
 import { readGlobalPublishStatus, writeGlobalPublishStatus } from "@/lib/global-publish-status";
 import { getVercelDeploymentByUid, resolveVercelApiToken, resolveVercelTeamId } from "@/lib/vercel-deployment-api";
 import { hasValidAdminSessionFromRequest, isAllowedAdminDevice } from "@/lib/gallery-admin-auth";
+import { logEvent } from "@/lib/structured-log";
 
 /**
  * Polling status build Vercel (server → Vercel API; token tidak pernah dikirim ke browser).
@@ -63,6 +64,11 @@ export async function GET(req: NextRequest) {
       { ok: false, enabled: true, uid, httpStatus: d.httpStatus, error: d.error },
       { status: 502, headers: { "cache-control": "no-store" } },
     );
+  }
+
+  const terminal = new Set(["READY", "ERROR", "CANCELED", "DELETED"]);
+  if (terminal.has(d.readyState)) {
+    logEvent("info", "vercel_deployment_poll_terminal", { uid: d.uid, readyState: d.readyState });
   }
 
   if (

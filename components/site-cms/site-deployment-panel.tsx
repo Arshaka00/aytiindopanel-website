@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { isOutdatedDeployHookSkippedMessage } from "@/lib/global-publish-deploy-hook";
+import { isCooldownDeployHookMessage, isOutdatedDeployHookSkippedMessage } from "@/lib/global-publish-deploy-hook";
 import type { SiteContent } from "@/lib/site-content-model";
 import { getSiteSettingsGateHeaderName } from "@/lib/site-settings-gate";
 import { SitePublicationSettingsCard } from "@/components/site-cms/site-publication-settings-card";
@@ -435,27 +435,35 @@ function DeployProductionStrip({
     detail = (s.lastDeployHookMessage ?? "Konten live tetap aman — periksa URL hook, secret Vercel, dan log build.")
       .slice(0, 220);
   } else if (s?.lastDeployHookStatus === "skipped") {
-    tone = "slate";
-    const stale = isStaleOrOutdatedSkippedHookCopy(hookOk, s.lastDeployHookStatus, s.lastDeployHookMessage);
-    title =
-      hookOk && stale
-        ? "Deploy hook siap"
-        : hookOk
-          ? "Deploy hook — publish terakhir"
-          : "Deploy hook tidak dijalankan";
-    detail = !hookOk
-      ? `Deploy hook tidak terbaca valid di runtime server (wajib https://). Publish & cache tetap berhasil.${
-          hookMetaHint ? ` · ${hookMetaHint}` : ""
-        }`
-      : stale
-        ? "Env deploy hook sudah benar di server; teks lama di bawah dari publish sebelum env lengkap. Jalankan Publish Global lagi untuk memicu deployment production."
-        : (() => {
-            const raw = s.lastDeployHookMessage ?? "Dilewati (cooldown atau kebijakan server).";
-            if (hookOk && isOutdatedDeployHookSkippedMessage(raw)) {
-              return "Cooldown / skip server — pesan penyimpanan di bawah mungkin dari publish lama; aman diabaikan atau jalankan Publish Global lagi.";
-            }
-            return raw.slice(0, 280);
-          })();
+    const cooldown = Boolean(hookOk && isCooldownDeployHookMessage(s.lastDeployHookMessage));
+    if (cooldown) {
+      tone = "emerald";
+      title = "Publish sukses · hook cooldown";
+      detail =
+        "Deploy hook dalam jeda anti-spam setelah sukses. Konten live & cache sudah diperbarui. Build terakhir ada di Vercel — publish lagi setelah jeda bila perlu build baru.";
+    } else {
+      tone = "slate";
+      const stale = isStaleOrOutdatedSkippedHookCopy(hookOk, s.lastDeployHookStatus, s.lastDeployHookMessage);
+      title =
+        hookOk && stale
+          ? "Deploy hook siap"
+          : hookOk
+            ? "Deploy hook — publish terakhir"
+            : "Deploy hook tidak dijalankan";
+      detail = !hookOk
+        ? `Deploy hook tidak terbaca valid di runtime server (wajib https://). Publish & cache tetap berhasil.${
+            hookMetaHint ? ` · ${hookMetaHint}` : ""
+          }`
+        : stale
+          ? "Env deploy hook sudah benar di server; teks lama di bawah dari publish sebelum env lengkap. Jalankan Publish Global lagi untuk memicu deployment production."
+          : (() => {
+              const raw = s.lastDeployHookMessage ?? "Dilewati (cooldown atau kebijakan server).";
+              if (hookOk && isOutdatedDeployHookSkippedMessage(raw)) {
+                return "Cooldown / skip server — pesan penyimpanan di bawah mungkin dari publish lama; aman diabaikan atau jalankan Publish Global lagi.";
+              }
+              return raw.slice(0, 280);
+            })();
+    }
   }
 
   const shell =
@@ -637,6 +645,7 @@ export function SiteDeploymentPanel({
     try {
       const r = await fetch("/api/site-content?siteSettingsContext=1", {
         credentials: "include",
+        cache: "no-store",
         headers: gateHeaders,
       });
       if (r.status === 403) {
@@ -661,6 +670,7 @@ export function SiteDeploymentPanel({
     try {
       const r = await fetch("/api/site-content/global-publish/status", {
         credentials: "include",
+        cache: "no-store",
       });
       if (!r.ok) return;
       const j = (await r.json()) as GlobalPublishStatusView;
@@ -760,6 +770,7 @@ export function SiteDeploymentPanel({
         deployHookHttpStatus?: number;
         deployHookMessage?: string;
         deployHookAttempts?: number;
+        deployHookSkipKind?: "cooldown" | "config" | null;
         vercelDeploymentUid?: string | null;
         vercelDeploymentReadyState?: string | null;
         revalidated?: boolean;
@@ -792,11 +803,16 @@ export function SiteDeploymentPanel({
       } else if (j.deployHook === "failed") {
         deployLine = ` Deploy production: gagal (HTTP ${j.deployHookHttpStatus ?? "—"}). Konten live aman. ${(j.deployHookMessage ?? "").slice(0, 120)}`;
       } else if (j.deployHook === "skipped") {
-        const rawSkip = j.deployHookMessage ?? "dilewati.";
-        const skipUi = isOutdatedDeployHookSkippedMessage(rawSkip)
-          ? "dilewati (pesan konfigurasi lama dari server — jika env hook sudah benar, abaikan dan cek Deployment Center)."
-          : rawSkip.slice(0, 160);
-        deployLine = ` Deploy: ${skipUi}`;
+        if (j.deployHookSkipKind === "cooldown") {
+          deployLine =
+            " Deploy hook sengaja tidak dipanggil (cooldown — build baru baru saja sukses). Konten live & cache sudah diperbarui.";
+        } else {
+          const rawSkip = j.deployHookMessage ?? "dilewati.";
+          const skipUi = isOutdatedDeployHookSkippedMessage(rawSkip)
+            ? "dilewati (pesan konfigurasi lama dari server — jika env hook sudah benar, abaikan dan cek Deployment Center)."
+            : rawSkip.slice(0, 160);
+          deployLine = ` Deploy: ${skipUi}`;
+        }
       }
       if (j.vercelDeploymentUid) {
         deployLine += ` Build Vercel dilacak (UID). Status: ${j.vercelDeploymentReadyState ?? "…"}.`;

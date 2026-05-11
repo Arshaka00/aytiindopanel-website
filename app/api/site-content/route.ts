@@ -9,6 +9,14 @@ import { hasValidAdminSessionFromRequest, isAllowedAdminDevice, hasValidDeviceBi
 import { appendAuditLog } from "@/lib/site-content-storage";
 import { siteSettingsGateAuthorized, siteSettingsGateForbiddenResponse } from "@/lib/site-settings-gate";
 
+export const dynamic = "force-dynamic";
+
+function noStoreJson(body: unknown) {
+  return NextResponse.json(body, {
+    headers: { "cache-control": "private, no-store, max-age=0, must-revalidate" },
+  });
+}
+
 function getClientMeta(req: NextRequest) {
   return {
     ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown",
@@ -40,7 +48,7 @@ export async function GET(req: NextRequest) {
     return siteSettingsGateForbiddenResponse();
   }
   const content = mode === "live" ? await getSiteContent() : await getDraftSiteContent();
-  return NextResponse.json({ content, mode, role });
+  return noStoreJson({ content, mode, role });
 }
 
 export async function PATCH(req: NextRequest) {

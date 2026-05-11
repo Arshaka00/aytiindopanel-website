@@ -10,6 +10,7 @@ export async function runAfterSiteContentLiveUpdated(): Promise<{ revalidated: b
   clearMiddlewareLiveSiteContentCache();
   try {
     revalidatePath("/", "layout");
+    revalidatePath("/");
     return { revalidated: true };
   } catch {
     return { revalidated: false };

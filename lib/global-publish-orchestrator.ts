@@ -1,16 +1,19 @@
 import { randomUUID } from "node:crypto";
 
 import {
+  isCooldownDeployHookMessage,
   isOutdatedDeployHookSkippedMessage,
   resolveDeployHookResolution,
   triggerDeployHookIfConfigured,
   type DeployHookPublicMeta,
+  type DeployHookResult,
 } from "@/lib/global-publish-deploy-hook";
 import {
   parseVercelIntegrationDeployHookUrl,
   resolveVercelApiToken,
   resolveVercelDeploymentAfterHook,
   resolveVercelTeamId,
+  tryResolveLatestDeploymentUidFromProject,
   vercelBuildMonitoringSupported,
 } from "@/lib/vercel-deployment-api";
 import { getDraftLiveMtimeHint } from "@/lib/global-publish-draft-live-hint";
@@ -22,10 +25,10 @@ import {
 } from "@/lib/global-publish-status";
 import { runAfterSiteContentLiveUpdated } from "@/lib/site-content-after-publish";
 import { getSiteContentVersionToken, publishSiteContentDraft } from "@/lib/site-content";
-import type { SiteContent } from "@/lib/site-content-model";
 import { hasVercelKvEnv } from "@/lib/cms-storage/env";
 import { captureException } from "@/lib/observability";
 import { appendAuditLog, type AuditEntry } from "@/lib/site-content-storage";
+import { logEvent } from "@/lib/structured-log";
 
 /** Antara dua publish global sukses (debounce server; cegah double-klik / burst). */
 const MIN_MS_BETWEEN_SUCCESS = 1600;
@@ -35,13 +38,13 @@ const DEPLOY_HOOK_SUCCESS_COOLDOWN_MS = 45_000;
 export type GlobalPublishOrchestratorResult =
   | {
       ok: true;
-      content: SiteContent;
       revalidated: boolean;
       deployHook: "skipped" | "ok" | "failed";
       deployHookHttpStatus?: number;
       deployHookMessage?: string;
       deployHookAttempts?: number;
-      deployHookResponseBody?: string;
+      /** `cooldown` = hook sengaja tidak dipanggil lagi; bukan gagal konfigurasi. */
+      deployHookSkipKind: "cooldown" | "config" | null;
       vercelDeploymentUid?: string | null;
       vercelDeploymentReadyState?: string | null;
       storageVersion: string;
@@ -54,6 +57,52 @@ export type GlobalPublishOrchestratorResult =
 
 function mergeStatus(base: GlobalPublishStatus, patch: Partial<GlobalPublishStatus>): GlobalPublishStatus {
   return { ...base, ...patch };
+}
+
+function hookSkipKind(hook: DeployHookResult): "cooldown" | "config" | null {
+  if (hook.status !== "skipped") return null;
+  return isCooldownDeployHookMessage(hook.message) ? "cooldown" : "config";
+}
+
+/** Normalisasi field Vercel di KV supaya UID lama tidak “nempel” setelah hook gagal/config skip; cooldown mempertahankan UID terakhir. */
+function buildVercelPersistencePatch(args: {
+  prev: GlobalPublishStatus;
+  hook: DeployHookResult;
+  resolved: {
+    uid: string | null;
+    readyState: string | null;
+    inspectorUrl: string | null;
+    errorMessage: string | null;
+  };
+  successAt: string;
+}): Partial<GlobalPublishStatus> {
+  const { prev, hook, resolved, successAt } = args;
+  const { uid, readyState, inspectorUrl, errorMessage } = resolved;
+  if (uid) {
+    return {
+      vercelDeploymentUid: uid,
+      vercelDeploymentReadyState: readyState,
+      vercelDeploymentInspectorUrl: inspectorUrl,
+      vercelDeploymentErrorMessage: errorMessage,
+      vercelDeploymentTrackedAt: successAt,
+    };
+  }
+  if (hook.status === "skipped" && isCooldownDeployHookMessage(hook.message)) {
+    return {
+      vercelDeploymentUid: prev.vercelDeploymentUid,
+      vercelDeploymentReadyState: prev.vercelDeploymentReadyState,
+      vercelDeploymentInspectorUrl: prev.vercelDeploymentInspectorUrl,
+      vercelDeploymentErrorMessage: prev.vercelDeploymentErrorMessage,
+      vercelDeploymentTrackedAt: prev.vercelDeploymentTrackedAt,
+    };
+  }
+  return {
+    vercelDeploymentUid: null,
+    vercelDeploymentReadyState: null,
+    vercelDeploymentInspectorUrl: null,
+    vercelDeploymentErrorMessage: null,
+    vercelDeploymentTrackedAt: null,
+  };
 }
 
 /** Kegagalan KV (transien) di tengah alur tidak boleh membatalkan publish draft→live. */
@@ -90,6 +139,7 @@ export async function executeGlobalPublish(params: {
     if (statusSnapshot.lastSuccessAt) {
       const last = new Date(statusSnapshot.lastSuccessAt).getTime();
       if (Number.isFinite(last) && now - last < MIN_MS_BETWEEN_SUCCESS) {
+        logEvent("info", "global_publish_debounced", { actorId: params.actorId, lastSuccessAt: statusSnapshot.lastSuccessAt });
         return {
           ok: false,
           code: "DEBOUNCED",
@@ -107,19 +157,23 @@ export async function executeGlobalPublish(params: {
     });
     await safeWriteGlobalPublishStatus(statusSnapshot, "attempt_start");
 
-    let live: SiteContent;
+    logEvent("info", "global_publish_start", { actorId: params.actorId, actorRole: params.actorRole, attemptAt });
+
     try {
-      live = await publishSiteContentDraft();
+      await publishSiteContentDraft();
+      logEvent("info", "global_publish_live_saved", { actorId: params.actorId });
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Gagal publish draft ke live.";
       const failedAt = new Date().toISOString();
-      await writeGlobalPublishStatus(
+      logEvent("error", "global_publish_live_failed", { actorId: params.actorId, message: msg });
+      await safeWriteGlobalPublishStatus(
         mergeStatus(await readGlobalPublishStatus(), {
           lastFailedAt: failedAt,
           lastError: msg,
           lastPhase: "idle",
           deployHookInProgress: false,
         }),
+        "publish_failed",
       );
       return { ok: false, code: "PUBLISH_FAILED", message: msg };
     }
@@ -131,8 +185,10 @@ export async function executeGlobalPublish(params: {
     try {
       const r = await runAfterSiteContentLiveUpdated();
       revalidated = r.revalidated;
+      logEvent("info", "global_publish_cache_revalidated", { actorId: params.actorId, revalidated });
     } catch {
       revalidated = false;
+      logEvent("warn", "global_publish_cache_revalidate_error", { actorId: params.actorId });
     }
 
     statusSnapshot = mergeStatus(await readGlobalPublishStatus(), { lastPhase: "deploy_hook" });
@@ -141,6 +197,7 @@ export async function executeGlobalPublish(params: {
     const hookDeploy = resolveDeployHookResolution();
     const url = hookDeploy.url;
     let hook: Awaited<ReturnType<typeof triggerDeployHookIfConfigured>>;
+    let cooldownSkip = false;
 
     if (!url) {
       hook = await triggerDeployHookIfConfigured();
@@ -152,11 +209,13 @@ export async function executeGlobalPublish(params: {
       const recentOk = lastOk && Number.isFinite(elapsed) && elapsed >= 0 && elapsed < DEPLOY_HOOK_SUCCESS_COOLDOWN_MS;
 
       if (recentOk) {
+        cooldownSkip = true;
         const remain = Math.max(1, Math.ceil((DEPLOY_HOOK_SUCCESS_COOLDOWN_MS - elapsed) / 1000));
         hook = {
           status: "skipped",
           message: `Deploy hook dalam jeda ${remain}s setelah sukses (anti spam). Konten live & cache sudah terbarui.`,
         };
+        logEvent("info", "global_publish_hook_skipped_cooldown", { actorId: params.actorId, remainSec: remain });
       } else {
         await safeWriteGlobalPublishStatus(
           mergeStatus(await readGlobalPublishStatus(), {
@@ -167,6 +226,19 @@ export async function executeGlobalPublish(params: {
         );
         try {
           hook = await triggerDeployHookIfConfigured();
+          if (hook.status === "ok") {
+            logEvent("info", "global_publish_hook_triggered", {
+              actorId: params.actorId,
+              httpStatus: hook.httpStatus,
+              attempts: hook.attempts,
+            });
+          } else if (hook.status === "failed") {
+            logEvent("warn", "global_publish_hook_failed", {
+              actorId: params.actorId,
+              httpStatus: hook.httpStatus,
+              attempts: hook.attempts,
+            });
+          }
         } finally {
           await writeGlobalPublishStatus(
             mergeStatus(await readGlobalPublishStatus(), {
@@ -185,33 +257,68 @@ export async function executeGlobalPublish(params: {
     let vercelInspector: string | null = null;
     let vercelErr: string | null = null;
     const apiTok = resolveVercelApiToken();
-    if (hook.status === "ok" && hook.responseBody && apiTok && url) {
+    const teamId = resolveVercelTeamId();
+    if (hook.status === "ok" && apiTok && url) {
       try {
-        const v = await resolveVercelDeploymentAfterHook({
-          hookUrl: url,
-          hookResponseBody: hook.responseBody,
-          token: apiTok,
-          teamId: resolveVercelTeamId(),
+        if (hook.responseBody?.trim()) {
+          const v = await resolveVercelDeploymentAfterHook({
+            hookUrl: url,
+            hookResponseBody: hook.responseBody,
+            token: apiTok,
+            teamId,
+          });
+          vercelUid = v.uid;
+          vercelReady = v.readyState;
+          vercelInspector = v.inspectorUrl;
+          vercelErr = v.errorMessage;
+        }
+        if (!vercelUid) {
+          const fb = await tryResolveLatestDeploymentUidFromProject({
+            hookUrl: url,
+            token: apiTok,
+            teamId,
+          });
+          if (fb.uid) {
+            vercelUid = fb.uid;
+            vercelReady = fb.readyState;
+            vercelInspector = fb.inspectorUrl;
+            vercelErr = fb.errorMessage;
+            logEvent("info", "global_publish_deployment_uid_fallback_list", {
+              actorId: params.actorId,
+              uid: vercelUid,
+            });
+          }
+        }
+        if (vercelUid) {
+          logEvent("info", "global_publish_deployment_uid_detected", {
+            actorId: params.actorId,
+            uid: vercelUid,
+            readyState: vercelReady,
+          });
+        }
+      } catch (err) {
+        logEvent("warn", "global_publish_deployment_uid_resolution_error", {
+          actorId: params.actorId,
+          message: err instanceof Error ? err.message : String(err),
         });
-        vercelUid = v.uid;
-        vercelReady = v.readyState;
-        vercelInspector = v.inspectorUrl;
-        vercelErr = v.errorMessage;
-      } catch {
-        /* monitoring opsional — tidak gagalkan publish */
       }
     }
 
     const successAt = new Date().toISOString();
     const prevStatus = await readGlobalPublishStatus();
-    const vercelPatch: Partial<GlobalPublishStatus> = {};
-    if (vercelUid) {
-      vercelPatch.vercelDeploymentUid = vercelUid;
-      vercelPatch.vercelDeploymentReadyState = vercelReady;
-      vercelPatch.vercelDeploymentInspectorUrl = vercelInspector;
-      vercelPatch.vercelDeploymentErrorMessage = vercelErr;
-      vercelPatch.vercelDeploymentTrackedAt = successAt;
-    }
+    const vercelPersistence = buildVercelPersistencePatch({
+      prev: prevStatus,
+      hook,
+      resolved: {
+        uid: vercelUid,
+        readyState: vercelReady,
+        inspectorUrl: vercelInspector,
+        errorMessage: vercelErr,
+      },
+      successAt,
+    });
+
+    const skipKind = hookSkipKind(hook);
     try {
       await writeGlobalPublishStatus(
         mergeStatus(prevStatus, {
@@ -225,14 +332,23 @@ export async function executeGlobalPublish(params: {
           lastDeployHookAttempts: hook.attempts ?? null,
           deployHookInProgress: false,
           storageVersionAfter: token,
-          ...vercelPatch,
+          ...vercelPersistence,
         }),
       );
+      logEvent("info", "global_publish_status_written", {
+        actorId: params.actorId,
+        deployHook: hook.status,
+        skipKind,
+        uid: vercelPersistence.vercelDeploymentUid ?? null,
+      });
     } catch (statusWriteErr) {
-      /** Draft→live sudah sukses; kegagalan KV/status tidak boleh mengembalikan HTTP 500 ke klien. */
       void captureException(statusWriteErr instanceof Error ? statusWriteErr : new Error(String(statusWriteErr)), {
         area: "global-publish-orchestrator",
         reason: "writeGlobalPublishStatus failed after successful publish",
+      });
+      logEvent("warn", "global_publish_status_write_failed_live_ok", {
+        actorId: params.actorId,
+        message: statusWriteErr instanceof Error ? statusWriteErr.message : String(statusWriteErr),
       });
     }
 
@@ -254,36 +370,53 @@ export async function executeGlobalPublish(params: {
           vercelDeploymentUid: vercelUid,
         },
       });
+      logEvent("info", "global_publish_audit_appended", { actorId: params.actorId });
     } catch (auditErr) {
       void captureException(auditErr instanceof Error ? auditErr : new Error(String(auditErr)), {
         area: "global-publish-orchestrator",
         reason: "appendAuditLog failed after successful publish (live sudah tersimpan)",
       });
+      logEvent("warn", "global_publish_audit_skipped", {
+        actorId: params.actorId,
+        message: auditErr instanceof Error ? auditErr.message : String(auditErr),
+      });
     }
+
+    logEvent("info", "global_publish_success", {
+      actorId: params.actorId,
+      revalidated,
+      deployHook: hook.status,
+      uid: vercelUid,
+      cooldownSkip,
+    });
 
     return {
       ok: true,
-      content: live,
       revalidated,
       deployHook: hook.status,
       deployHookHttpStatus: hook.httpStatus,
       deployHookMessage: hook.message,
       deployHookAttempts: hook.attempts,
-      deployHookResponseBody: hook.responseBody,
+      deployHookSkipKind: skipKind,
       vercelDeploymentUid: vercelUid,
       vercelDeploymentReadyState: vercelReady,
       storageVersion: token,
     };
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Gagal menjalankan publish global.";
-    await writeGlobalPublishStatus(
+    logEvent("error", "global_publish_unknown_failure", {
+      actorId: params.actorId,
+      message: msg,
+    });
+    await safeWriteGlobalPublishStatus(
       mergeStatus(await readGlobalPublishStatus(), {
         lastFailedAt: new Date().toISOString(),
         lastError: msg,
         lastPhase: "idle",
         deployHookInProgress: false,
       }),
-    ).catch(() => {});
+      "unknown_failure",
+    );
     return { ok: false, code: "UNKNOWN", message: msg };
   } finally {
     await lock.release().catch(() => {});
@@ -326,7 +459,7 @@ export async function getGlobalPublishStatusPayload(): Promise<{
   const integrationUrlParsed = Boolean(hookUrl && parseVercelIntegrationDeployHookUrl(hookUrl));
   const apiTokenConfigured = Boolean(resolveVercelApiToken());
   const supported = vercelBuildMonitoringSupported(hookUrl ?? "");
-  const status =
+  let status =
     deployHookMeta.configured &&
     statusRaw.lastDeployHookStatus === "skipped" &&
     isOutdatedDeployHookSkippedMessage(statusRaw.lastDeployHookMessage)
@@ -336,6 +469,22 @@ export async function getGlobalPublishStatusPayload(): Promise<{
             "Hook HTTPS terdeteksi di server; teks lama dari publish sebelum env lengkap disembunyikan.",
         }
       : statusRaw;
+  if (
+    deployHookMeta.configured &&
+    status.lastDeployHookStatus === "skipped" &&
+    isCooldownDeployHookMessage(status.lastDeployHookMessage) &&
+    status.lastSuccessAt
+  ) {
+    const succ = new Date(status.lastSuccessAt).getTime();
+    const settledMs = status.lastDeployHookSettledAt ? new Date(status.lastDeployHookSettledAt).getTime() : 0;
+    if (Number.isFinite(succ) && (!settledMs || succ >= settledMs - 3000)) {
+      status = {
+        ...status,
+        lastDeployHookMessage:
+          "Hook dalam cooldown (publish sukses sebelumnya). Konten live & cache sudah diperbarui — tunggu jeda atau buka Deployment di Vercel.",
+      };
+    }
+  }
   return {
     status,
     draftLiveHint,

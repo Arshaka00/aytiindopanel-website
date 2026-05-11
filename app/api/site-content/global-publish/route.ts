@@ -58,6 +58,7 @@ export async function POST(req: NextRequest) {
       deployHookHttpStatus: result.deployHookHttpStatus,
       deployHookMessage: result.deployHookMessage,
       deployHookAttempts: result.deployHookAttempts,
+      deployHookSkipKind: result.deployHookSkipKind,
       vercelDeploymentUid: result.vercelDeploymentUid,
       vercelDeploymentReadyState: result.vercelDeploymentReadyState,
       storageVersion: result.storageVersion,
