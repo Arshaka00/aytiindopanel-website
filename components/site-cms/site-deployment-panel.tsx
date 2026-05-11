@@ -737,7 +737,8 @@ export function SiteDeploymentPanel({
           ...gateHeaders,
         },
       });
-      const j = (await r.json().catch(() => ({}))) as {
+      const rawBody = await r.text();
+      let j: {
         ok?: boolean;
         error?: string;
         code?: string;
@@ -748,7 +749,12 @@ export function SiteDeploymentPanel({
         vercelDeploymentUid?: string | null;
         vercelDeploymentReadyState?: string | null;
         revalidated?: boolean;
-      };
+      } = {};
+      try {
+        j = rawBody ? (JSON.parse(rawBody) as typeof j) : {};
+      } catch {
+        j = {};
+      }
       if (r.status === 403) {
         onGateInvalid?.();
         setGlobalPublishFeedback("Akses pengaturan situs perlu dibuka kunci lagi.");
@@ -758,7 +764,12 @@ export function SiteDeploymentPanel({
         const detail = [typeof j.code === "string" ? j.code : null, typeof j.error === "string" ? j.error : null]
           .filter(Boolean)
           .join(" · ");
-        throw new Error(detail || `Publish global gagal (HTTP ${r.status}).`);
+        throw new Error(
+          detail ||
+            (rawBody.startsWith("<")
+              ? `Publish global gagal (HTTP ${r.status}). Respons bukan JSON — cek log deployment Vercel.`
+              : `Publish global gagal (HTTP ${r.status}).`),
+        );
       }
       const rev = j.revalidated === false ? " Cache halaman mungkin perlu beberapa detik." : "";
       let deployLine = "";

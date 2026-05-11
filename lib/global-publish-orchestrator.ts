@@ -199,21 +199,29 @@ export async function executeGlobalPublish(params: {
       vercelPatch.vercelDeploymentErrorMessage = vercelErr;
       vercelPatch.vercelDeploymentTrackedAt = successAt;
     }
-    await writeGlobalPublishStatus(
-      mergeStatus(prevStatus, {
-        lastPhase: "done",
-        lastSuccessAt: successAt,
-        lastFailedAt: null,
-        lastError: null,
-        lastDeployHookStatus: hook.status,
-        lastDeployHookHttpStatus: hook.httpStatus ?? null,
-        lastDeployHookMessage: hook.message ?? null,
-        lastDeployHookAttempts: hook.attempts ?? null,
-        deployHookInProgress: false,
-        storageVersionAfter: token,
-        ...vercelPatch,
-      }),
-    );
+    try {
+      await writeGlobalPublishStatus(
+        mergeStatus(prevStatus, {
+          lastPhase: "done",
+          lastSuccessAt: successAt,
+          lastFailedAt: null,
+          lastError: null,
+          lastDeployHookStatus: hook.status,
+          lastDeployHookHttpStatus: hook.httpStatus ?? null,
+          lastDeployHookMessage: hook.message ?? null,
+          lastDeployHookAttempts: hook.attempts ?? null,
+          deployHookInProgress: false,
+          storageVersionAfter: token,
+          ...vercelPatch,
+        }),
+      );
+    } catch (statusWriteErr) {
+      /** Draft→live sudah sukses; kegagalan KV/status tidak boleh mengembalikan HTTP 500 ke klien. */
+      void captureException(statusWriteErr instanceof Error ? statusWriteErr : new Error(String(statusWriteErr)), {
+        area: "global-publish-orchestrator",
+        reason: "writeGlobalPublishStatus failed after successful publish",
+      });
+    }
 
     try {
       await appendAuditLog({
