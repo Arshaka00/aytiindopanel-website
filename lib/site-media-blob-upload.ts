@@ -9,10 +9,6 @@ import { blobSiteMediaUploadPrefix, putPublicSiteMediaBlob } from "@/lib/site-me
 
 const IMAGE_WIDTH_VARIANTS = [480, 960, 1600] as const;
 
-function sanitizeSegment(s: string): string {
-  return s.replace(/[^a-zA-Z0-9._-]+/g, "-").slice(0, 80) || "project";
-}
-
 function extFromMime(mime: string): string {
   if (mime === "image/jpeg" || mime === "image/jpg") return ".jpg";
   if (mime === "image/png") return ".png";

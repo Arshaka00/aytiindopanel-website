@@ -19,6 +19,13 @@ const MAX_IMAGE_BYTES = 12 * 1024 * 1024;
 const MAX_VIDEO_BYTES = 80 * 1024 * 1024;
 const IMAGE_WIDTH_VARIANTS = [480, 960, 1600] as const;
 
+/** Kurangi NFT trace seluruh repo ke file upload route (saran Turbopack). */
+function joinPublic(...segments: string[]): string {
+  return path.join(/* turbopackIgnore: true */ process.cwd(), "public", ...segments);
+}
+
+export const runtime = "nodejs";
+
 function sanitizeSegment(s: string): string {
   return s.replace(/[^a-zA-Z0-9._-]+/g, "-").slice(0, 80) || "project";
 }
@@ -126,7 +133,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (scope === "hero") {
-    destDir = path.join(process.cwd(), "public", "images", "gambar_hero");
+    destDir = joinPublic("images", "gambar_hero");
     publicPrefix = "/images/gambar_hero";
   } else if (
     scope === "tentang" ||
@@ -137,20 +144,17 @@ export async function POST(req: NextRequest) {
     scope === "industry"
   ) {
     const sub = segment || "general";
-    destDir = path.join(process.cwd(), "public", "images", "cms", scope, sub);
+    destDir = joinPublic("images", "cms", scope, sub);
     publicPrefix = `/images/cms/${scope}/${sub}`;
   } else if (scope === "project") {
-    if (!projectId) {
-      return NextResponse.json({ error: "projectId wajib untuk scope project." }, { status: 400 });
-    }
-    destDir = path.join(process.cwd(), "public", "images", "gallery", "projects", projectId);
+    destDir = joinPublic("images", "gallery", "projects", projectId);
     publicPrefix = `/images/gallery/projects/${projectId}`;
   } else if (scope === "gallery") {
-    destDir = path.join(process.cwd(), "public", "images", "gallery");
+    destDir = joinPublic("images", "gallery");
     publicPrefix = "/images/gallery";
   } else if (isMediaLibraryScope(scope)) {
     const sub = MEDIA_SCOPE_TO_DIR[scope];
-    destDir = path.join(process.cwd(), "public", "media", sub);
+    destDir = joinPublic("media", sub);
     publicPrefix = `${PUBLIC_MEDIA_BASE}/${sub}`;
   } else {
     return NextResponse.json({ error: "Scope tidak dikenal." }, { status: 400 });
