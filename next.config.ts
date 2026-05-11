@@ -3,8 +3,6 @@ import type { NextConfig } from "next";
 import { SITE_APEX_HOSTNAME, SITE_PUBLIC_HOSTNAME } from "./lib/site-public-host";
 
 const nextConfig: NextConfig = {
-  /** Binary native — hindari masalah bundle/trace di serverless Vercel. */
-  serverExternalPackages: ["sharp"],
   experimental: {
     /** Kurangi bundle surface untuk import bernama besar (tree-shake lebih agresif). */
     optimizePackageImports: [
@@ -38,15 +36,10 @@ const nextConfig: NextConfig = {
         hostname: "images.unsplash.com",
         pathname: "/**",
       },
-      /** Media CMS yang di-upload ke Vercel Blob (`access: public`). */
+      /** Media CMS di Vercel Blob (`access: public`). `**` = subdomain berapa pun (picomatch). */
       {
         protocol: "https",
-        hostname: "*.public.blob.vercel-storage.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "*.blob.vercel-storage.com",
+        hostname: "**.public.blob.vercel-storage.com",
         pathname: "/**",
       },
     ],
