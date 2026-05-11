@@ -51,3 +51,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Kunci sementara publish global (jangan commit)
+data/site-content/.global-publish.lock

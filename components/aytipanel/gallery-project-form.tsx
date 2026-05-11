@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { mergeAytiCardClass } from "@/lib/ayti-icon-cold";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 
 import {
   PROJECT_CATEGORIES,
@@ -30,8 +30,31 @@ type FieldErrors = Partial<
 /** Folder static Next: `aytipanel/public/images/gallery` → URL `/images/gallery/...` */
 export const GALLERY_UPLOAD_PUBLIC_DIR = "/images/gallery";
 
+/** Prefix URL hasil unggahan API `scope=project` → `public/images/gallery/projects/<id>/`. */
+export const GALLERY_PROJECT_MEDIA_PREFIX = "/images/gallery/projects";
+
 /** Gambar hero cadangan jika tidak ada foto di galeri (path di `public`). */
 export const GALLERY_FALLBACK_HERO_IMAGE = "/images/gallery/peta_indonesia.png";
+
+async function dataUrlToImageFile(dataUrl: string, filename: string): Promise<File> {
+  const res = await fetch(dataUrl);
+  const blob = await res.blob();
+  return new File([blob], filename, { type: blob.type || "image/jpeg" });
+}
+
+async function postGalleryProjectUpload(file: File, projectId: string): Promise<string> {
+  const form = new FormData();
+  form.append("file", file);
+  form.append("scope", "project");
+  form.append("projectId", projectId);
+  const r = await fetch("/api/site-media/upload", { method: "POST", body: form });
+  const j = (await r.json().catch(() => ({}))) as { error?: string; url?: string };
+  if (!r.ok) {
+    throw new Error(typeof j.error === "string" ? j.error : "Unggahan ditolak server.");
+  }
+  if (!j.url || typeof j.url !== "string") throw new Error("Respons unggahan tidak berisi URL.");
+  return j.url;
+}
 
 function normalizePath(s: string): string {
   const t = s.trim();
@@ -121,6 +144,17 @@ export function GalleryProjectForm(props: GalleryProjectFormProps) {
     mode === "edit" ? "loading" : "ready",
   );
 
+  /** ID stabil untuk subfolder unggahan (create) — sama dengan `id` proyek saat disimpan. */
+  const [createProjectId] = useState(() => generateGalleryProjectId());
+  const mediaScopeId = mode === "edit" ? editId : createProjectId;
+  const [galleryUploadBusy, setGalleryUploadBusy] = useState(false);
+  const [galleryUploadProgress, setGalleryUploadProgress] = useState<{
+    index: number;
+    total: number;
+    fileName: string;
+  } | null>(null);
+  const [videoUploadBusy, setVideoUploadBusy] = useState(false);
+
   const progressNum = useMemo(() => {
     const t = progress.trim();
     if (t === "") return undefined;
@@ -157,7 +191,7 @@ export function GalleryProjectForm(props: GalleryProjectFormProps) {
     const heroAlt =
       galleryFirst?.alt ?? `${name.trim() || "Proyek"} — dokumentasi proyek`;
 
-    const projectId = mode === "edit" ? editId : generateGalleryProjectId();
+    const projectId = mode === "edit" ? editId : createProjectId;
     const item: GalleryProjectItem = {
       id: projectId,
       name: name.trim(),
@@ -197,13 +231,16 @@ export function GalleryProjectForm(props: GalleryProjectFormProps) {
     videoPosterSrc,
     videoAutoplay,
     galleryPhotosText,
+    createProjectId,
   ]);
 
   useEffect(() => {
     if (mode !== "edit" || !editId) return;
-    setLoadState("loading");
     let cancelled = false;
-    const load = async () => {
+    void (async () => {
+      await Promise.resolve();
+      if (cancelled) return;
+      setLoadState("loading");
       try {
         const res = await fetch(`/api/gallery-projects/${encodeURIComponent(editId)}`, {
           cache: "no-store",
@@ -240,31 +277,54 @@ export function GalleryProjectForm(props: GalleryProjectFormProps) {
             ? p.galleryPhotos.map((ph) => (ph.alt.trim() ? `${ph.src} | ${ph.alt}` : ph.src)).join("\n")
             : "",
         );
-        setLoadState("ready");
+        if (!cancelled) setLoadState("ready");
       } catch {
         if (!cancelled) setLoadState("notfound");
       }
-    };
-    void load();
+    })();
     return () => {
       cancelled = true;
     };
   }, [mode, editId]);
 
-  const applyPickedVideoFile = useCallback(async (file: File | undefined, input: HTMLInputElement | null) => {
-    if (!file) return;
-    setVideoSrc(galleryVideoPublicPathFromFile(file));
-    setVideoPosterGenerating(true);
-    try {
-      const dataUrl = await captureStableVideoPosterDataUrl(file, { maxWidth: 960, jpegQuality: 0.8 });
-      setVideoPosterSrc(dataUrl);
-    } catch {
-      setVideoPosterSrc("");
-    } finally {
-      setVideoPosterGenerating(false);
-      if (input) input.value = "";
-    }
-  }, []);
+  const applyPickedVideoFile = useCallback(
+    async (file: File | undefined, input: HTMLInputElement | null) => {
+      if (!file || !mediaScopeId.trim()) return;
+      setSubmitError(null);
+      setVideoUploadBusy(true);
+      setVideoPosterGenerating(true);
+      try {
+        const url = await postGalleryProjectUpload(file, mediaScopeId);
+        setVideoSrc(url);
+        const dataUrl = await captureStableVideoPosterDataUrl(file, { maxWidth: 960, jpegQuality: 0.8 });
+        if (dataUrl) {
+          try {
+            const posterFile = await dataUrlToImageFile(dataUrl, `poster-${Date.now()}.jpg`);
+            const posterUrl = await postGalleryProjectUpload(posterFile, mediaScopeId);
+            setVideoPosterSrc(posterUrl);
+          } catch {
+            setVideoPosterSrc(dataUrl);
+          }
+        } else {
+          setVideoPosterSrc("");
+        }
+      } catch (err) {
+        setSubmitError(err instanceof Error ? err.message : "Gagal mengunggah video.");
+        setVideoSrc(galleryVideoPublicPathFromFile(file));
+        try {
+          const dataUrl = await captureStableVideoPosterDataUrl(file, { maxWidth: 960, jpegQuality: 0.8 });
+          setVideoPosterSrc(dataUrl);
+        } catch {
+          setVideoPosterSrc("");
+        }
+      } finally {
+        setVideoPosterGenerating(false);
+        setVideoUploadBusy(false);
+        if (input) input.value = "";
+      }
+    },
+    [mediaScopeId],
+  );
 
   useEffect(() => {
     const prev = prevVideoSrcRef.current;
@@ -276,24 +336,47 @@ export function GalleryProjectForm(props: GalleryProjectFormProps) {
   }, [videoSrc]);
 
   const appendGalleryImagesFromFiles = useCallback(
-    (files: FileList | null) => {
-      if (!files?.length) return;
+    async (files: FileList | null) => {
+      if (!files?.length || !mediaScopeId.trim()) return;
       const altBase = name.trim() || "Galeri proyek";
+      setSubmitError(null);
+      setGalleryUploadBusy(true);
+      const fileArr = Array.from(files);
+      const total = fileArr.length;
       const lines: string[] = [];
-      for (const file of Array.from(files)) {
-        const rawName = file.name.trim() || `foto-${Date.now()}.jpg`;
-        const path = `${GALLERY_UPLOAD_PUBLIC_DIR}/${encodeURIComponent(rawName)}`;
-        lines.push(`${path} | ${altBase}`);
+      try {
+        for (let i = 0; i < fileArr.length; i++) {
+          const file = fileArr[i];
+          const fileName = file.name.trim() || `foto-${i + 1}.jpg`;
+          setGalleryUploadProgress({ index: i + 1, total, fileName });
+          try {
+            const url = await postGalleryProjectUpload(file, mediaScopeId);
+            lines.push(`${url} | ${altBase}`);
+          } catch (err) {
+            const rawName = file.name.trim() || `foto-${Date.now()}.jpg`;
+            const path = `${GALLERY_UPLOAD_PUBLIC_DIR}/${encodeURIComponent(rawName)}`;
+            lines.push(`${path} | ${altBase}`);
+            setSubmitError(
+              err instanceof Error
+                ? `${err.message} — baris ini memakai path manual; salin file ke public jika perlu.`
+                : "Sebagian unggahan gagal — periksa sesi admin.",
+            );
+          }
+        }
+        if (lines.length === 0) return;
+        setGalleryPhotosText((prev) => {
+          const base = prev.trim();
+          return base ? `${base}\n${lines.join("\n")}` : lines.join("\n");
+        });
+      } finally {
+        setGalleryUploadProgress(null);
+        setGalleryUploadBusy(false);
       }
-      setGalleryPhotosText((prev) => {
-        const base = prev.trim();
-        return base ? `${base}\n${lines.join("\n")}` : lines.join("\n");
-      });
     },
-    [name],
+    [name, mediaScopeId],
   );
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setSubmitError(null);
     const item = validate();
@@ -311,8 +394,9 @@ export function GalleryProjectForm(props: GalleryProjectFormProps) {
         }
         router.push("/gallery-project?added=1");
       } else {
-        const { id: _omit, ...rest } = item;
-        const updates: Partial<Omit<GalleryProjectItem, "id">> = { ...rest };
+        const rawUpdates = { ...item } as Record<string, unknown>;
+        delete rawUpdates.id;
+        const updates = rawUpdates as Partial<Omit<GalleryProjectItem, "id">>;
         const embedRemote = videoSrc.trim() && /^https?:\/\//i.test(videoSrc.trim());
         if (embedRemote) {
           (updates as { videoPosterSrc?: null }).videoPosterSrc = null;
@@ -397,15 +481,31 @@ export function GalleryProjectForm(props: GalleryProjectFormProps) {
         "space-y-6 rounded-2xl border border-slate-200/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,250,252,0.96))] p-5 shadow-[0_18px_45px_-24px_rgba(15,23,42,0.35)] ring-1 ring-black/[0.03] dark:border-white/10 dark:bg-[linear-gradient(180deg,rgba(15,23,42,0.94),rgba(2,6,23,0.92))] dark:shadow-[0_24px_55px_-22px_rgba(0,0,0,0.7)] dark:ring-white/[0.04] md:p-7",
       )}
     >
-      <div className="rounded-xl border border-border/70 bg-background/70 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] dark:bg-slate-950/35 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-700 dark:text-sky-300/90">
-          Form Proyek
-        </p>
-        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-          Isi data inti terlebih dahulu, lalu lanjut ke media proyek di bagian bawah.
+      <div className="rounded-xl border border-sky-500/12 bg-gradient-to-br from-sky-500/[0.05] via-transparent to-transparent px-4 py-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] dark:border-sky-400/15 dark:from-sky-400/[0.06] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] md:px-5 md:py-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-5">
+          <div className="min-w-0 flex-1 space-y-1">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-sky-700 dark:text-sky-300/90">
+              Form proyek
+            </p>
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              Isi data inti dulu, lalu bagian <span className="font-medium text-foreground/80">video dan galeri</span> di
+              bawah.
+            </p>
+          </div>
+          <div className="shrink-0 rounded-lg border border-border/70 bg-background/90 px-3 py-2 shadow-sm dark:border-white/10 dark:bg-slate-950/55">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">ID folder unggah</p>
+            <code className="mt-1 block max-w-[min(100%,18rem)] break-all font-mono text-[11px] leading-snug text-foreground">
+              {mediaScopeId}
+            </code>
+          </div>
+        </div>
+        <p className="mt-3 border-t border-border/60 pt-3 text-[11px] leading-relaxed text-muted-foreground dark:border-white/[0.07]">
+          Aset dari tombol unggah →{" "}
+          <code className="rounded-md bg-muted/90 px-1.5 py-0.5 font-mono text-[10px] text-foreground/90">
+            public{GALLERY_PROJECT_MEDIA_PREFIX}/…
+          </code>
         </p>
       </div>
-
 
       <div className="space-y-1.5">
         <label htmlFor="gp-name" className="text-sm font-semibold text-foreground">
@@ -530,7 +630,7 @@ export function GalleryProjectForm(props: GalleryProjectFormProps) {
         {errors.progress ? <p className="text-xs text-red-500">{errors.progress}</p> : null}
       </div>
 
-      <div className="space-y-1.5 rounded-xl border border-border/75 bg-muted-bg/35 p-4 md:p-5">
+      <div className="space-y-3 rounded-xl border border-border/75 bg-muted-bg/35 p-4 md:p-5">
         <label htmlFor="gp-video" className="text-sm font-semibold text-foreground">
           Video (opsional)
         </label>
@@ -548,37 +648,47 @@ export function GalleryProjectForm(props: GalleryProjectFormProps) {
             id="gp-video"
             value={videoSrc}
             onChange={(e) => setVideoSrc(e.target.value)}
-            className="h-11 min-w-0 flex-1 rounded-xl border border-border/80 bg-background/85 px-3.5 font-mono text-base outline-none shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] transition-[border-color,box-shadow,background-color] focus:border-sky-400/55 focus:bg-background focus:shadow-[0_0_0_3px_rgba(56,189,248,0.14),inset_0_1px_0_rgba(255,255,255,0.45)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] lg:text-sm"
-            placeholder="/images/gallery/proyek.mp4 atau https://www.youtube.com/embed/..."
+            disabled={videoUploadBusy}
+            className="h-11 min-w-0 flex-1 rounded-xl border border-border/80 bg-background/85 px-3.5 font-mono text-base outline-none shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] transition-[border-color,box-shadow,background-color] focus:border-sky-400/55 focus:bg-background focus:shadow-[0_0_0_3px_rgba(56,189,248,0.14),inset_0_1px_0_rgba(255,255,255,0.45)] disabled:opacity-60 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] lg:text-sm"
+            placeholder={`${GALLERY_PROJECT_MEDIA_PREFIX}/…/file.mp4 atau https://www.youtube.com/embed/...`}
             autoComplete="off"
           />
           <button
             type="button"
+            disabled={videoUploadBusy || videoPosterGenerating}
             onClick={() => videoFileInputRef.current?.click()}
-            className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl border border-sky-500/35 bg-gradient-to-r from-sky-500/15 to-blue-600/15 px-4 text-sm font-semibold text-foreground shadow-[0_10px_24px_-16px_rgba(56,189,248,0.8)] transition-[border-color,background-color,transform,box-shadow] hover:border-sky-400/60 hover:from-sky-500/25 hover:to-blue-600/25 hover:shadow-[0_12px_28px_-16px_rgba(56,189,248,0.9)] motion-safe:active:scale-[0.99]"
+            className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl border border-sky-500/35 bg-gradient-to-r from-sky-500/15 to-blue-600/15 px-4 text-sm font-semibold text-foreground shadow-[0_10px_24px_-16px_rgba(56,189,248,0.8)] transition-[border-color,background-color,transform,box-shadow] hover:border-sky-400/60 hover:from-sky-500/25 hover:to-blue-600/25 hover:shadow-[0_12px_28px_-16px_rgba(56,189,248,0.9)] disabled:pointer-events-none disabled:opacity-55 motion-safe:active:scale-[0.99]"
           >
-            Pilih video
+            {videoUploadBusy || videoPosterGenerating ? "Mengunggah…" : "Pilih video"}
           </button>
         </div>
         {errors.videoSrc ? <p className="text-xs text-red-500">{errors.videoSrc}</p> : null}
-        <p className="text-xs text-muted-foreground">
-          Pilih file dari komputer — path diisi ke{" "}
-          <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px]">{GALLERY_UPLOAD_PUBLIC_DIR}/</code>.
-          Salin file yang sama ke{" "}
-          <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px]">public/images/gallery/</code> agar video
-          bisa diputar, atau tempel URL embed YouTube/Vimeo pada kolom di atas.
-        </p>
+        <ul className="list-inside list-disc space-y-1.5 text-[11px] leading-relaxed text-muted-foreground marker:text-sky-500/60">
+          <li>
+            Pilih file → unggah ke{" "}
+            <code className="rounded bg-background/80 px-1 py-px font-mono text-[10px] text-foreground/85">
+              {GALLERY_PROJECT_MEDIA_PREFIX}/&lt;id&gt;/
+            </code>{" "}
+            (sesi admin).
+          </li>
+          <li>
+            Gagal unggah: path manual{" "}
+            <code className="rounded bg-background/80 px-1 font-mono text-[10px]">{GALLERY_UPLOAD_PUBLIC_DIR}/</code> + salin
+            ke <code className="rounded bg-background/80 px-1 font-mono text-[10px]">public/images/gallery/</code>.
+          </li>
+          <li>Atau tempel URL embed YouTube/Vimeo di kolom.</li>
+        </ul>
         {videoPosterGenerating ? (
-          <p className="text-xs font-medium text-sky-600 dark:text-sky-400">Menghasilkan thumbnail poster dari video…</p>
+          <p className="text-xs font-medium text-sky-600 dark:text-sky-400">Menghasilkan / mengunggah poster…</p>
         ) : null}
-        {videoPosterSrc.startsWith("data:image") ? (
-          <div className="flex items-start gap-3 pt-1">
-            <div className="relative h-[4.5rem] w-32 overflow-hidden rounded-xl border border-border shadow-sm">
+        {videoPosterSrc.startsWith("data:image") || videoPosterSrc.startsWith("/") ? (
+          <div className="flex items-start gap-3 rounded-lg border border-border/50 bg-background/40 p-2.5 dark:bg-slate-950/30">
+            <div className="relative h-[4.5rem] w-32 shrink-0 overflow-hidden rounded-lg border border-border/80 shadow-sm">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={videoPosterSrc} alt="" className="h-full w-full object-cover" />
             </div>
-            <p className="max-w-xs pt-1 text-[11px] leading-relaxed text-muted-foreground">
-              Poster diambil dari frame stabil (~12% durasi). Disimpan bersama proyek untuk tampilan kartu.
+            <p className="min-w-0 flex-1 pt-0.5 text-[11px] leading-relaxed text-muted-foreground">
+              Pratinjau poster (~12% durasi). Disimpan ke folder proyek bila unggah berhasil, untuk tampilan kartu.
             </p>
           </div>
         ) : null}
@@ -596,7 +706,7 @@ export function GalleryProjectForm(props: GalleryProjectFormProps) {
         </label>
       </div>
 
-      <div className="space-y-1.5 rounded-xl border border-border/75 bg-muted-bg/35 p-4 md:p-5">
+      <div className="space-y-3 rounded-xl border border-border/75 bg-muted-bg/35 p-4 md:p-5">
         <label htmlFor="gp-gallery-photos" className="text-sm font-semibold text-foreground">
           Galeri foto (opsional)
         </label>
@@ -609,46 +719,77 @@ export function GalleryProjectForm(props: GalleryProjectFormProps) {
           tabIndex={-1}
           aria-hidden
           onChange={(e) => {
-            appendGalleryImagesFromFiles(e.target.files);
+            void appendGalleryImagesFromFiles(e.target.files);
             e.target.value = "";
           }}
         />
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
           <button
             type="button"
+            disabled={galleryUploadBusy}
             onClick={() => galleryMultiInputRef.current?.click()}
-            className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-xl border border-sky-500/35 bg-gradient-to-r from-sky-500/12 to-blue-600/12 px-4 text-sm font-semibold text-foreground shadow-[0_8px_22px_-16px_rgba(56,189,248,0.8)] transition-[border-color,background-color,box-shadow] hover:border-sky-400/55 hover:from-sky-500/22 hover:to-blue-600/22 hover:shadow-[0_10px_24px_-16px_rgba(56,189,248,0.9)]"
+            className="inline-flex min-h-10 w-full shrink-0 items-center justify-center rounded-xl border border-sky-500/35 bg-gradient-to-r from-sky-500/12 to-blue-600/12 px-4 text-sm font-semibold text-foreground shadow-[0_8px_22px_-16px_rgba(56,189,248,0.8)] transition-[border-color,background-color,box-shadow] hover:border-sky-400/55 hover:from-sky-500/22 hover:to-blue-600/22 hover:shadow-[0_10px_24px_-16px_rgba(56,189,248,0.9)] disabled:pointer-events-none disabled:opacity-55 sm:w-auto"
           >
-            Unggah beberapa foto galeri
+            {galleryUploadBusy ? "Mengunggah…" : "Unggah beberapa foto galeri"}
           </button>
-          <span className="text-xs text-muted-foreground">
-            Path otomatis ke <code className="rounded bg-muted px-1 font-mono text-[11px]">{GALLERY_UPLOAD_PUBLIC_DIR}/</code>
-            — salin file ke <code className="rounded bg-muted px-1 font-mono text-[11px]">public/images/gallery/</code>.
-          </span>
+          <p className="text-[11px] leading-relaxed text-muted-foreground sm:max-w-[20rem] sm:text-right">
+            Server:{" "}
+            <code className="rounded bg-background/80 px-1 font-mono text-[10px] text-foreground/85">
+              {GALLERY_PROJECT_MEDIA_PREFIX}/…/
+            </code>{" "}
+            · manual:{" "}
+            <code className="rounded bg-background/80 px-1 font-mono text-[10px]">{GALLERY_UPLOAD_PUBLIC_DIR}/</code>
+          </p>
         </div>
+        {galleryUploadProgress ? (
+          <div className="space-y-1.5" role="status" aria-live="polite">
+            <div className="h-1 w-full overflow-hidden rounded-full bg-background/60 dark:bg-slate-950/80">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-sky-500 to-sky-400/90 motion-safe:transition-[width] motion-safe:duration-300 motion-safe:ease-out"
+                style={{
+                  width: `${Math.min(100, Math.round((galleryUploadProgress.index / galleryUploadProgress.total) * 100))}%`,
+                }}
+              />
+            </div>
+            <p className="text-xs font-medium text-sky-700 dark:text-sky-300/90">
+              <span className="tabular-nums">
+                {galleryUploadProgress.index}/{galleryUploadProgress.total}
+              </span>
+              <span className="mx-1.5 text-muted-foreground">·</span>
+              <span className="font-mono text-[11px] font-normal text-foreground/90">{galleryUploadProgress.fileName}</span>
+            </p>
+          </div>
+        ) : null}
         <textarea
           id="gp-gallery-photos"
           value={galleryPhotosText}
           onChange={(e) => setGalleryPhotosText(e.target.value)}
+          disabled={galleryUploadBusy}
           rows={5}
-          className="w-full rounded-xl border border-border/80 bg-background/85 px-3.5 py-3 font-mono text-base leading-relaxed outline-none shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] transition-[border-color,box-shadow,background-color] focus:border-sky-400/55 focus:bg-background focus:shadow-[0_0_0_3px_rgba(56,189,248,0.14),inset_0_1px_0_rgba(255,255,255,0.45)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] lg:text-sm"
-          placeholder={`/images/gallery/a.jpg\n/images/gallery/b.jpg | Keterangan foto`}
+          className="w-full rounded-xl border border-border/80 bg-background/85 px-3.5 py-3 font-mono text-base leading-relaxed outline-none shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] transition-[border-color,box-shadow,background-color] focus:border-sky-400/55 focus:bg-background focus:shadow-[0_0_0_3px_rgba(56,189,248,0.14),inset_0_1px_0_rgba(255,255,255,0.45)] disabled:opacity-60 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] lg:text-sm"
+          placeholder={`${GALLERY_PROJECT_MEDIA_PREFIX}/local-…/foto.webp\n${GALLERY_UPLOAD_PUBLIC_DIR}/legacy.jpg | Keterangan`}
         />
         {errors.galleryPhotos ? <p className="text-xs text-red-500">{errors.galleryPhotos}</p> : null}
-        <p className="text-xs text-muted-foreground">
-          Satu path per baris (dimulai dengan <code className="rounded bg-muted px-1 text-[11px]">/</code>). Tambahkan{" "}
-          <code className="rounded bg-muted px-1 text-[11px]">|</code> lalu teks alternatif bila perlu. Foto pertama juga
-          dipakai sebagai gambar hero proyek (jika tidak ada video); jika galeri kosong dipakai gambar cadangan bawaan.
-          Strip foto berada di bawah video dan bisa digeser mendatar.
-        </p>
+        <ul className="list-inside list-disc space-y-1 text-[11px] leading-relaxed text-muted-foreground marker:text-sky-500/60">
+          <li>Satu path per baris (awalan <code className="rounded bg-background/80 px-1 font-mono text-[10px]">/</code>); tambahkan <code className="rounded bg-background/80 px-1 font-mono text-[10px]">|</code> lalu teks alt.</li>
+          <li>Foto pertama = hero jika tanpa video; galeri kosong memakai gambar cadangan.</li>
+          <li>Strip galeri di bawah video, dapat digeser mendatar.</li>
+        </ul>
       </div>
 
-      <p className="text-xs leading-relaxed text-muted-foreground">
-        Data proyek ini disimpan di penyimpanan browser (localStorage) perangkat ini. Untuk dipublikasikan permanen ke
-        seluruh pengunjung, salin entri ke{" "}
-        <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px]">gallery-project-data.ts</code> atau
-        hubungi developer.
-      </p>
+      <div className="border-t border-border/60 pt-4 text-[11px] leading-relaxed text-muted-foreground dark:border-white/[0.08]">
+        <p>
+          Simpan mengirim data ke server (
+          <code className="rounded-md bg-muted/80 px-1.5 py-px font-mono text-[10px] text-foreground/85">
+            data/gallery-project-extra.json
+          </code>
+          ). Unggah menulis ke{" "}
+          <code className="rounded-md bg-muted/80 px-1.5 py-px font-mono text-[10px] text-foreground/85">
+            public{GALLERY_PROJECT_MEDIA_PREFIX}/…
+          </code>
+          . Preferensi sembunyi/override per browser tidak berubah.
+        </p>
+      </div>
 
       {submitError ? (
         <div
@@ -664,7 +805,12 @@ export function GalleryProjectForm(props: GalleryProjectFormProps) {
       <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
         <button
           type="submit"
-          disabled={submitting || (mode === "edit" && loadState !== "ready")}
+          disabled={
+            submitting ||
+            galleryUploadBusy ||
+            videoUploadBusy ||
+            (mode === "edit" && loadState !== "ready")
+          }
           className="inline-flex min-h-12 w-full items-center justify-center rounded-xl border border-sky-500/35 bg-gradient-to-r from-sky-500/20 via-blue-600/24 to-sky-500/20 px-5 py-3 text-sm font-semibold text-foreground shadow-[0_16px_38px_-20px_rgba(56,189,248,0.85)] transition-[transform,box-shadow,opacity,border-color] duration-200 hover:border-sky-400/55 hover:shadow-[0_20px_42px_-20px_rgba(56,189,248,0.95)] disabled:opacity-60 motion-safe:hover:-translate-y-0.5 sm:w-auto sm:min-w-[220px]"
         >
           {submitting ? "Menyimpan…" : mode === "create" ? "Simpan & lihat di Gallery" : "Simpan perubahan"}

@@ -27,6 +27,7 @@ type AuditAction =
   | "draft_restored"
   | "live_restored"
   | "draft_published"
+  | "global_publish"
   | "live_replace";
 
 export type AuditEntry = {

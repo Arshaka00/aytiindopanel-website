@@ -6,6 +6,11 @@ import { createSiteContentRepository } from "@/lib/site-content-repository";
 let cache: { content: SiteContent; at: number } | null = null;
 const TTL_MS = 15_000;
 
+/** Hapus cache pembacaan live di proses ini (setelah publish / global publish). */
+export function clearMiddlewareLiveSiteContentCache(): void {
+  cache = null;
+}
+
 /** Baca konten live untuk middleware (cache pendek; hindari React `cache`). */
 export async function getNormalizedLiveSiteContentForMiddleware(): Promise<SiteContent> {
   const now = Date.now();

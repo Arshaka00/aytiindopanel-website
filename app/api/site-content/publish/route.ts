@@ -6,6 +6,7 @@ import { canPublish, resolveCmsRole } from "@/lib/cms-role";
 import { hasValidCsrf } from "@/lib/csrf";
 import { hasValidAdminSessionFromRequest, isAllowedAdminDevice } from "@/lib/gallery-admin-auth";
 import { publishSiteContentDraft } from "@/lib/site-content";
+import { runAfterSiteContentLiveUpdated } from "@/lib/site-content-after-publish";
 import { siteSettingsGateAuthorized, siteSettingsGateForbiddenResponse } from "@/lib/site-settings-gate";
 import { appendAuditLog } from "@/lib/site-content-storage";
 
@@ -28,6 +29,7 @@ export async function POST(req: NextRequest) {
   }
   try {
     const live = await publishSiteContentDraft();
+    await runAfterSiteContentLiveUpdated();
     await appendAuditLog({
       id: randomUUID(),
       at: new Date().toISOString(),

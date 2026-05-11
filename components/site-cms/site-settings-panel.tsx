@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { SiteContent } from "@/lib/site-content-model";
 import { getSiteSettingsGateHeaderName } from "@/lib/site-settings-gate";
@@ -24,7 +24,15 @@ function getCookie(name: string): string {
 }
 
 const divider =
-  "my-8 h-px w-full rounded-full bg-gradient-to-r from-transparent via-white/18 to-transparent";
+  "my-8 h-px w-full rounded-full bg-gradient-to-r from-transparent via-white/12 to-transparent md:my-9";
+
+function sitePublishStateLabel(settings: SiteContent["siteSettings"] | null): string {
+  if (!settings) return "—";
+  if (settings.maintenanceMode) return "Maintenance aktif";
+  if (!settings.published) return "Mode tidak tayang";
+  return "Mode tayang (live)";
+}
+
 
 type BackupItem = { file: string; createdAt: string; size: number };
 
@@ -65,6 +73,7 @@ export function SiteSettingsPanel({
   const [status, setStatus] = useState<string>("");
   const [role, setRole] = useState<string>("viewer");
   const [backups, setBackups] = useState<BackupItem[]>([]);
+  const manualPublishAdvancedRef = useRef<HTMLDetailsElement>(null);
 
   const load = useCallback(async () => {
     try {
@@ -191,6 +200,17 @@ export function SiteSettingsPanel({
     }
   };
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.location.hash !== "#manual-publish-advanced") return;
+    const el = manualPublishAdvancedRef.current;
+    if (!el) return;
+    el.open = true;
+    window.requestAnimationFrame(() => {
+      el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+  }, []);
+
   const publishDraft = async () => {
     if (busy) return;
     setBusy(true);
@@ -282,12 +302,6 @@ export function SiteSettingsPanel({
     }
   };
 
-  if (!settings) {
-    return (
-      <p className="text-center text-sm text-slate-400">{status || "Memuat…"}</p>
-    );
-  }
-
   const addWa = () => {
     const id =
       typeof crypto !== "undefined" && "randomUUID" in crypto
@@ -342,45 +356,67 @@ export function SiteSettingsPanel({
   };
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6 pb-16">
-      <header className="space-y-2 text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-300/90">CMS</p>
-        <h1 className="text-2xl font-semibold text-white md:text-3xl">Site Settings</h1>
-        <p className="text-sm text-slate-400">
-          Domain, kontak, SEO, draft→live, backup, dan mode publikasi — tanpa deploy ulang.
+    <div className="mx-auto max-w-3xl space-y-7 pb-20 md:max-w-4xl md:space-y-9">
+      <header className="space-y-3 text-center md:space-y-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-300/88">CMS</p>
+        <h1 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">Site Settings</h1>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-300/75">System configuration</p>
+        <p className="mx-auto max-w-lg text-sm leading-relaxed text-slate-400">
+          Domain, brand, kontak, SEO, mode tayang, backup, dan utilitas lanjutan. Publish global &amp; monitoring deploy
+          ada di halaman terpisah:{" "}
+          <Link className="font-medium text-violet-200/90 hover:text-violet-100 hover:underline" href="/site-admin/deployment">
+            Deployment Center
+          </Link>
+          .
         </p>
-        <Link
-          href="/site-admin"
-          className="inline-block text-xs font-medium text-sky-300/90 hover:text-sky-200 hover:underline"
-        >
-          ← Kembali ke Panel CMS
-        </Link>
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs">
+          <Link
+            href="/site-admin"
+            className="font-medium text-sky-300/90 hover:text-sky-200 hover:underline"
+          >
+            ← Panel CMS
+          </Link>
+          <Link
+            href="/site-admin/deployment"
+            className="font-medium text-violet-200/90 hover:text-violet-100 hover:underline"
+          >
+            Deployment Center →
+          </Link>
+        </div>
       </header>
 
-      <section className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 shadow-lg backdrop-blur-md motion-safe:animate-[premium-page-reveal_320ms_var(--ease-premium-soft)_both]">
-        <h2 className="text-base font-semibold text-white">Draft → live</h2>
-        <p className="mt-2 text-sm leading-relaxed text-slate-400">
-          Menyalin seluruh konten <span className="text-slate-300">draft</span> ke penyimpanan{" "}
-          <span className="text-slate-300">live</span> yang dilihat pengunjung. Hanya{" "}
-          <span className="font-semibold text-emerald-200/90">super_admin</span>. Role Anda:{" "}
-          <span className="font-semibold text-sky-300">{role}</span>.
-        </p>
-        <div className="mt-4 flex flex-wrap justify-end">
-          <button
-            type="button"
-            onClick={() => void publishDraft()}
-            disabled={busy || role !== "super_admin"}
-            className="rounded-lg border border-emerald-300/40 bg-emerald-500/20 px-4 py-2.5 text-xs font-semibold text-emerald-100 transition hover:bg-emerald-500/30 disabled:cursor-not-allowed disabled:opacity-40"
+      <section
+        id="site-configuration"
+        aria-labelledby="site-configuration-zone-title"
+        className="scroll-mt-24 space-y-7 md:space-y-9"
+      >
+        <div className="rounded-2xl border border-cyan-400/22 bg-gradient-to-br from-cyan-500/[0.07] via-slate-950/55 to-slate-950/90 px-5 py-4 shadow-sm backdrop-blur-md md:px-6 md:py-5">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-cyan-300/78">Site configuration</p>
+          <h2
+            id="site-configuration-zone-title"
+            className="mt-1.5 text-lg font-semibold tracking-tight text-white md:text-xl"
           >
-            Publish Live
-          </button>
+            Konfigurasi situs
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">
+            Form konfigurasi situs: identitas, kontak, SEO, tayang, cadangan, dan utilitas manual. Untuk publish global
+            &amp; status deployment buka{" "}
+            <Link className="font-medium text-violet-200/85 hover:text-violet-100 hover:underline" href="/site-admin/deployment">
+              Deployment Center
+            </Link>
+            .
+          </p>
+          <p className="mt-3 text-xs leading-relaxed text-slate-400">
+            <span className="font-semibold text-slate-500">Mode tayang (dari pengaturan):</span>{" "}
+            <span className="text-slate-100">{sitePublishStateLabel(settings)}</span>
+          </p>
         </div>
-      </section>
 
-      <div className={divider} />
-
-      <section className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 shadow-lg backdrop-blur-md motion-safe:animate-[premium-page-reveal_380ms_var(--ease-premium-soft)_both]">
-        <h2 className="text-base font-semibold text-white">Identitas & URL</h2>
+        {settings ? (
+          <>
+      <section className="rounded-2xl border border-cyan-400/12 bg-white/[0.04] p-6 shadow-md backdrop-blur-md motion-safe:animate-[premium-page-reveal_380ms_var(--ease-premium-soft)_both] md:p-7">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-cyan-400/55">Domain &amp; brand</p>
+        <h2 className="mt-2 text-base font-semibold tracking-tight text-white md:text-lg">Identitas & URL</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
             <FieldLabel hint="Digunakan metadata, header, dan schema.">Nama website</FieldLabel>
@@ -1144,6 +1180,73 @@ export function SiteSettingsPanel({
             </div>
           ))}
         </div>
+      </section>
+        </>
+      ) : (
+        <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] px-6 py-16 text-center shadow-inner backdrop-blur-sm">
+          <p className="text-sm text-slate-400">{status || "Memuat formulir konfigurasi…"}</p>
+        </div>
+      )}
+
+      <div className={divider} />
+
+      <details
+        ref={manualPublishAdvancedRef}
+        id="manual-publish-advanced"
+        className="group scroll-mt-24 overflow-hidden rounded-2xl border border-amber-400/14 bg-slate-950/40 shadow-sm backdrop-blur-md motion-safe:animate-[premium-page-reveal_360ms_var(--ease-premium-soft)_both]"
+      >
+        <summary className="flex cursor-pointer list-none items-start justify-between gap-3 px-4 py-3.5 transition hover:bg-white/[0.03] sm:px-5 sm:py-4 [&::-webkit-details-marker]:hidden">
+          <div className="min-w-0 space-y-1 text-left">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="rounded border border-amber-400/25 bg-amber-500/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-amber-100/90">
+                Advanced
+              </span>
+              <span className="rounded border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-slate-400">
+                Internal utility
+              </span>
+              <span className="rounded border border-rose-400/20 bg-rose-500/8 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-rose-100/85">
+                Emergency publishing
+              </span>
+            </div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">Manual pipeline</p>
+            <p className="text-sm font-semibold text-slate-100">Advanced publishing tools</p>
+            <p className="text-xs leading-relaxed text-slate-500">
+              Bukan workflow utama. Hanya bila perlu salin draft→live tanpa publish global (tanpa revalidate / deploy
+              otomatis).
+            </p>
+          </div>
+          <span
+            className="mt-0.5 shrink-0 rounded-md border border-white/10 bg-black/25 px-2 py-1 text-[10px] font-medium text-slate-400 transition group-open:rotate-180 motion-reduce:transition-none"
+            aria-hidden
+          >
+            ▼
+          </span>
+        </summary>
+        <div className="max-h-[min(70vh,22rem)] space-y-4 overflow-y-auto overscroll-y-contain border-t border-white/[0.07] px-4 py-4 sm:px-5 sm:py-5">
+          <section className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 md:p-5">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-500">
+              Publishing workflow · Content pipeline
+            </p>
+            <h3 className="mt-2 text-sm font-semibold tracking-tight text-white md:text-base">Draft → live (manual)</h3>
+            <p className="mt-2 text-xs leading-relaxed text-slate-400 md:text-sm">
+              Salin seluruh konten <span className="text-slate-300">draft</span> ke penyimpanan{" "}
+              <span className="text-slate-300">live</span> pengunjung — tanpa revalidate cache atau deploy hook. Hanya{" "}
+              <span className="font-semibold text-emerald-200/90">super_admin</span>. Role saat ini:{" "}
+              <span className="font-semibold text-sky-300/95">{role}</span>.
+            </p>
+            <div className="mt-4 flex flex-wrap justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => void publishDraft()}
+                disabled={busy || role !== "super_admin"}
+                className="rounded-lg border border-emerald-300/32 bg-emerald-500/14 px-4 py-2 text-xs font-semibold text-emerald-100 transition hover:bg-emerald-500/22 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Publish Live
+              </button>
+            </div>
+          </section>
+        </div>
+      </details>
       </section>
     </div>
   );

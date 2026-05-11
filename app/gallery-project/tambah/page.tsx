@@ -9,7 +9,8 @@ import { getAdminCookieName, isAllowedAdminDevice, verifyAdminSessionToken } fro
 
 export const metadata: Metadata = {
   title: "Tambah Proyek | Gallery Project",
-  description: "Buat proyek baru: folder media terstruktur, video, galeri, dan poster otomatis.",
+  description:
+    "Buat proyek baru: simpan ke server, unggah foto/video ke subfolder per ID di public/images/gallery/projects, atau tempel path manual.",
 };
 
 export default async function TambahGalleryProjectPage() {
