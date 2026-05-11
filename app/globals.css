@@ -1034,6 +1034,23 @@ html {
 }
 
 /*
+ * Windows (ClearType + skala tampilan): sedikit turunkan optik judul kristal agar selaras Mac.
+ * Hanya tipografi; desktop premium di breakpoint lain tidak disentuh.
+ */
+@media (min-width: 768px) {
+  html.ua-windows #beranda.hero #hero-heading .hero-heading-glass-middle {
+    font-size: clamp(1.9rem, 10.9vw, 4.35rem);
+    letter-spacing: -0.042em;
+  }
+}
+
+@media (max-width: 767px) {
+  html.ua-windows #beranda.hero #hero-heading .hero-heading-glass-middle {
+    font-size: clamp(1.9rem, 10.9vw, 4.35rem);
+  }
+}
+
+/*
  * Crystal ice typography — `hero.headingMiddle` (“PENDINGIN”).
  * Performa: tanpa animasi background pada teks (repaint mahal); kilau = opacity di ::after saja.
  * Desktop: filter SVG ringan; mobile: tanpa SVG filter (GPU teks).
@@ -3222,6 +3239,34 @@ html {
   .hero-stats-section .card-stats-tile {
     backdrop-filter: blur(6px) !important;
     -webkit-backdrop-filter: blur(6px) !important;
+  }
+
+  /* Hero (#beranda): ringankan blur/shadow/glow di mobile — desktop ≥768px tidak diubah. */
+  #beranda.hero .hero-intro-tagline-surface {
+    backdrop-filter: blur(7px) !important;
+    -webkit-backdrop-filter: blur(7px) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      0 2px 5px rgba(0, 0, 0, 0.48),
+      0 10px 24px rgba(1, 5, 16, 0.48),
+      0 22px 44px rgba(2, 10, 28, 0.5) !important;
+  }
+
+  #beranda.hero .hero-lihat-produk-cta {
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+  }
+
+  #beranda.hero .hero-content-enter {
+    filter: drop-shadow(0 2px 6px rgba(2, 7, 18, 0.58));
+  }
+
+  #beranda.hero .hero-overlay-glow {
+    opacity: 0.72;
+  }
+
+  #beranda.hero .hero-overlay-bottom {
+    opacity: 0.9;
   }
 }
 

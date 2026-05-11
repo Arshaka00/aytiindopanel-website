@@ -1,20 +1,48 @@
+import dynamic from "next/dynamic";
 import { Fragment, type ReactNode } from "react";
 
-import { CustomersPartnersSectionClient } from "@/components/aytipanel/customers-partners-section-client";
-import { KeunggulanOperationalSection } from "@/components/aytipanel/keunggulan-operational-section";
-import { LayananRingkasSection } from "@/components/aytipanel/layanan-ringkas-section";
 import { ScrollRevealSection } from "@/components/aytipanel/scroll-reveal-section";
-import { PortfolioSection } from "@/components/aytipanel/section-middle";
-import { SectionProducts } from "@/components/aytipanel/section-products";
-import {
-  FaqSection,
-  KontakSection,
-  TentangSection,
-} from "@/components/aytipanel/section-bottom";
 import { SectionTop } from "@/components/aytipanel/section-top";
-import { ServiceMaintenanceSection } from "@/components/aytipanel/service-maintenance-section";
 import { DEFAULT_HOME_LAYOUT } from "@/lib/home-layout-defaults";
 import type { SiteContent } from "@/lib/site-content-model";
+
+const TentangSection = dynamic(() =>
+  import("@/components/aytipanel/tentang-section").then((m) => m.TentangSection),
+);
+
+const LayananRingkasSection = dynamic(() =>
+  import("@/components/aytipanel/layanan-ringkas-section").then((m) => m.LayananRingkasSection),
+);
+
+const SectionProducts = dynamic(() =>
+  import("@/components/aytipanel/section-products").then((m) => m.SectionProducts),
+);
+
+const ServiceMaintenanceSection = dynamic(() =>
+  import("@/components/aytipanel/service-maintenance-section").then((m) => m.ServiceMaintenanceSection),
+);
+
+const PortfolioSection = dynamic(() =>
+  import("@/components/aytipanel/section-middle").then((m) => m.PortfolioSection),
+);
+
+const CustomersPartnersSectionClient = dynamic(() =>
+  import("@/components/aytipanel/customers-partners-section-client").then(
+    (m) => m.CustomersPartnersSectionClient,
+  ),
+);
+
+const KeunggulanOperationalSection = dynamic(() =>
+  import("@/components/aytipanel/keunggulan-operational-section").then((m) => m.KeunggulanOperationalSection),
+);
+
+const FaqSection = dynamic(() =>
+  import("@/components/aytipanel/section-bottom").then((m) => m.FaqSection),
+);
+
+const KontakSection = dynamic(() =>
+  import("@/components/aytipanel/section-bottom").then((m) => m.KontakSection),
+);
 
 type Props = {
   content: SiteContent;
@@ -29,6 +57,9 @@ type Props = {
  * Setiap section (kecuali `beranda` / hero — selalu di atas-fold dan punya animasi
  * masuk sendiri) dibungkus `ScrollRevealSection` agar saat scroll mendekati viewport
  * fade-in halus + translateY ringan secara satu kali (premium, cinematic, GPU-friendly).
+ *
+ * Section di bawah hero dimuat lewat `dynamic()` agar chunk JS client terpecah
+ * (SSR tetap aktif — HTML & SEO tidak dikorbankan).
  */
 export function HomeMainSections({ content, waPhoneDigits }: Props) {
   const layout = content.homeLayout ?? DEFAULT_HOME_LAYOUT;

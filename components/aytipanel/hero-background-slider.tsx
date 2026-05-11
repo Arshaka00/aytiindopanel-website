@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import Image from "next/image";
+import { useEffect, useMemo, useState } from "react";
 import { useCmsViewportIsMobile } from "@/components/common/use-cms-viewport-mobile";
 import {
   cmsImageTransformToReactStyle,
   resolveCmsImageTransformForViewport,
 } from "@/lib/cms-image-transform";
+import { isHeroSlideNextImageOptimizable } from "@/lib/hero-slide-image-policy";
 import type { HeroSlideEntry } from "@/lib/site-content-model";
 import {
   HERO_SLIDE_INTERVAL_MS,
@@ -13,6 +15,11 @@ import {
 } from "@/components/aytipanel/hero-slider-config";
 
 export type HeroSlideSource = HeroSlideEntry;
+
+/** `sizes` men-cap lebar decode di desktop lebar; mobile = 100vw. */
+const HERO_SLIDE_SIZES = "(max-width: 767px) 100vw, min(100vw, 1920px)";
+
+const HERO_IMG_BASELINE = { width: 1920, height: 1080 } as const;
 
 /**
  * Pause hero marquee saat #beranda keluar viewport.
@@ -63,6 +70,98 @@ function marqueeKeyframesCss(slideCount: number): string {
 }
 
 /**
+ * Setelah idle (timeout pendek): muat slide 2..N agar tidak berebut bandwidth dengan slide pertama (LCP).
+ */
+function useDeferNonPrimaryHeroSlides(slideCount: number) {
+  const [ready, setReady] = useState(slideCount <= 1);
+
+  useEffect(() => {
+    if (slideCount <= 1) return;
+    let cancelled = false;
+    const unlock = () => {
+      if (!cancelled) setReady(true);
+    };
+    const idleId =
+      typeof window.requestIdleCallback === "function"
+        ? window.requestIdleCallback(unlock, { timeout: 2400 })
+        : undefined;
+    const timeoutId = window.setTimeout(unlock, 2600);
+    return () => {
+      cancelled = true;
+      if (idleId !== undefined && typeof window.cancelIdleCallback === "function") {
+        window.cancelIdleCallback(idleId);
+      }
+      window.clearTimeout(timeoutId);
+    };
+  }, [slideCount]);
+
+  return ready;
+}
+
+type HeroSlideFrameProps = {
+  slide: HeroSlideSource;
+  index: number;
+  slideCount: number;
+  isMobile: boolean;
+  nonPrimaryMediaReady: boolean;
+};
+
+function HeroSlideFrame({
+  slide,
+  index,
+  slideCount,
+  isMobile,
+  nonPrimaryMediaReady,
+}: HeroSlideFrameProps) {
+  const tf = resolveCmsImageTransformForViewport(slide, isMobile);
+  const imgStyle = cmsImageTransformToReactStyle(tf);
+  const useNext = isHeroSlideNextImageOptimizable(slide.src);
+  const isPrimary = index === 0;
+  const showMedia = slideCount <= 1 || isPrimary || nonPrimaryMediaReady;
+
+  return (
+    <div
+      className="cms-media-responsive-frame relative h-full shrink-0 overflow-hidden"
+      style={{ flex: `0 0 ${100 / slideCount}%` }}
+    >
+      {showMedia ? (
+        useNext ? (
+          <Image
+            src={slide.src}
+            alt=""
+            fill
+            sizes={HERO_SLIDE_SIZES}
+            draggable={false}
+            priority={isPrimary}
+            quality={isPrimary ? 82 : 72}
+            className="cms-media-fit-anchor touch-manipulation select-none [-webkit-touch-callout:none] [-webkit-user-drag:none]"
+            style={imgStyle}
+            decoding="async"
+            fetchPriority={isPrimary ? "high" : "low"}
+          />
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element -- URL di luar next/image remotePatterns / blob pratinjau
+          <img
+            src={slide.src}
+            alt=""
+            width={HERO_IMG_BASELINE.width}
+            height={HERO_IMG_BASELINE.height}
+            draggable={false}
+            className="cms-media-fit-anchor absolute inset-0 h-full w-full touch-manipulation select-none [-webkit-touch-callout:none] [-webkit-user-drag:none]"
+            style={imgStyle}
+            loading={isPrimary ? "eager" : "lazy"}
+            decoding="async"
+            fetchPriority={isPrimary ? "high" : "low"}
+          />
+        )
+      ) : (
+        <div className="absolute inset-0 bg-[#050B18]" aria-hidden />
+      )}
+    </div>
+  );
+}
+
+/**
  * Carousel hero tanpa timer JS — `transform` + keyframes bertahap (andalan untuk mobile).
  */
 export function HeroBackgroundSlider({ sources }: { sources?: readonly HeroSlideSource[] }) {
@@ -70,6 +169,7 @@ export function HeroBackgroundSlider({ sources }: { sources?: readonly HeroSlide
   const isMobile = useCmsViewportIsMobile();
   const slides = sources && sources.length > 0 ? sources : heroSlideSources;
   const count = slides.length;
+  const nonPrimaryMediaReady = useDeferNonPrimaryHeroSlides(count);
 
   const keyframesTag = useMemo(() => {
     if (count < 2) return null;
@@ -87,28 +187,46 @@ export function HeroBackgroundSlider({ sources }: { sources?: readonly HeroSlide
   if (count === 0) return null;
 
   if (count === 1) {
-    const slide = slides[0];
+    const slide = slides[0]!;
     const tf = resolveCmsImageTransformForViewport(slide, isMobile);
     const imgStyle = cmsImageTransformToReactStyle(tf);
+    const useNext = isHeroSlideNextImageOptimizable(slide.src);
+
     return (
       <div
         className="hero-marquee-viewport pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[#050B18]"
         aria-hidden
       >
         <div className="cms-media-responsive-frame absolute inset-0">
-          {/* eslint-disable-next-line @next/next/no-img-element -- asset /public */}
-          <img
-            src={slide.src}
-            alt=""
-            width={1920}
-            height={1080}
-            draggable={false}
-            className="cms-media-fit-anchor absolute inset-0 h-full w-full touch-manipulation select-none [-webkit-touch-callout:none] [-webkit-user-drag:none]"
-            style={imgStyle}
-            loading="eager"
-            decoding="async"
-            fetchPriority="high"
-          />
+          {useNext ? (
+            <Image
+              src={slide.src}
+              alt=""
+              fill
+              sizes={HERO_SLIDE_SIZES}
+              draggable={false}
+              priority
+              quality={78}
+              className="cms-media-fit-anchor touch-manipulation select-none [-webkit-touch-callout:none] [-webkit-user-drag:none]"
+              style={imgStyle}
+              decoding="async"
+              fetchPriority="high"
+            />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={slide.src}
+              alt=""
+              width={HERO_IMG_BASELINE.width}
+              height={HERO_IMG_BASELINE.height}
+              draggable={false}
+              className="cms-media-fit-anchor absolute inset-0 h-full w-full touch-manipulation select-none [-webkit-touch-callout:none] [-webkit-user-drag:none]"
+              style={imgStyle}
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+            />
+          )}
         </div>
         <div
           className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_100%_92%_at_50%_44%,transparent_22%,rgba(5,11,24,0.38)_62%,rgba(5,11,24,0.62)_100%)]"
@@ -136,36 +254,16 @@ export function HeroBackgroundSlider({ sources }: { sources?: readonly HeroSlide
             animation: `hero-marquee-${count} ${durationMs}ms linear infinite`,
           }}
         >
-          {slides.map((slide, i) => {
-            const tf = resolveCmsImageTransformForViewport(slide, isMobile);
-            const imgStyle = cmsImageTransformToReactStyle(tf);
-            const slideMob =
-              "mobile" in slide && slide.mobile && typeof slide.mobile === "object"
-                ? slide.mobile
-                : undefined;
-            const mobileKey = slideMob ? JSON.stringify(slideMob) : "";
-            return (
-              <div
-                key={`${slide.src}-${i}-${tf.focalX}-${tf.focalY}-${tf.zoom}-${tf.objectFit}-${mobileKey}`}
-                className="cms-media-responsive-frame relative h-full shrink-0 overflow-hidden"
-                style={{ flex: `0 0 ${100 / count}%` }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element -- asset /public */}
-                <img
-                  src={slide.src}
-                  alt=""
-                  width={1920}
-                  height={1080}
-                  draggable={false}
-                  className="cms-media-fit-anchor absolute inset-0 h-full w-full touch-manipulation select-none [-webkit-touch-callout:none] [-webkit-user-drag:none]"
-                  style={imgStyle}
-                  loading="eager"
-                  decoding="async"
-                  fetchPriority={i === 0 ? "high" : "auto"}
-                />
-              </div>
-            );
-          })}
+          {slides.map((slide, i) => (
+            <HeroSlideFrame
+              key={`${slide.src}-${i}`}
+              slide={slide}
+              index={i}
+              slideCount={count}
+              isMobile={isMobile}
+              nonPrimaryMediaReady={nonPrimaryMediaReady}
+            />
+          ))}
         </div>
         <div
           className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_100%_92%_at_50%_44%,transparent_22%,rgba(5,11,24,0.38)_62%,rgba(5,11,24,0.62)_100%)]"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ComponentProps } from "react";
 
 import { HeroBackgroundSlider } from "@/components/aytipanel/hero-background-slider";
 import { heroSlideSources } from "@/components/aytipanel/hero-slider-config";
@@ -127,6 +127,22 @@ export function HeroSectionBackground(props?: {
   const disableVideo = props?.disableVideoBackground === true;
   const showVideo =
     Boolean(video) && isHeroBackgroundVideoSrc(video?.src) && !disableVideo;
+
+  /** Mobile: kurangi fetch decode awal; desktop tetap `auto`. */
+  const [videoPreload, setVideoPreload] =
+    useState<ComponentProps<"video">["preload"]>("auto");
+  useEffect(() => {
+    if (!showVideo) return;
+    const mq = window.matchMedia("(max-width: 767.98px)");
+    const sync = () => {
+      queueMicrotask(() => {
+        setVideoPreload(mq.matches ? "metadata" : "auto");
+      });
+    };
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, [showVideo]);
   /** Poster eksplisit, atau frame cadangan dari slide pertama — bukan warna solid dummy. */
   const videoPoster =
     showVideo && video
@@ -146,7 +162,7 @@ export function HeroSectionBackground(props?: {
             playsInline
             autoPlay
             loop
-            preload="auto"
+            preload={videoPreload}
             className="absolute inset-0 h-full w-full object-cover object-center"
           />
           {/* Samakan vignette dengan HeroBackgroundSlider (satu gambar). */}

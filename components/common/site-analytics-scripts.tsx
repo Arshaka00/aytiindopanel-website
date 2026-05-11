@@ -1,13 +1,60 @@
 "use client";
 
 import Script from "next/script";
+import { useEffect, useRef, useState } from "react";
 
 import type { SiteAnalyticsSettings } from "@/lib/site-content-model";
 
-/** Injeksi sekali per ID — `afterInteractive`, aman untuk hydration. */
+/**
+ * Tunda injeksi GTM / GA / Meta / Clarity sampai idle atau interaksi pertama,
+ * supaya main thread awal lebih longgar (mobile + TBT). Setelah aktif, perilaku
+ * sama seperti sebelumnya (`afterInteractive` pada mount komponen ini).
+ */
 export function SiteAnalyticsScripts({ analytics }: { analytics: SiteAnalyticsSettings }) {
   const { googleAnalyticsId, googleTagManagerId, metaPixelId, microsoftClarityId } = analytics;
   const useGaDirect = Boolean(googleAnalyticsId) && !googleTagManagerId;
+  const hasAny =
+    Boolean(googleTagManagerId) ||
+    useGaDirect ||
+    Boolean(metaPixelId) ||
+    Boolean(microsoftClarityId);
+
+  const [shouldLoad, setShouldLoad] = useState(false);
+  const firedRef = useRef(false);
+
+  useEffect(() => {
+    if (!hasAny) return;
+
+    const enable = () => {
+      if (firedRef.current) return;
+      firedRef.current = true;
+      setShouldLoad(true);
+      window.removeEventListener("pointerdown", enable, true);
+      window.removeEventListener("scroll", enable, true);
+      window.removeEventListener("keydown", enable, true);
+    };
+
+    let idleId: number | undefined;
+    if (typeof window.requestIdleCallback === "function") {
+      idleId = window.requestIdleCallback(enable, { timeout: 5200 });
+    }
+    const timeoutId = window.setTimeout(enable, 6200);
+    window.addEventListener("pointerdown", enable, { capture: true, passive: true });
+    window.addEventListener("scroll", enable, { capture: true, passive: true });
+    window.addEventListener("keydown", enable, { capture: true, passive: true });
+
+    return () => {
+      if (idleId !== undefined && typeof window.cancelIdleCallback === "function") {
+        window.cancelIdleCallback(idleId);
+      }
+      window.clearTimeout(timeoutId);
+      window.removeEventListener("pointerdown", enable, true);
+      window.removeEventListener("scroll", enable, true);
+      window.removeEventListener("keydown", enable, true);
+    };
+  }, [hasAny]);
+
+  if (!hasAny || !shouldLoad) return null;
 
   return (
     <>

@@ -8,6 +8,7 @@ export function UaClassFlags() {
       const ua = navigator.userAgent;
       if (/Android/i.test(ua)) document.documentElement.classList.add("ua-android");
       if (/iPhone/i.test(ua)) document.documentElement.classList.add("ua-iphone");
+      if (/Win64|Windows NT|WOW64/i.test(ua)) document.documentElement.classList.add("ua-windows");
     } catch {
       // noop
     }
