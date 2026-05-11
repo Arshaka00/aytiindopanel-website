@@ -55,6 +55,17 @@ function mergeStatus(base: GlobalPublishStatus, patch: Partial<GlobalPublishStat
   return { ...base, ...patch };
 }
 
+/** Kegagalan KV (transien) di tengah alur tidak boleh membatalkan publish draft→live. */
+function safeWriteGlobalPublishStatus(next: GlobalPublishStatus, phase: string): Promise<void> {
+  return writeGlobalPublishStatus(next).catch((err) => {
+    void captureException(err instanceof Error ? err : new Error(String(err)), {
+      area: "global-publish-orchestrator",
+      reason: "writeGlobalPublishStatus",
+      phase,
+    });
+  });
+}
+
 export async function executeGlobalPublish(params: {
   actorRole: AuditEntry["actorRole"];
   actorId: string;
@@ -93,7 +104,7 @@ export async function executeGlobalPublish(params: {
       lastPhase: "publish_content",
       deployHookInProgress: false,
     });
-    await writeGlobalPublishStatus(statusSnapshot);
+    await safeWriteGlobalPublishStatus(statusSnapshot, "attempt_start");
 
     let live: SiteContent;
     try {
@@ -113,7 +124,7 @@ export async function executeGlobalPublish(params: {
     }
 
     statusSnapshot = mergeStatus(await readGlobalPublishStatus(), { lastPhase: "revalidate" });
-    await writeGlobalPublishStatus(statusSnapshot);
+    await safeWriteGlobalPublishStatus(statusSnapshot, "revalidate");
 
     let revalidated = false;
     try {
@@ -124,7 +135,7 @@ export async function executeGlobalPublish(params: {
     }
 
     statusSnapshot = mergeStatus(await readGlobalPublishStatus(), { lastPhase: "deploy_hook" });
-    await writeGlobalPublishStatus(statusSnapshot);
+    await safeWriteGlobalPublishStatus(statusSnapshot, "deploy_hook");
 
     const hookDeploy = resolveDeployHookResolution();
     const url = hookDeploy.url;
@@ -146,11 +157,12 @@ export async function executeGlobalPublish(params: {
           message: `Deploy hook dalam jeda ${remain}s setelah sukses (anti spam). Konten live & cache sudah terbarui.`,
         };
       } else {
-        await writeGlobalPublishStatus(
+        await safeWriteGlobalPublishStatus(
           mergeStatus(await readGlobalPublishStatus(), {
             deployHookInProgress: true,
             lastDeployHookTriggeredAt: new Date().toISOString(),
           }),
+          "hook_trigger",
         );
         try {
           hook = await triggerDeployHookIfConfigured();
@@ -273,7 +285,7 @@ export async function executeGlobalPublish(params: {
     ).catch(() => {});
     return { ok: false, code: "UNKNOWN", message: msg };
   } finally {
-    await lock.release();
+    await lock.release().catch(() => {});
   }
 }
 

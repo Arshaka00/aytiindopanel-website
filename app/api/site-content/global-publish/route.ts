@@ -5,6 +5,7 @@ import { canPublish, resolveCmsRole } from "@/lib/cms-role";
 import { hasValidCsrf } from "@/lib/csrf";
 import { executeGlobalPublish } from "@/lib/global-publish-orchestrator";
 import { hasValidAdminSessionFromRequest, isAllowedAdminDevice, hasValidDeviceBindingCookie } from "@/lib/gallery-admin-auth";
+import { captureException } from "@/lib/observability";
 import { siteSettingsGateAuthorized, siteSettingsGateForbiddenResponse } from "@/lib/site-settings-gate";
 
 /** Pastikan `process.env` deploy hook = runtime Vercel, bukan Edge. */
@@ -33,31 +34,37 @@ export async function POST(req: NextRequest) {
   const userAgent = req.headers.get("user-agent") ?? "unknown";
   const deviceBound = hasValidDeviceBindingCookie(req.cookies);
 
-  const result = await executeGlobalPublish({
-    actorRole: role,
-    actorId: role,
-    ip,
-    userAgent,
-    deviceBound,
-  });
+  try {
+    const result = await executeGlobalPublish({
+      actorRole: role,
+      actorId: role,
+      ip,
+      userAgent,
+      deviceBound,
+    });
 
-  if (!result.ok) {
-    const status =
-      result.code === "LOCK_BUSY" ? 409 : result.code === "DEBOUNCED" ? 429 : result.code === "PUBLISH_FAILED" ? 400 : 500;
-    return NextResponse.json({ ok: false, code: result.code, error: result.message }, { status });
+    if (!result.ok) {
+      const status =
+        result.code === "LOCK_BUSY" ? 409 : result.code === "DEBOUNCED" ? 429 : result.code === "PUBLISH_FAILED" ? 400 : 500;
+      return NextResponse.json({ ok: false, code: result.code, error: result.message }, { status });
+    }
+
+    /** Jangan kirim `content` penuh — JSON bisa terlalu besar untuk respons serverless (413/500). UI memakai router.refresh + API site-content. */
+    return NextResponse.json({
+      ok: true,
+      mode: "live" as const,
+      revalidated: result.revalidated,
+      deployHook: result.deployHook,
+      deployHookHttpStatus: result.deployHookHttpStatus,
+      deployHookMessage: result.deployHookMessage,
+      deployHookAttempts: result.deployHookAttempts,
+      vercelDeploymentUid: result.vercelDeploymentUid,
+      vercelDeploymentReadyState: result.vercelDeploymentReadyState,
+      storageVersion: result.storageVersion,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    void captureException(err, { area: "global-publish-route", reason: "executeGlobalPublish" });
+    return NextResponse.json({ ok: false, code: "UNKNOWN" as const, error: message }, { status: 500 });
   }
-
-  /** Jangan kirim `content` penuh — JSON bisa terlalu besar untuk respons serverless (413/500). UI memakai router.refresh + API site-content. */
-  return NextResponse.json({
-    ok: true,
-    mode: "live" as const,
-    revalidated: result.revalidated,
-    deployHook: result.deployHook,
-    deployHookHttpStatus: result.deployHookHttpStatus,
-    deployHookMessage: result.deployHookMessage,
-    deployHookAttempts: result.deployHookAttempts,
-    vercelDeploymentUid: result.vercelDeploymentUid,
-    vercelDeploymentReadyState: result.vercelDeploymentReadyState,
-    storageVersion: result.storageVersion,
-  });
 }
