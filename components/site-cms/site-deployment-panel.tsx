@@ -85,6 +85,17 @@ type GlobalPublishStatusView = {
   };
   /** Tanpa `kv` di Vercel, riwayat publish di API bisa kosong antar request (penyimpanan /tmp). */
   publishGlobalStatusPersistence?: "kv" | "vercel_tmp" | "local";
+  /** Git SHA / deployment id dari env Vercel + versi konten live (storage). */
+  deployRuntime?: {
+    gitCommitSha: string | null;
+    gitCommitShort: string | null;
+    vercelDeploymentId: string | null;
+    vercelEnv: string | null;
+    vercelUrl: string | null;
+    nodeEnv: string;
+    serverNowIso: string;
+    liveContentVersion: string;
+  };
   vercelBuildMonitor: {
     supported: boolean;
     integrationUrlParsed?: boolean;
@@ -712,7 +723,7 @@ export function SiteDeploymentPanel({
       try {
         const r = await fetch(
           `/api/site-content/vercel-deployment-status?uid=${encodeURIComponent(deploymentUid)}`,
-          { credentials: "include" },
+          { credentials: "include", cache: "no-store" },
         );
         const j = (await r.json().catch(() => ({}))) as {
           ok?: boolean;
@@ -821,6 +832,7 @@ export function SiteDeploymentPanel({
       router.refresh();
       await loadGlobalPublishStatus();
       await loadContext();
+      window.setTimeout(() => void loadGlobalPublishStatus(), 800);
     } catch (e) {
       setGlobalPublishFeedback(e instanceof Error ? e.message : "Publish global gagal.");
     } finally {
@@ -856,6 +868,33 @@ export function SiteDeploymentPanel({
           </Link>
         </div>
       </header>
+
+      {gpSnapshot?.deployRuntime ? (
+        <section
+          aria-label="Versi build production"
+          className="mx-auto max-w-3xl rounded-xl border border-sky-500/25 bg-sky-950/35 px-4 py-3 text-left shadow-sm shadow-black/15 backdrop-blur-sm md:max-w-4xl md:px-5"
+        >
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-sky-200/85">Production · build marker</p>
+          <p className="mt-1.5 font-mono text-[11px] leading-relaxed text-sky-100/95 break-all md:text-xs">
+            <span className="text-sky-300/90">commit</span>{" "}
+            {gpSnapshot.deployRuntime.gitCommitShort ?? "—"}{" "}
+            <span className="text-slate-500">·</span> <span className="text-sky-300/90">dpl</span>{" "}
+            {gpSnapshot.deployRuntime.vercelDeploymentId
+              ? truncateMiddle(gpSnapshot.deployRuntime.vercelDeploymentId, 36)
+              : "—"}{" "}
+            <span className="text-slate-500">·</span> <span className="text-sky-300/90">env</span>{" "}
+            {gpSnapshot.deployRuntime.vercelEnv ?? "—"}{" "}
+            <span className="text-slate-500">·</span> <span className="text-sky-300/90">live token</span>{" "}
+            {truncateMiddle(gpSnapshot.deployRuntime.liveContentVersion, 28)}
+          </p>
+          <p className="mt-1 text-[10px] text-slate-500">
+            Cocokkan <code className="rounded bg-black/30 px-1">commit</code> dengan GitHub{" "}
+            <code className="rounded bg-black/30 px-1">main</code> terbaru. Respons ini{" "}
+            <code className="rounded bg-black/30 px-1">no-store</code> — waktu server:{" "}
+            {formatIsoDateTime(gpSnapshot.deployRuntime.serverNowIso)}.
+          </p>
+        </section>
+      ) : null}
 
       <section
         id="deployment-center"

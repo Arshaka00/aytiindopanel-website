@@ -26,6 +26,7 @@ import {
 import { runAfterSiteContentLiveUpdated } from "@/lib/site-content-after-publish";
 import { getSiteContentVersionToken, publishSiteContentDraft } from "@/lib/site-content";
 import { hasVercelKvEnv } from "@/lib/cms-storage/env";
+import { getDeployRuntimeFingerprint } from "@/lib/deploy-build-marker";
 import { captureException } from "@/lib/observability";
 import { appendAuditLog, type AuditEntry } from "@/lib/site-content-storage";
 import { logEvent } from "@/lib/structured-log";
@@ -442,6 +443,8 @@ export async function getGlobalPublishStatusPayload(): Promise<{
   publishGlobalStatusPersistence: "kv" | "vercel_tmp" | "local";
   /** `preview` = deployment PR/preview — env bertanda hanya Production tidak tersedia (lihat Vercel). */
   serverDeploymentEnv: "production" | "preview" | "development" | null;
+  /** Bandingkan dengan `git log -1` / deployment Vercel — pastikan bukan build/cache lama. */
+  deployRuntime: ReturnType<typeof getDeployRuntimeFingerprint> & { liveContentVersion: string };
   vercelBuildMonitor: {
     supported: boolean;
     /** URL hook cocok pola `api.vercel.com/v1/integrations/deploy/...` (respons job JSON). */
@@ -454,7 +457,11 @@ export async function getGlobalPublishStatusPayload(): Promise<{
     errorMessage: string | null;
   };
 }> {
-  const [statusRaw, draftLiveHint] = await Promise.all([readGlobalPublishStatus(), getDraftLiveMtimeHint()]);
+  const [statusRaw, draftLiveHint, liveContentVersion] = await Promise.all([
+    readGlobalPublishStatus(),
+    getDraftLiveMtimeHint(),
+    getSiteContentVersionToken(),
+  ]);
   const { url: hookUrl, meta: deployHookMeta } = resolveDeployHookResolution();
   const integrationUrlParsed = Boolean(hookUrl && parseVercelIntegrationDeployHookUrl(hookUrl));
   const apiTokenConfigured = Boolean(resolveVercelApiToken());
@@ -496,6 +503,10 @@ export async function getGlobalPublishStatusPayload(): Promise<{
         ? "vercel_tmp"
         : "local",
     serverDeploymentEnv: getServerDeploymentEnv(),
+    deployRuntime: {
+      ...getDeployRuntimeFingerprint(),
+      liveContentVersion,
+    },
     vercelBuildMonitor: {
       supported,
       integrationUrlParsed,

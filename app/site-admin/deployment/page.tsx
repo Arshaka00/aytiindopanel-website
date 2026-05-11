@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { SiteDeploymentEntry } from "@/components/site-cms/site-deployment-entry";
 import { isAllowedAdminDevice } from "@/lib/gallery-admin-auth";
 
+export const dynamic = "force-dynamic";
+
 export default async function SiteAdminDeploymentPage() {
   const allowed = isAllowedAdminDevice(await headers(), await cookies());
   if (!allowed) notFound();
