@@ -82,6 +82,8 @@ type GlobalPublishStatusView = {
     hostLength: number | null;
     pathnameLength: number | null;
   };
+  /** Tanpa `kv` di Vercel, riwayat publish di API bisa kosong antar request (penyimpanan /tmp). */
+  publishGlobalStatusPersistence?: "kv" | "vercel_tmp" | "local";
   vercelBuildMonitor: {
     supported: boolean;
     integrationUrlParsed?: boolean;
@@ -361,7 +363,11 @@ function DeploymentActivityTimeline({
         <span className="text-[9px] font-medium uppercase tracking-wide text-slate-600">Ringkas</span>
       </div>
       {rows.length === 0 ? (
-        <p className="mt-3 text-xs leading-relaxed text-slate-500">Belum ada aktivitas deployment tercatat.</p>
+        <p className="mt-3 text-xs leading-relaxed text-slate-500">
+          {gp?.publishGlobalStatusPersistence === "vercel_tmp"
+            ? "Riwayat tidak muncul di server tanpa Vercel KV (penyimpanan status tidak tetap antar Lambda). Pasang KV_REST_API_URL + KV_REST_API_TOKEN di Production, redeploy, lalu publish lagi — atau cek deployment di dashboard Vercel."
+            : "Belum ada aktivitas deployment tercatat."}
+        </p>
       ) : (
         <ul className="mt-3 max-h-[11.5rem] space-y-2.5 overflow-y-auto pr-0.5 sm:max-h-40">
           {rows.map((row) => (
@@ -559,6 +565,13 @@ function DeployProductionStrip({
             terakhir. Setelah <strong>Publish Global</strong> sukses memanggil hook dan respons berisi job, status
             BUILDING/READY akan muncul di blok ini.
           </p>
+          {gp?.publishGlobalStatusPersistence === "vercel_tmp" ? (
+            <p className="m-0 mt-2 border-t border-white/[0.06] pt-2 text-slate-500">
+              Tanpa <strong>KV</strong>, server tidak menyimpan UID/riwayat secara konsisten di panel ini — deploy tetap
+              bisa berjalan; pasang <code className="rounded bg-black/25 px-1">KV_REST_API_URL</code> +{" "}
+              <code className="rounded bg-black/25 px-1">KV_REST_API_TOKEN</code> agar status di halaman ini stabil.
+            </p>
+          ) : null}
         </div>
       ) : hookOk ? (
         <div className="rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-2.5 text-[11px] leading-relaxed text-slate-500">
@@ -919,7 +932,9 @@ export function SiteDeploymentPanel({
             <dd className="mt-1.5 text-sm leading-snug text-slate-200">
               {gpSnapshot?.status.lastSuccessAt
                 ? "Layout / data cache diperbarui saat publish sukses (revalidate root)."
-                : "Belum ada publish global tercatat di sesi ini."}
+                : gpSnapshot?.publishGlobalStatusPersistence === "vercel_tmp"
+                  ? "Server tidak mengembalikan catatan publish terakhir (typical tanpa KV di Vercel). Publish bisa tetap sukses — pasang KV agar status & UID muncul konsisten di panel."
+                  : "Belum ada publish global tercatat."}
             </dd>
           </div>
           <div>

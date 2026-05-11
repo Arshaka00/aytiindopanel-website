@@ -23,6 +23,7 @@ import {
 import { runAfterSiteContentLiveUpdated } from "@/lib/site-content-after-publish";
 import { getSiteContentVersionToken, publishSiteContentDraft } from "@/lib/site-content";
 import type { SiteContent } from "@/lib/site-content-model";
+import { hasVercelKvEnv } from "@/lib/cms-storage/env";
 import { captureException } from "@/lib/observability";
 import { appendAuditLog, type AuditEntry } from "@/lib/site-content-storage";
 
@@ -304,6 +305,8 @@ export async function getGlobalPublishStatusPayload(): Promise<{
   deployHookConfigured: boolean;
   /** Diagnostik aman (tanpa URL); sama dengan `resolveDeployHookResolution().meta`. */
   deployHookMeta: DeployHookPublicMeta;
+  /** `vercel_tmp` = serverless tanpa KV — status tidak konsisten antar Lambda (panel bisa tampak kosong). */
+  publishGlobalStatusPersistence: "kv" | "vercel_tmp" | "local";
   /** `preview` = deployment PR/preview — env bertanda hanya Production tidak tersedia (lihat Vercel). */
   serverDeploymentEnv: "production" | "preview" | "development" | null;
   vercelBuildMonitor: {
@@ -338,6 +341,11 @@ export async function getGlobalPublishStatusPayload(): Promise<{
     draftLiveHint,
     deployHookConfigured: deployHookMeta.configured,
     deployHookMeta,
+    publishGlobalStatusPersistence: hasVercelKvEnv()
+      ? "kv"
+      : process.env.VERCEL === "1"
+        ? "vercel_tmp"
+        : "local",
     serverDeploymentEnv: getServerDeploymentEnv(),
     vercelBuildMonitor: {
       supported,
