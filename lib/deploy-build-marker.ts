@@ -8,6 +8,8 @@ export type DeployRuntimeFingerprint = {
   vercelDeploymentId: string | null;
   vercelEnv: string | null;
   vercelUrl: string | null;
+  /** URL publik host deployment Vercel (`https://` + `VERCEL_URL`), jika ada. */
+  deploymentHostUrl: string | null;
   nodeEnv: string;
   /** ISO — waktu respons API (bukan waktu build image). */
   serverNowIso: string;
@@ -15,12 +17,20 @@ export type DeployRuntimeFingerprint = {
 
 export function getDeployRuntimeFingerprint(): DeployRuntimeFingerprint {
   const sha = process.env.VERCEL_GIT_COMMIT_SHA?.trim() || null;
+  const vercelUrl = process.env.VERCEL_URL?.trim() || null;
+  const deploymentHostUrl =
+    !vercelUrl || vercelUrl.length === 0
+      ? null
+      : vercelUrl.startsWith("http://") || vercelUrl.startsWith("https://")
+        ? vercelUrl
+        : `https://${vercelUrl}`;
   return {
     gitCommitSha: sha,
     gitCommitShort: sha ? sha.slice(0, 7) : null,
     vercelDeploymentId: process.env.VERCEL_DEPLOYMENT_ID?.trim() || null,
     vercelEnv: process.env.VERCEL_ENV?.trim() || null,
-    vercelUrl: process.env.VERCEL_URL?.trim() || null,
+    vercelUrl,
+    deploymentHostUrl,
     nodeEnv: process.env.NODE_ENV ?? "development",
     serverNowIso: new Date().toISOString(),
   };

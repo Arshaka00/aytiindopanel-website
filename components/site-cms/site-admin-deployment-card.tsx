@@ -104,11 +104,11 @@ export function SiteAdminDeploymentCard() {
 
         <div className="relative space-y-4">
           <div className="space-y-2">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-violet-200/80">Operations</p>
-            <h2 className="text-lg font-semibold tracking-tight text-white md:text-xl">Git Deployment Flow</h2>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-violet-200/80">Development</p>
+            <h2 className="text-lg font-semibold tracking-tight text-white md:text-xl">Deployment</h2>
             <p className="max-w-xl text-sm leading-relaxed text-slate-400">
-              Publish global dinonaktifkan. Production mengikuti commit <strong className="font-medium text-slate-300">main</strong>{" "}
-              terbaru di Vercel — bandingkan marker build di halaman deployment.
+              <strong className="font-medium text-slate-200">Production mengikuti deployment terbaru dari branch main.</strong>{" "}
+              Publish global dinonaktifkan — bandingkan commit &amp; marker di halaman ini dengan Vercel.
             </p>
           </div>
 

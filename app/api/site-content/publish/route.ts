@@ -10,6 +10,8 @@ import { runAfterSiteContentLiveUpdated } from "@/lib/site-content-after-publish
 import { siteSettingsGateAuthorized, siteSettingsGateForbiddenResponse } from "@/lib/site-settings-gate";
 import { appendAuditLog } from "@/lib/site-content-storage";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   if (!isAllowedAdminDevice(req.headers, req.cookies) || !hasValidAdminSessionFromRequest(req)) {
     return NextResponse.json({ error: "Akses admin diperlukan." }, { status: 401 });
@@ -40,11 +42,14 @@ export async function POST(req: NextRequest) {
       userAgent: req.headers.get("user-agent") ?? "unknown",
       deviceBound: true,
     });
-    return NextResponse.json({ ok: true, content: live, mode: "live" });
+    return NextResponse.json(
+      { ok: true, content: live, mode: "live" },
+      { headers: { "cache-control": "private, no-store, max-age=0, must-revalidate" } },
+    );
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Gagal publish draft." },
-      { status: 400 },
+      { status: 400, headers: { "cache-control": "private, no-store, max-age=0, must-revalidate" } },
     );
   }
 }

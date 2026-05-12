@@ -21,19 +21,22 @@ export function SiteAdminDashboard() {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-300/85">Internal</p>
           <h1 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">Panel CMS</h1>
           <p className="mx-auto max-w-lg text-sm leading-relaxed text-slate-400">
-          <span className="text-slate-300">Git Deployment Flow</span> untuk marker build deployment dan (opsional) publish
-          global. <span className="text-slate-300">Site Settings</span> untuk konfigurasi domain, SEO, kontak, backup, dan
-          utilitas lanjutan.
-        </p>
+            <span className="text-slate-300">Deployment</span> untuk marker build (mode sederhana bila{" "}
+            <code className="rounded-md bg-white/[0.06] px-1.5 py-0.5 font-mono text-[11px] text-slate-300">
+              CMS_ENABLE_GLOBAL_PUBLISH=false
+            </code>
+            , atau alur publish global penuh bila diaktifkan). <span className="text-slate-300">Site Settings</span> untuk
+            domain, SEO, kontak, backup, dan utilitas lanjutan.
+          </p>
         </header>
 
         <section aria-labelledby="ops-deployment-heading" className="space-y-3 md:space-y-4">
           <div className="flex flex-col gap-1 border-b border-white/[0.06] pb-3 px-0.5 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h2 id="ops-deployment-heading" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-violet-200/85">
-                Git Deployment Flow
+                Deployment
               </h2>
-              <p className="mt-1 text-xs text-slate-500">Mission control operasional — bukan konfigurasi situs.</p>
+              <p className="mt-1 text-xs text-slate-500">Ringkasan build — konfigurasi situs ada di Site Settings.</p>
             </div>
           </div>
           <SiteAdminDeploymentCard />
@@ -63,8 +66,8 @@ export function SiteAdminDashboard() {
               <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-cyan-300/88">System configuration</p>
               <h3 className="mt-2 text-base font-semibold text-white md:text-lg">Site Settings</h3>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-400">
-                Domain &amp; URL, WhatsApp &amp; email, SEO, mode tayang, backup &amp; restore, serta utilitas publishing
-                manual di bagian Advanced di akhir halaman.
+                Domain &amp; URL, WhatsApp &amp; email, SEO, mode tayang, backup &amp; restore. Utilitas salin draft→live
+                manual (Advanced) hanya ditampilkan bila publish global diaktifkan di environment.
               </p>
               <span className="mt-4 text-xs font-semibold text-cyan-200/95 group-hover:underline">Buka konfigurasi →</span>
             </Link>

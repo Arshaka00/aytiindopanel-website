@@ -93,6 +93,7 @@ type GlobalPublishStatusView = {
     vercelDeploymentId: string | null;
     vercelEnv: string | null;
     vercelUrl: string | null;
+    deploymentHostUrl: string | null;
     nodeEnv: string;
     serverNowIso: string;
     liveContentVersion: string;
@@ -693,13 +694,14 @@ export function SiteDeploymentPanel({
   }, []);
 
   useEffect(() => {
-    const boot = window.setTimeout(() => void loadGlobalPublishStatus(), 0);
-    const t = window.setInterval(() => void loadGlobalPublishStatus(), 30_000);
-    return () => {
-      window.clearTimeout(boot);
-      window.clearInterval(t);
-    };
+    void loadGlobalPublishStatus();
   }, [loadGlobalPublishStatus]);
+
+  useEffect(() => {
+    if (gpSnapshot?.globalPublishWorkflowEnabled === false) return;
+    const t = window.setInterval(() => void loadGlobalPublishStatus(), 30_000);
+    return () => window.clearInterval(t);
+  }, [loadGlobalPublishStatus, gpSnapshot?.globalPublishWorkflowEnabled]);
 
   const gpEnabled = gpSnapshot?.globalPublishWorkflowEnabled !== false;
 
@@ -849,11 +851,18 @@ export function SiteDeploymentPanel({
     }
   };
 
+  const refreshDevDeploymentSnapshot = useCallback(() => {
+    void loadGlobalPublishStatus();
+    router.refresh();
+  }, [loadGlobalPublishStatus, router]);
+
   return (
     <div className="mx-auto max-w-3xl space-y-6 pb-16 md:max-w-4xl md:space-y-8">
       <header className="space-y-3 text-center md:space-y-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-200/80">CMS · operations</p>
-        <h1 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">Git Deployment Flow</h1>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-200/80">CMS · deployment</p>
+        <h1 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">
+          {gpEnabled ? "Git Deployment Flow" : "Development Deployment"}
+        </h1>
         <p className="mx-auto max-w-lg text-sm leading-relaxed text-slate-400">
           {gpEnabled ? (
             <>
@@ -892,7 +901,7 @@ export function SiteDeploymentPanel({
         </div>
       </header>
 
-      {gpSnapshot?.deployRuntime ? (
+      {gpSnapshot?.deployRuntime && gpEnabled ? (
         <section
           aria-label="Versi build production"
           className="mx-auto max-w-3xl rounded-xl border border-sky-500/25 bg-sky-950/35 px-4 py-3 text-left shadow-sm shadow-black/15 backdrop-blur-sm md:max-w-4xl md:px-5"
@@ -916,12 +925,6 @@ export function SiteDeploymentPanel({
             <code className="rounded bg-black/30 px-1">no-store</code> — waktu server:{" "}
             {formatIsoDateTime(gpSnapshot.deployRuntime.serverNowIso)}.
           </p>
-          {!gpEnabled ? (
-            <p className="mt-2 border-t border-white/[0.06] pt-2 text-[11px] leading-relaxed text-slate-400">
-              Publish global dinonaktifkan (<code className="rounded bg-black/30 px-1 text-[10px]">CMS_ENABLE_GLOBAL_PUBLISH=false</code>
-              ). Bandingkan marker ini dengan commit deployment Vercel production Anda.
-            </p>
-          ) : null}
         </section>
       ) : null}
 
@@ -1089,39 +1092,108 @@ export function SiteDeploymentPanel({
           </button>
         </div>
       </section>
-      ) : (
+      ) : gpSnapshot?.deployRuntime ? (
         <section
           id="deployment-center"
           aria-labelledby="deployment-center-heading"
-          className="scroll-mt-24 rounded-2xl border border-violet-400/18 bg-gradient-to-br from-violet-500/[0.05] via-slate-950/58 to-slate-950/92 p-6 shadow-md shadow-black/20 backdrop-blur-md md:p-8"
+          className="relative scroll-mt-24 overflow-hidden rounded-2xl border border-slate-400/22 bg-gradient-to-br from-slate-500/[0.06] via-slate-950/72 to-slate-950/95 p-6 shadow-lg shadow-black/25 backdrop-blur-md md:p-8"
         >
-          <h2 id="deployment-center-heading" className="text-lg font-semibold tracking-tight text-white md:text-xl">
-            Ringkas
-          </h2>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">
-            Orkestrasi publish global, deploy hook, dan polling build dinonaktifkan. Gunakan marker build di atas dan
-            dashboard Vercel untuk memastikan production sesuai <code className="rounded bg-black/25 px-1 text-xs">main</code>.
-          </p>
-          <p className="mt-4">
-            <a
-              href="https://vercel.com/dashboard"
-              target="_blank"
-              rel="noreferrer"
-              className="text-sm font-semibold text-sky-300/95 hover:text-sky-200 hover:underline"
-            >
-              Buka dashboard Vercel →
-            </a>
-          </p>
-          <div className="mt-6 flex flex-col gap-3 border-t border-white/[0.08] pt-6 sm:flex-row sm:justify-end">
-            <button
-              type="button"
-              onClick={() => void loadGlobalPublishStatus()}
-              className="rounded-lg border border-white/12 bg-white/[0.05] px-4 py-2.5 text-xs font-semibold text-slate-200 transition hover:bg-white/[0.08]"
-            >
-              Segarkan marker
-            </button>
+          <div
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(92%_58%_at_100%_0%,rgba(148,163,184,0.09),transparent_56%)]"
+            aria-hidden
+          />
+          <div className="relative space-y-6">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400/95">Runtime snapshot</p>
+              <h2 id="deployment-center-heading" className="mt-1 text-lg font-semibold tracking-tight text-white md:text-xl">
+                Build &amp; konten live
+              </h2>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-400">
+                <strong className="font-medium text-slate-200">Production mengikuti deployment terbaru dari branch main.</strong>{" "}
+                Alur: localhost → <code className="rounded bg-black/30 px-1 text-xs">git push</code> → Vercel auto deploy →
+                production. CMS pada instance ini membaca penyimpanan live langsung — tanpa antrian publish global.
+              </p>
+            </div>
+
+            <dl className="grid gap-4 rounded-xl border border-white/[0.08] bg-black/22 px-4 py-5 sm:grid-cols-2 md:px-6">
+              <div>
+                <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Commit terbaru</dt>
+                <dd className="mt-1.5 font-mono text-sm text-slate-100">
+                  {gpSnapshot.deployRuntime.gitCommitShort ?? "—"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Vercel deployment</dt>
+                <dd className="mt-1.5 break-all font-mono text-xs text-slate-200">
+                  {gpSnapshot.deployRuntime.vercelDeploymentId
+                    ? truncateMiddle(gpSnapshot.deployRuntime.vercelDeploymentId, 44)
+                    : "—"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Lingkungan</dt>
+                <dd className="mt-1.5 text-sm text-slate-200">{gpSnapshot.deployRuntime.vercelEnv ?? "—"}</dd>
+              </div>
+              <div>
+                <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Marker waktu</dt>
+                <dd className="mt-1.5 tabular-nums text-sm text-slate-200">
+                  {formatIsoDateTime(gpSnapshot.deployRuntime.serverNowIso)}
+                </dd>
+                <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
+                  Respons <code className="rounded bg-black/30 px-1 text-[10px]">no-store</code> — cocokkan dengan log deploy di
+                  Vercel.
+                </p>
+              </div>
+              <div className="sm:col-span-2">
+                <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">Build marker (konten live)</dt>
+                <dd className="mt-1.5 break-all font-mono text-xs text-slate-300">
+                  {truncateMiddle(gpSnapshot.deployRuntime.liveContentVersion, 52)}
+                </dd>
+              </div>
+            </dl>
+
+            <div className="flex flex-wrap items-center gap-3">
+              {gpSnapshot.deployRuntime.deploymentHostUrl ? (
+                <a
+                  href={gpSnapshot.deployRuntime.deploymentHostUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex rounded-lg border border-white/14 bg-white/[0.06] px-4 py-2.5 text-xs font-semibold text-slate-100 transition hover:bg-white/[0.1]"
+                >
+                  Buka host deployment →
+                </a>
+              ) : null}
+              <a
+                href="https://vercel.com/dashboard"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex rounded-lg border border-sky-400/28 bg-sky-500/12 px-4 py-2.5 text-xs font-semibold text-sky-100 transition hover:bg-sky-500/18"
+              >
+                Dashboard Vercel →
+              </a>
+            </div>
+
+            <p className="border-t border-white/[0.07] pt-4 text-[11px] leading-relaxed text-slate-500">
+              Publish global dinonaktifkan —{" "}
+              <code className="rounded bg-black/30 px-1 text-[10px]">CMS_ENABLE_GLOBAL_PUBLISH=false</code>. Backend orkestrasi
+              lama tetap ada; aktifkan env tersebut bila tim kembali ke mode enterprise.
+            </p>
+
+            <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => void refreshDevDeploymentSnapshot()}
+                className="rounded-lg border border-white/12 bg-white/[0.06] px-4 py-2.5 text-xs font-semibold text-slate-100 transition hover:bg-white/[0.1]"
+              >
+                Segarkan snapshot
+              </button>
+            </div>
           </div>
         </section>
+      ) : (
+        <p className="rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-8 text-center text-sm text-slate-500">
+          Memuat penanda deployment…
+        </p>
       )}
 
       <SitePublicationSettingsCard

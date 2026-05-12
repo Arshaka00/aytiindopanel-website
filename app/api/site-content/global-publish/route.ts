@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { rateLimitRequest } from "@/lib/api-rate-limit";
+import { isGlobalPublishEnabled } from "@/lib/cms-global-publish-flag";
 import { canPublish, resolveCmsRole } from "@/lib/cms-role";
 import { hasValidCsrf } from "@/lib/csrf";
 import { executeGlobalPublish } from "@/lib/global-publish-orchestrator";
@@ -28,6 +29,19 @@ export async function POST(req: NextRequest) {
   }
   if (!siteSettingsGateAuthorized(req)) {
     return siteSettingsGateForbiddenResponse();
+  }
+
+  if (!isGlobalPublishEnabled()) {
+    return NextResponse.json(
+      {
+        ok: false,
+        code: "GLOBAL_PUBLISH_DISABLED" as const,
+        error:
+          "Publish global dinonaktifkan (CMS_ENABLE_GLOBAL_PUBLISH=false). Production mengikuti commit terbaru di branch main + deploy Vercel — simpan konten lewat Git/deploy sesuai workflow tim.",
+        globalPublishWorkflowEnabled: false,
+      },
+      { status: 400, headers: { "cache-control": "private, no-store, max-age=0, must-revalidate" } },
+    );
   }
 
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";

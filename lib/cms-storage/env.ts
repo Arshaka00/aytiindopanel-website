@@ -35,17 +35,6 @@ export function hasVercelKvEnv(): boolean {
   return Boolean(url && process.env.KV_REST_API_TOKEN?.trim());
 }
 
-/**
- * Publish global + orkestrasi deploy hook + polling UID (Deployment Center).
- * Set **`CMS_ENABLE_GLOBAL_PUBLISH=false`** (atau `0` / `no`) untuk fase dev: source of truth = Git + Vercel deploy saja.
- * Default: **aktif** (unset / nilai lain).
- */
-export function isGlobalPublishWorkflowEnabled(): boolean {
-  const v = process.env.CMS_ENABLE_GLOBAL_PUBLISH?.trim().toLowerCase();
-  if (v === "false" || v === "0" || v === "no") return false;
-  return true;
-}
-
 /** Prefix konsisten untuk key KV (status publish, lock). */
 export function cmsKvKey(suffix: string): string {
   const base = process.env.CMS_KV_PREFIX?.trim() || "aytipanel:site-cms";

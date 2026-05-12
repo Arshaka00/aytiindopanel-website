@@ -26,7 +26,8 @@ import {
 } from "@/lib/global-publish-status";
 import { runAfterSiteContentLiveUpdated } from "@/lib/site-content-after-publish";
 import { getSiteContentVersionToken, publishSiteContentDraft } from "@/lib/site-content";
-import { hasVercelKvEnv, isGlobalPublishWorkflowEnabled } from "@/lib/cms-storage/env";
+import { hasVercelKvEnv } from "@/lib/cms-storage/env";
+import { isGlobalPublishEnabled } from "@/lib/cms-global-publish-flag";
 import { getDeployRuntimeFingerprint } from "@/lib/deploy-build-marker";
 import { captureException } from "@/lib/observability";
 import { appendAuditLog, type AuditEntry } from "@/lib/site-content-storage";
@@ -125,7 +126,7 @@ export async function executeGlobalPublish(params: {
   userAgent: string;
   deviceBound: boolean;
 }): Promise<GlobalPublishOrchestratorResult> {
-  if (!isGlobalPublishWorkflowEnabled()) {
+  if (!isGlobalPublishEnabled()) {
     logEvent("info", "global_publish_disabled_skip", { actorId: params.actorId });
     return {
       ok: false,
@@ -470,7 +471,7 @@ export async function getGlobalPublishStatusPayload(): Promise<{
     errorMessage: string | null;
   };
 }> {
-  if (!isGlobalPublishWorkflowEnabled()) {
+  if (!isGlobalPublishEnabled()) {
     const liveContentVersion = await getSiteContentVersionToken();
     const { meta: deployHookMeta } = resolveDeployHookResolution();
     return {
