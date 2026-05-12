@@ -185,8 +185,21 @@ export async function getStorageVersionToken(): Promise<string> {
 export async function publishDraftToLive(): Promise<void> {
   await runSerialized(async () => {
     const port = getSiteContentFileStoragePort();
-    const draftRaw = await port.readRawByMode("draft");
-    if (draftRaw === null) throw new Error("Draft tidak ditemukan.");
+    let draftRaw = await port.readRawByMode("draft");
+    let usedLiveFallback = false;
+    /** Draft belum pernah ditulis (Blob baru) atau baca draft gagal — coba `live.json` sebagai sumber (republish idempoten). */
+    if (draftRaw === null) {
+      draftRaw = await port.readRawByMode("live");
+      usedLiveFallback = true;
+    }
+    if (draftRaw === null) {
+      throw new Error(
+        "Draft tidak ditemukan dan live.json juga kosong atau tidak dapat dibaca. Buka Site Settings, simpan sekali, atau perbaiki Vercel Blob (store aktif, BLOB_READ_WRITE_TOKEN, CMS_BLOB_PREFIX).",
+      );
+    }
+    if (usedLiveFallback) {
+      logEvent("info", "publish_draft_to_live_used_live_fallback", {});
+    }
     const parsed = JSON.parse(draftRaw) as unknown;
     const validated = validateSiteContentStrict(parsed);
     if (!validated.ok) {
