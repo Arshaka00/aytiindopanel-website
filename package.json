@@ -13,7 +13,6 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@vercel/blob": "^2.3.3",
-    "@vercel/kv": "^3.0.0",
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.38.0",
     "next": "16.2.4",

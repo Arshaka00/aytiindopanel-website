@@ -3,8 +3,7 @@ import { createFilesystemSiteContentStorage } from "@/lib/cms-storage/filesystem
 import type { SiteContentFileStoragePort } from "@/lib/cms-storage/site-content-file-storage-port";
 import { createVercelBlobSiteContentStorage } from "@/lib/cms-storage/vercel-blob-site-content-storage";
 
-export { cmsKvKey, hasVercelBlobEnv, hasVercelKvEnv, isProductionStorage } from "@/lib/cms-storage/env";
-export { getCmsKv } from "@/lib/cms-storage/kv-client";
+export { hasVercelBlobEnv, isProductionStorage } from "@/lib/cms-storage/env";
 export type {
   BackupRow,
   CmsStorageMode,

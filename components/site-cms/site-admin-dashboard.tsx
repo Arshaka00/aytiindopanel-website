@@ -12,9 +12,23 @@ export function SiteAdminDashboard() {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-300/90">Internal</p>
           <h1 className="text-2xl font-semibold text-white md:text-3xl">Panel CMS</h1>
           <p className="text-sm text-slate-400">
-            Pintasan cepat. Pengaturan domain, kontak, SEO, publish, dan backup ada di Site Settings.
+            Pintasan cepat: deployment (Git/Vercel), analytics, site settings, dan beranda untuk edit inline.
           </p>
         </header>
+
+        <Link
+          href="/site-admin/deployment"
+          className="group block rounded-2xl border border-violet-400/35 bg-gradient-to-br from-violet-500/15 to-slate-900/60 p-6 shadow-lg backdrop-blur-md transition hover:border-violet-300/55 hover:from-violet-500/25"
+        >
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-violet-300/90">Deploy</p>
+          <h2 className="mt-2 text-lg font-semibold text-white md:text-xl">Deployment</h2>
+          <p className="mt-2 text-sm leading-relaxed text-slate-300">
+            Commit build, lingkungan Vercel, status tayang konten, dan tautan ke dashboard / deployment.
+          </p>
+          <span className="mt-4 inline-block text-sm font-semibold text-violet-200 group-hover:underline">
+            Buka ringkasan deployment →
+          </span>
+        </Link>
 
         <Link
           href="/site-admin/visitor-analytics"
