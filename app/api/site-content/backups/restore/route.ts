@@ -5,9 +5,7 @@ import { rateLimitRequest } from "@/lib/api-rate-limit";
 import { canEditContent, resolveCmsRole } from "@/lib/cms-role";
 import { hasValidCsrf } from "@/lib/csrf";
 import { hasValidAdminSessionFromRequest, isAllowedAdminDevice } from "@/lib/gallery-admin-auth";
-import { isGlobalPublishEnabled } from "@/lib/cms-global-publish-flag";
-import { appendAuditLog, restoreFromBackup, writeSiteContentToStorage } from "@/lib/site-content-storage";
-import { runAfterSiteContentLiveUpdated } from "@/lib/site-content-after-publish";
+import { appendAuditLog, restoreFromBackup } from "@/lib/site-content-storage";
 import { siteSettingsGateAuthorized, siteSettingsGateForbiddenResponse } from "@/lib/site-settings-gate";
 
 export async function POST(req: NextRequest) {
@@ -28,10 +26,6 @@ export async function POST(req: NextRequest) {
   const mode = body.mode === "live" ? "live" : "draft";
   try {
     const restored = await restoreFromBackup(mode, body.file);
-    if (!isGlobalPublishEnabled()) {
-      await writeSiteContentToStorage(mode === "draft" ? "live" : "draft", restored);
-      await runAfterSiteContentLiveUpdated().catch(() => {});
-    }
     await appendAuditLog({
       id: randomUUID(),
       at: new Date().toISOString(),

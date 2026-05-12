@@ -2,6 +2,8 @@
 
 import type { NextRequest } from "next/server";
 
+import { isGalleryAdminLocalhostRequest } from "@/lib/gallery-admin-localhost";
+
 const ADMIN_COOKIE_NAME = "gp_admin_session";
 const DEVICE_COOKIE_NAME = "gp_admin_device_bound";
 
@@ -30,6 +32,9 @@ export function isAllowedAdminDeviceEdge(req: NextRequest): boolean {
   }
 
   if (hasAnyDeviceBindingCookie(req)) return true;
+  if (isGalleryAdminLocalhostRequest(req.headers.get("host"), req.headers.get("x-forwarded-host"))) {
+    return true;
+  }
   const ua = (req.headers.get("user-agent") ?? "").toLowerCase();
   return ua.includes("macintosh") && !ua.includes("iphone") && !ua.includes("android");
 }

@@ -2,7 +2,6 @@ import { NextResponse, type NextRequest } from "next/server";
 import { randomUUID } from "node:crypto";
 
 import { rateLimitRequest } from "@/lib/api-rate-limit";
-import { isGlobalPublishEnabled } from "@/lib/cms-global-publish-flag";
 import { canEditContent, resolveCmsRole } from "@/lib/cms-role";
 import { hasValidCsrf } from "@/lib/csrf";
 import { applySiteContentPatch, getDraftSiteContent, getSiteContent } from "@/lib/site-content";
@@ -49,12 +48,7 @@ export async function GET(req: NextRequest) {
     return siteSettingsGateForbiddenResponse();
   }
   const content = mode === "live" ? await getSiteContent() : await getDraftSiteContent();
-  return noStoreJson({
-    content,
-    mode,
-    role,
-    globalPublishWorkflowEnabled: isGlobalPublishEnabled(),
-  });
+  return noStoreJson({ content, mode, role });
 }
 
 export async function PATCH(req: NextRequest) {

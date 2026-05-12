@@ -2,6 +2,8 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 
 import type { NextRequest } from "next/server";
 
+import { isGalleryAdminLocalhostRequest } from "@/lib/gallery-admin-localhost";
+
 const ADMIN_COOKIE_NAME = "gp_admin_session";
 const DEVICE_COOKIE_NAME = "gp_admin_device_bound";
 const ADMIN_SESSION_TTL_SEC = 60 * 30;
@@ -111,7 +113,7 @@ export function hasValidDeviceBindingCookie(cookies: CookieReader): boolean {
 /**
  * Device boleh admin jika:
  * - Env `GALLERY_ADMIN_DEVICE_SERIAL` diset: header `x-device-serial` cocok ATAU cookie binding sah (setelah POST /api/gallery-admin/device-bind).
- * - Serial tidak diset: cookie binding sah ATAU user agent macOS desktop (dev — bukan iPhone/Android).
+ * - Serial tidak diset: cookie binding sah ATAU host dev lokal (localhost / LAN privat di development) ATAU user agent macOS desktop (bukan iPhone/Android).
  */
 export function isAllowedAdminDevice(headersObj: Headers, cookies?: CookieReader): boolean {
   const requiredSerial = getEnv("GALLERY_ADMIN_DEVICE_SERIAL");
@@ -124,6 +126,10 @@ export function isAllowedAdminDevice(headersObj: Headers, cookies?: CookieReader
   }
 
   if (cookies && hasValidDeviceBindingCookie(cookies)) return true;
+
+  if (isGalleryAdminLocalhostRequest(headersObj.get("host"), headersObj.get("x-forwarded-host"))) {
+    return true;
+  }
 
   const ua = getUserAgent(headersObj).toLowerCase();
   return ua.includes("macintosh") && !ua.includes("iphone") && !ua.includes("android");

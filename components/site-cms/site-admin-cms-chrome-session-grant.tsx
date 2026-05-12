@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 import { grantCmsChromeSurfaceFromSiteAdminVisit } from "@/lib/cms-chrome-gate";
 
-/** Set izin bilah CMS mengambang setelah kunjungan ke /site-admin (host production atau localhost). */
+/** Set izin bilah CMS mengambang setelah kunjungan ke /site-admin (host production; localhost/LAN dev tidak wajib). */
 export function SiteAdminCmsChromeSessionGrant() {
   const pathname = usePathname();
 

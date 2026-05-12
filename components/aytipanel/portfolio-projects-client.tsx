@@ -153,7 +153,7 @@ function PortfolioProjectsStrip({
     const mq = window.matchMedia("(min-width: 768px)");
     let accum = 0;
     let cooldown = false;
-    let cooldownTimer: number | null = null;
+    let cooldownTimer: number | undefined;
 
     const onWheel = (e: WheelEvent) => {
       if (!mq.matches || cooldown) return;
@@ -182,7 +182,7 @@ function PortfolioProjectsStrip({
     root.addEventListener("wheel", onWheel, { passive: false });
     return () => {
       root.removeEventListener("wheel", onWheel);
-      if (cooldownTimer !== null) window.clearTimeout(cooldownTimer);
+      if (cooldownTimer !== undefined) window.clearTimeout(cooldownTimer);
     };
   }, [projects.length, getStripScrollDeltaPx]);
 
