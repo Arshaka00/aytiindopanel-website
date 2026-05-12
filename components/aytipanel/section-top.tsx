@@ -188,9 +188,10 @@ export function SectionTop({
                   secondaryClassName="hero-lihat-produk-cta group/ghost inline-flex min-h-[50px] w-full shrink-0 touch-manipulation items-center justify-center gap-2 rounded-[0.9375rem] border border-white/[0.34] bg-white/[0.05] px-5 py-3.5 text-[0.875rem] font-semibold uppercase leading-snug tracking-[0.03em] text-[#F5F7FF] shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur-[10px] transition-[opacity,transform,background-color,border-color,box-shadow] duration-300 ease-out hover:bg-white/[0.11] hover:border-[#59D8FF]/55 hover:shadow-[0_0_24px_rgba(89,216,255,0.12)] active:opacity-[0.94] motion-safe:active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-white max-md:bg-white/[0.08] max-md:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_10px_28px_rgba(2,8,24,0.32)] md:min-h-[50px] md:w-auto md:flex-1 md:rounded-xl md:py-3 md:text-base md:min-w-[12rem]"
                   heroWhatsAppLabel={hero.ctaWhatsApp.label}
                   heroWhatsAppMessage={hero.ctaWhatsApp.message}
+                  heroWhatsAppAriaLabel={hero.ctaWhatsApp.ariaLabel}
                   secondaryLabel={hero.ctaSecondary.label}
                   secondaryHref={hero.ctaSecondary.href}
-                  secondaryAria="Lihat section produk utama"
+                  secondaryAriaLabel={hero.ctaSecondary.ariaLabel}
                 />
               </div>
             </div>

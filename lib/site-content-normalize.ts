@@ -44,6 +44,36 @@ export function normalizeSiteContent(c: SiteContent): SiteContent {
   out.header.mobileNavIds = defaults.header.mobileNavIds.filter((id) =>
     out.header.navItems.some((n) => n.id === id),
   );
+  out.header.siteSearchPlaceholder =
+    typeof out.header.siteSearchPlaceholder === "string" && out.header.siteSearchPlaceholder.trim()
+      ? out.header.siteSearchPlaceholder.trim()
+      : defaults.header.siteSearchPlaceholder;
+  out.header.siteSearchNoResultsText =
+    typeof out.header.siteSearchNoResultsText === "string" && out.header.siteSearchNoResultsText.trim()
+      ? out.header.siteSearchNoResultsText.trim()
+      : defaults.header.siteSearchNoResultsText;
+
+  const defCtaWa = defaults.hero.ctaWhatsApp;
+  const inCtaWa = out.hero.ctaWhatsApp;
+  out.hero.ctaWhatsApp = {
+    ...defCtaWa,
+    ...inCtaWa,
+    label: (inCtaWa?.label ?? defCtaWa.label).trim() || defCtaWa.label,
+    message: (inCtaWa?.message ?? defCtaWa.message).trim() || defCtaWa.message,
+    ariaLabel:
+      (typeof inCtaWa?.ariaLabel === "string" ? inCtaWa.ariaLabel.trim() : "") || defCtaWa.ariaLabel,
+  };
+  const defCtaSec = defaults.hero.ctaSecondary;
+  const inCtaSec = out.hero.ctaSecondary;
+  out.hero.ctaSecondary = {
+    ...defCtaSec,
+    ...inCtaSec,
+    label: (inCtaSec?.label ?? defCtaSec.label).trim() || defCtaSec.label,
+    href: (inCtaSec?.href ?? defCtaSec.href).trim() || defCtaSec.href,
+    ariaLabel:
+      (typeof inCtaSec?.ariaLabel === "string" ? inCtaSec.ariaLabel.trim() : "") || defCtaSec.ariaLabel,
+  };
+
   out.hero.intro = {
     before1: out.hero?.intro?.before1 ?? defaults.hero.intro.before1,
     bold1: out.hero?.intro?.bold1 ?? defaults.hero.intro.bold1,

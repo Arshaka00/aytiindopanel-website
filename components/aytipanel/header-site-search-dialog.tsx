@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { IconSearch } from "@/components/aytipanel/icons";
+import { CmsText } from "@/components/site-cms/cms-text";
+import { useSiteCmsOptional } from "@/components/site-cms/site-cms-provider";
 import type { HeaderSiteSearchTarget } from "@/lib/header-site-search-targets";
 
 type Props = {
@@ -10,6 +12,10 @@ type Props = {
   onClose: () => void;
   targets: readonly HeaderSiteSearchTarget[];
   onSelectHref: (href: string) => void;
+  /** `header.siteSearchPlaceholder` */
+  searchPlaceholder: string;
+  /** `header.siteSearchNoResultsText` */
+  noResultsText: string;
 };
 
 export function HeaderSiteSearchDialog({
@@ -17,11 +23,36 @@ export function HeaderSiteSearchDialog({
   onClose,
   targets,
   onSelectHref,
+  searchPlaceholder,
+  noResultsText,
 }: Props) {
   const inputId = useId();
   const listId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
+  const cms = useSiteCmsOptional();
+  const cmsEdit = Boolean(cms?.eligible && cms.editMode);
+
+  const patchHeaderField = useCallback(
+    async (path: "header.siteSearchPlaceholder" | "header.siteSearchNoResultsText", current: string) => {
+      if (!cms) return;
+      const ok = await cms.ensureWriteSession();
+      if (!ok) return;
+      const label =
+        path === "header.siteSearchPlaceholder"
+          ? "Teks petunjuk di kotak pencarian:"
+          : "Teks saat tidak ada hasil pencarian:";
+      const next = window.prompt(label, current);
+      if (next === null) return;
+      try {
+        await cms.patchContent(path, next.trim());
+        cms.refreshPage();
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    [cms],
+  );
 
   useEffect(() => {
     if (!open) {
@@ -83,7 +114,7 @@ export function HeaderSiteSearchDialog({
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="masukan kata kunci"
+              placeholder={searchPlaceholder}
               autoComplete="off"
               autoCorrect="off"
               spellCheck={false}
@@ -120,7 +151,12 @@ export function HeaderSiteSearchDialog({
           >
             {filtered.length === 0 ? (
               <li className="px-4 py-7 text-center text-[0.8125rem] leading-relaxed text-muted-foreground">
-                Tidak ada halaman yang cocok dengan pencarian Anda. Coba kata lain atau periksa ejaan.
+                <CmsText
+                  path="header.siteSearchNoResultsText"
+                  text={noResultsText}
+                  as="span"
+                  className="inline text-[0.8125rem] leading-relaxed text-muted-foreground"
+                />
               </li>
             ) : (
               filtered.map((t) => (
@@ -140,6 +176,24 @@ export function HeaderSiteSearchDialog({
               ))
             )}
           </ul>
+        ) : null}
+        {cmsEdit ? (
+          <div className="flex flex-wrap justify-end gap-2 border-t border-border/70 px-3 py-2 sm:px-4">
+            <button
+              type="button"
+              className="rounded-lg border border-border/80 bg-muted-bg/40 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:bg-muted-bg/70 hover:text-foreground"
+              onClick={() => void patchHeaderField("header.siteSearchPlaceholder", searchPlaceholder)}
+            >
+              Edit petunjuk cari
+            </button>
+            <button
+              type="button"
+              className="rounded-lg border border-border/80 bg-muted-bg/40 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:bg-muted-bg/70 hover:text-foreground"
+              onClick={() => void patchHeaderField("header.siteSearchNoResultsText", noResultsText)}
+            >
+              Edit teks tanpa hasil
+            </button>
+          </div>
         ) : null}
       </div>
     </div>

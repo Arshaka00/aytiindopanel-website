@@ -76,7 +76,7 @@ export function SeoArticlesAdminPanel() {
     const row: SeoArticleFaqItem = {
       id: typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `faq_${Date.now()}`,
       question: "Pertanyaan baru",
-      answerMarkdown: "Jawaban singkat.",
+      answerMarkdown: "Jawaban satu atau dua kalimat.",
     };
     patchArticle({ faq: [...article.faq, row] });
   }, [article, patchArticle]);
@@ -119,7 +119,7 @@ export function SeoArticlesAdminPanel() {
   }, [file]);
 
   if (loading) {
-    return <p className="text-center text-sm text-slate-400">Memuat artikel SEO…</p>;
+    return <p className="text-center text-sm text-slate-400">Memuat daftar artikel…</p>;
   }
 
   if (loadError || !file || !article) {
@@ -138,6 +138,25 @@ export function SeoArticlesAdminPanel() {
 
   return (
     <div className="space-y-8">
+      <aside className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 px-4 py-3 text-xs leading-relaxed text-emerald-50/95">
+        <p>
+          <span className="font-semibold text-emerald-100">Lingkup:</span> hanya artikel publik di{" "}
+          <code className="rounded bg-black/25 px-1 py-px text-[11px]">/artikel/…</code> (file{" "}
+          <code className="rounded bg-black/25 px-1 py-px text-[11px]">data/seo-articles/live.json</code>). Untuk meta
+          default beranda, deskripsi organisasi, footer situs, dan draft→live CMS utama buka{" "}
+          <Link href="/site-admin/site-settings" className="font-medium text-sky-300 underline-offset-2 hover:underline">
+            Site Settings
+          </Link>
+          .
+        </p>
+        <p className="mt-3 border-t border-emerald-500/20 pt-3 font-semibold text-emerald-100/95">Tip nada tulisan</p>
+        <ul className="mt-1.5 list-disc space-y-1 pl-4 marker:text-emerald-400/80">
+          <li>Deck: boleh langsung ke masalah lapangan, hindari definisi panjang.</li>
+          <li>Hindari rangkaian H2 + bullet kosong; satu istilah teknis per paragraf biasanya cukup.</li>
+          <li>Penutup: satu paragraf konkret, bukan formula panjang &ldquo;Secara kesimpulan&hellip;&rdquo; berulang.</li>
+          <li>FAQ: jawab seperti obrolan teknisi, bukan kotak ensiklopedia.</li>
+        </ul>
+      </aside>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <label htmlFor="seo-article-pick" className={labelClass}>
@@ -158,7 +177,7 @@ export function SeoArticlesAdminPanel() {
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <Link href="/artikel" className="text-sm font-medium text-sky-300 hover:underline" target="_blank" rel="noreferrer">
-            Lihat indeks artikel →
+            Lihat indeks →
           </Link>
           <Link
             href={`/artikel/${article.slug}`}

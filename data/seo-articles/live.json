@@ -1,32 +1,32 @@
 {
   "version": 1,
-  "updatedAt": "2026-05-11T10:02:22.339Z",
+  "updatedAt": "2026-05-12T14:30:00.000Z",
   "articles": [
     {
       "id": "a1111111-1111-4111-8111-111111111111",
       "slug": "cara-kerja-cold-storage",
       "title": "Cara kerja cold storage: siklus pendinginan hingga distribusi",
-      "deck": "Memahami prinsip termal, isolasi sandwich panel, dan kontrol suhu agar rantai dingin tetap stabil untuk bahan pangan dan industri.",
+      "deck": "Panas masuk lewat dinding dan pintu; mesin refrigerasi mendorong panas itu keluar lagi. Intinya begitu—sisanya soal panel, setpoint, dan kebiasaan buka pintu.",
       "primaryKeyword": "cara kerja cold storage",
       "tags": ["cold storage", "refrigerasi", "sandwich panel", "rantai dingin"],
-      "heroImage": "",
+      "heroImage": "/images/layanan/instalasi-sistem-pendingin/1.jpg",
       "published": true,
       "publishedAt": "2026-05-01T08:00:00.000Z",
-      "updatedAt": "2026-05-11T09:00:00.000Z",
+      "updatedAt": "2026-05-12T14:30:00.000Z",
       "authorName": "Tim Teknis AYTI",
       "metaTitle": "Cara kerja cold storage | panduan refrigerasi industri",
-      "metaDescription": "Penjelasan ringkas cara kerja cold storage: isolasi, evaporator, kompresor, dan praktik operasi aman untuk restoran dan pabrik.",
-      "bodyMarkdown": "## Prinsip dasar cold storage\n\nCold storage mempertahankan suhu rendah dengan **menghilangkan panas masuk** lewat dinding isolasi dan menarik panas dari ruang lewat sirkuit refrigerasi. Kinerja bangunan sangat bergantung pada **ketebalan dan jenis sandwich panel** serta sealing pintu.\n\n## Siklus refrigerasi singkat\n\nKompresor menaikkan tekanan refrigeran; kondensor membuang panas ke lingkungan; expansion valve menurunkan tekanan; evaporator menyerap panas di dalam ruang. Setpoint suhu dijaga oleh sensor dan kontroler agar fluktuasi minimal.\n\n## Operasi dan distribusi\n\nSetelah produk mencapai suhu target, transport keluar harus cepat agar **temperature rise** tidak melebihi toleransi HACCP. Untuk restoran dan UMKM skala menengah, lihat juga panduan cold storage khusus F&B.\n\n## Kesimpulan\n\nCold storage yang dirancang benar menggabungkan **insulasi**, **kapasitas mesin**, dan **SOP bongkar muat** agar energi dan kualitas produk optimal.",
+      "metaDescription": "Ringkasan cara kerja cold storage: isolasi panel, sirkuit refrigerasi, dan hal kecil di lapangan yang sering bikin suhu naik turun.",
+      "bodyMarkdown": "## Dari mana panasnya?\n\nRuang dingin tidak “menciptakan” dingin; dia **mengeluarkan panas** yang ada di dalam—dari produk, dari orang yang masuk, dari lampu, dan dari udara luar saat pintu kebuka. Sandwich panel dan seal pintu kerjaannya menahan supaya panas itu tidak masuk seenaknya.\n\n## Siklus refrigerasi (versi singkat)\n\nRefrigeran mutar: kompresor naikkan tekanan, kondensor buang panas ke luar ruang, expansion valve turunkan tekanan, lalu evaporator di dalam ruang yang menyerap panas. Sensor dan kontroler cuma menjaga supaya mesin jalan cukup—tidak kurang, tidak boros.\n\n## Saat produk sudah dingin\n\nMasalah sering muncul **bongkar muat**: pintu lama terbuka, truk belum siap, atau antrean staf. Naik suhu sebentar saja sudah tercatat di logger; untuk F&B, itu yang bikin audit repot kalau tidak ada SOP.\n\n## Yang perlu diingat\n\nCold storage yang enak dipakai itu biasanya yang **isolasi rapat**, **kapasitas mesin pas beban**, dan **aturan pintu** jelas di lapangan—bukan yang paling besar atau paling mahal saja.",
       "faq": [
         {
           "id": "f1a1a1a1-1111-4111-8111-111111111111",
           "question": "Apakah cold storage sama dengan cold room?",
-          "answerMarkdown": "Umumnya **cold room** merujuk ruang pendingin skala lebih kecil atau modular, sementara **cold storage** sering dipakai untuk gudang skala lebih besar; prinsip termalnya sama."
+          "answerMarkdown": "Nama sering dicampur. Yang kami maksud **cold room** biasanya satu ruang modular (dapur, UMKM, outlet). **Cold storage** sering dipakai untuk gudang yang lebih besar, tapi prinsip mesin dan panelnya sama saja."
         },
         {
           "id": "f1a1a1a1-2222-4222-8222-222222222222",
-          "question": "Mengapa penting menjaga sealing pintu?",
-          "answerMarkdown": "Kebocoran udara menyebabkan **embun beku** di evaporator dan beban kompresor naik, sehingga suhu tidak stabil dan biaya listrik melonjak."
+          "question": "Mengapa sealing pintu sering disebut-sebut?",
+          "answerMarkdown": "Udara rembes = embun di koil naik = defrost sering = kompresor capek. Tagihan listrik naik perlahan; suhu ruang jadi susah “duduk tenang”."
         }
       ],
       "relatedSlugs": ["suhu-ideal-cold-room", "cold-storage-untuk-restoran", "ruang-pendingin-industri"]
@@ -35,22 +35,22 @@
       "id": "a2222222-2222-4222-8222-222222222222",
       "slug": "suhu-ideal-cold-room",
       "title": "Suhu ideal cold room untuk bahan pangan dan industri",
-      "deck": "Rentang suhu untuk chiller, freezer, blast holding, dan tips validasi sensor agar produk tetap aman dan sesuai standar mutu.",
+      "deck": "Angka setpoint itu mudah; yang sulit menjaga naik-turunnya kecil. Di bawah ini rentang umum per jenis ruang—sesuaikan lagi dengan SOP produk Anda.",
       "primaryKeyword": "suhu ideal cold room",
       "tags": ["cold room", "suhu", "HACCP", "blast freezer"],
-      "heroImage": "",
+      "heroImage": "/images/layanan/instalasi-panel-cold-room/1.jpg",
       "published": true,
       "publishedAt": "2026-05-02T08:00:00.000Z",
-      "updatedAt": "2026-05-11T09:00:00.000Z",
+      "updatedAt": "2026-05-12T14:30:00.000Z",
       "authorName": "Tim Teknis AYTI",
       "metaTitle": "Suhu ideal cold room — panduan praktis",
-      "metaDescription": "Ringkasan suhu target cold room untuk chiller, freezer, dan seafood; termasuk verifikasi sensor dan distribusi udara.",
-      "bodyMarkdown": "## Chiller vs freezer\n\nRuang **chiller** umumnya 0 °C hingga 4 °C untuk sayur, susu, dan daging segar sebelum dimasak. **Freezer** biasanya −18 °C atau lebih rendah untuk produk beku jangka panjang.\n\n### Seafood dan protein\n\nIkan dan seafood sering membutuhkan rantai lebih ketat; untuk pembekuan cepat setelah tangkap, pertimbangkan jalur **blast freezer** sebelum penyimpanan beku massal.\n\n## Verifikasi di lapangan\n\nGunakan data logger di beberapa titik—dekat pintu, dekat evaporator, dan di tengah tumpukan palet. Jarak bebas evaporator dari barang harus dijaga agar sirkulasi udara tidak terhambat.\n\n## Kesimpulan\n\nSetpoint harus selaras dengan **SOP produk** dan regulasi setempat; dokumentasi suhu rutin mendukung audit mutu dan traceability.",
+      "metaDescription": "Rentang suhu chiller vs freezer, catatan seafood, dan cara cek sensor supaya log suhu tidak bikin kejutan saat audit.",
+      "bodyMarkdown": "## Chiller dan freezer beda tugas\n\nRuang **chiller** (sekitar 0–4 °C) dipakai untuk bahan segar yang tidak dibekukan: sayur, susu, daging olah. **Freezer** umumnya sekitar −18 °C ke bawah untuk stok beku jangka panjang. Kalau dipaksakan dalam satu ruang tanpa pemisahan jelas, salah satu jenis komoditas biasanya yang rugi.\n\n## Seafood dan protein\n\nIkan dan seafood tidak suka naik turun suhu. Kalau ada jalur **blast freezer** setelah tangkap atau olah, cold room berikutnya cuma menampung produk yang suhu intinya sudah aman—bukan mendorong mesin kerja berat dari hangat ke beku.\n\n## Cek di lapangan, bukan cuma di display kontrol\n\nTaruh logger di tiga titik: dekat pintu (paling “kotor”), dekat evaporator, dan di tengah tumpukan palet. Seringkali display kontrol sudah bagus, tapi ujung rak belakang beda beberapa derajat. Jarak bebas ke koil juga jangan dipakai simpan kardus.\n\n## Penutup\n\nSetpoint harus bicara dengan **SOP produk** dan aturan setempat. Kalau dokumentasi suhu sudah rapi, audit mutu biasanya lebih soal kebiasaan operasi, bukan soal angka ajaib satu malam.",
       "faq": [
         {
           "id": "f2b2b2b2-1111-4111-8111-111111111111",
           "question": "Berapa suhu aman untuk daging beku?",
-          "answerMarkdown": "Penyimpanan beku umumnya **−18 °C** atau lebih dingin; pastikan inti produk mencapai suhu target sebelum dipindahkan ke gudang beku."
+          "answerMarkdown": "Umumnya penyimpanan beku di sekitar **−18 °C** ke bawah. Yang penting inti produk sudah benar-benar beku sebelum dipindah ke gudang beku besar—kalau inti masih hangat, luar saja yang dingin."
         }
       ],
       "relatedSlugs": ["cara-kerja-cold-storage", "blast-freezer-seafood", "cold-storage-untuk-restoran"]
@@ -59,22 +59,22 @@
       "id": "a3333333-3333-4333-8333-333333333333",
       "slug": "blast-freezer-seafood",
       "title": "Blast freezer untuk seafood: waktu pembekuan dan kualitas",
-      "deck": "Blast freezing menurunkan suhu inti cepat untuk menjaga tekstur ikan, mencepat kristal es mikro, dan mendukung ekspor yang membutuhkan cold chain ketat.",
+      "deck": "Pembekuan cepat bukan gimmick—itu cara bikin kristal es kecil supaya daging ikan tidak hancur saat dicairkan. Blast freezer dipakai di awal rantai; cold storage menyusul untuk menumpuk stok.",
       "primaryKeyword": "blast freezer seafood",
       "tags": ["blast freezer", "seafood", "pembekuan cepat", "HACCP"],
-      "heroImage": "",
+      "heroImage": "/images/layanan/testing-commissioning/1.jpg",
       "published": true,
       "publishedAt": "2026-05-03T08:00:00.000Z",
-      "updatedAt": "2026-05-11T09:00:00.000Z",
+      "updatedAt": "2026-05-12T14:30:00.000Z",
       "authorName": "Tim Teknis AYTI",
       "metaTitle": "Blast freezer seafood — alur dan kapasitas",
-      "metaDescription": "Panduan blast freezer untuk seafood: prinsip pembekuan cepat, kapasitas batch, dan hubungannya dengan cold storage.",
-      "bodyMarkdown": "## Mengapa blast freezer penting untuk seafood\n\nSeafood mudah mengalami **denaturasi protein** dan pertumbuhan mikroba jika suhu turun lambat. Blast freezer mendorong penurunan suhu inti dalam waktu singkat sehingga kristal es lebih halus.\n\n## Alur kerja tipikal\n\nProduk dikemas rapi, dimasukkan dengan jarak untuk udara dingin, lalu siklus blast dijalankan hingga inti mencapai setpoint. Setelah itu, produk dipindah ke **cold storage** beku untuk holding.\n\n### Kapasitas dan beban\n\nPilih kapasitas mesin dan koil sesuai **tonase harian** dan waktu siklus; overload akan memperpanjang waktu pembekuan dan menurunkan mutu.\n\n## Kesimpulan\n\nKombinasi **blast freezer** + gudang beku + isolasi panel yang baik membentuk rantai dingin yang andal untuk komoditas laut.",
+      "metaDescription": "Kenapa blast dipakai untuk seafood, urutan kerja batch, dan tanda overload yang sering bikin waktu pembekuan melar.",
+      "bodyMarkdown": "## Kenapa tidak pakai freezer biasa saja?\n\nSeafood turun suhu pelan = kristal es besar = tekstur hancur dan cairan banyak keluar saat thawing. **Blast freezer** dipaksa mendorong suhu inti turun cepat supaya kristalnya halus. Beda rasanya memang kerasa di daging ikan.\n\n## Urutan kerja yang umum\n\nProduk masuk rapi, tidak numpuk nutup saluran udara, siklus blast jalan sampai inti kena target. Setelah itu baru pindah ke **cold storage** beku untuk simpan lama. Kalau langkah dua diloncati, beban cold storage naik drastis.\n\n## Tonase harian vs mesin\n\nKalau batch tiap jam melebihi desain, waktu pembekuan melar—bukan karena mesin “lemah”, tapi karena **beban panas** masuk lebih cepat dari yang dihitung. Itu yang bikin mutu turun diam-diam.\n\n## Singkatnya\n\nBlast + gudang beku + panel yang rapat itu satu rangkaian. Yang putus di tengah biasanya bukan mesinnya, tapi **antrian kerja** dan jarak buka pintu.",
       "faq": [
         {
           "id": "f3c3c3c3-1111-4111-8111-111111111111",
           "question": "Apa beda blast chiller dan blast freezer?",
-          "answerMarkdown": "**Blast chiller** menurunkan suhu panas ke suhu dingin aman untuk penyimpanan chiller; **blast freezer** menargetkan pembekuan cepat hingga zona beku."
+          "answerMarkdown": "**Blast chiller** menurunkan suhu dari panas ke suhu aman untuk simpan di chiller. **Blast freezer** mengejar zona beku cepat. Sering salah pilih karena namanya mirip—padahal target suhunya beda jauh."
         }
       ],
       "relatedSlugs": ["suhu-ideal-cold-room", "cold-storage-untuk-restoran", "cara-kerja-cold-storage"]
@@ -83,22 +83,22 @@
       "id": "a4444444-4444-4444-8444-444444444444",
       "slug": "cold-storage-untuk-restoran",
       "title": "Cold storage untuk restoran: layout, SOP, dan efisiensi energi",
-      "deck": "Desain cold room restoran, zonasi bahan mentah/matang, traffic pintu, dan pemilihan panel agar operasional dapur tetap rapi dan aman pangan.",
+      "deck": "Jam rame = pintu kebuka terus. Cold room restoran itu setengah desain, setengah kebiasaan staf. Panel bagus tidak akan menyelamatkan kalau pintu sering nganggur.",
       "primaryKeyword": "cold storage untuk restoran",
       "tags": ["restoran", "cold storage", "HACCP", "F&B"],
-      "heroImage": "",
+      "heroImage": "/images/layanan/instalasi-panel-cold-room/2.jpg",
       "published": true,
       "publishedAt": "2026-05-04T08:00:00.000Z",
-      "updatedAt": "2026-05-11T09:00:00.000Z",
+      "updatedAt": "2026-05-12T14:30:00.000Z",
       "authorName": "Tim Teknis AYTI",
       "metaTitle": "Cold storage untuk restoran — desain & SOP",
-      "metaDescription": "Tips cold storage untuk restoran: zonasi, frekuensi buka pintu, pemeliharaan coil, dan integrasi dengan dapur.",
-      "bodyMarkdown": "## Zonasi dan aliran bahan\n\nPisahkan jalur **bahan mentah**, **matang**, dan **kemasan** untuk mencegah kontamin silang. Cold room terpisah untuk sayur dan protein sering membantu audit kesehatan.\n\n## Traffic pintu dan beban\n\nJam sibuk restoran memicu buka-tutup pintu tinggi; gunakan **air curtain** atau ruang vestibule bila perlu, dan latih staf untuk tidak meninggalkan pintu terbuka.\n\n### Panel dan insulasi\n\nInvestasi pada **sandwich panel** berkualitas mengurangi loss energi dan embun di joint; ini berpengaruh langsung pada tagihan listrik bulanan.\n\n## Kesimpulan\n\nCold storage restoran yang baik adalah kombinasi **desain**, **disiplin SOP**, dan **pemeliharaan preventif** pada unit refrigerasi.",
+      "metaDescription": "Zonasi bahan, traffic pintu saat rush hour, dan pemilihan panel untuk cold room restoran tanpa teori berlebihan.",
+      "bodyMarkdown": "## Pisahkan jalur, bukan cuma rak\n\nMentah, matang, dan kemasan lebih aman kalau **jalurnya tidak saling silang**. Banyak outlet yang akhirnya bikin cold room terpisah untuk bau ikan dan produk susu—bukan karena aturan aneh, tapi supaya rasa dan audit tidak bentrok.\n\n## Traffic pintu saat rush\n\nSaat service rame, pintu cold room jadi musuh utama. **Air curtain** atau vestibule kecil membantu; yang lebih murah tapi susah: tegur staf yang ninggalin pintu terbuka “sebentar”.\n\n## Panel dan tagihan listrik\n\nPanel tipis atau sambungan asal-asalan bikin kompresor jalan panjang. Efeknya ke tagihan listrik bulanan—kadang baru kerasa setelah beberapa bulan operasi.\n\n## Penutup\n\nCold room restoran yang enak dipakai = **alur bahan jelas** + **disiplin pintu** + **jadwal cek koil** rutin. Mesin mahal tanpa kebiasaan itu sama saja bolong-bolong.",
       "faq": [
         {
           "id": "f4d4d4d4-1111-4111-8111-111111111111",
           "question": "Apakah satu cold room cukup untuk semua bahan?",
-          "answerMarkdown": "Bisa, dengan **rak dan wadah** yang jelas, namun banyak restoran memisahkan ruang untuk bau ikan vs produk susu demi mutu organoleptik dan audit lebih mudah."
+          "answerMarkdown": "Bisa, kalau label rak dan wadah ketat. Tapi banyak yang akhirnya pisah ruang demi bau dan kebersihan—audit juga jadi lebih cepat kalau tidak semua jenis bahan bercampur dalam satu bau."
         }
       ],
       "relatedSlugs": ["suhu-ideal-cold-room", "harga-sandwich-panel", "cara-kerja-cold-storage"]
@@ -107,22 +107,22 @@
       "id": "a5555555-5555-4555-8555-555555555555",
       "slug": "harga-sandwich-panel",
       "title": "Harga sandwich panel: faktor spesifikasi dan estimasi proyek",
-      "deck": "Ketebalan PU/PIR, finishing, cam-lock, aksesoris pintu, dan kompleksitas instalasi mempengaruhi total harga sandwich panel untuk cold room dan pabrik.",
+      "deck": "Per m² di brosur belum tentu sama dengan total di lapangan. Tebal inti, pintu, lantai, dan pekerjaan MEP sering makan budget di luar daftar panel saja.",
       "primaryKeyword": "harga sandwich panel",
       "tags": ["sandwich panel", "estimasi", "cold room", "PU panel"],
-      "heroImage": "",
+      "heroImage": "/images/layanan/produksi-panel-pu-eps/1.jpg",
       "published": true,
       "publishedAt": "2026-05-05T08:00:00.000Z",
-      "updatedAt": "2026-05-11T09:00:00.000Z",
+      "updatedAt": "2026-05-12T14:30:00.000Z",
       "authorName": "Tim Teknis AYTI",
       "metaTitle": "Harga sandwich panel — faktor & estimasi",
-      "metaDescription": "Faktor yang mempengaruhi harga sandwich panel untuk cold storage: ketebalan isolasi, sistem sambungan, pintu, dan pekerjaan di lapangan.",
-      "bodyMarkdown": "## Komponen utama harga\n\n**Ketebalan inti isolasi** dan densitas busa PU/PIR sangat mempengaruhi harga per m². Ruang freezer membutuhkan panel lebih tebal dibanding chiller agar **thermal bridge** minimal.\n\n## Sistem sambungan dan aksesoris\n\nSistem **cam-lock** mempercepat instalasi modular; tambahan pintu sliding bertingkat, jendela observasi, atau floor insulation akan menambah BOQ.\n\n### Pekerjaan sipil dan MEP\n\nLantai keramik/heated floor, drainase, dan titik listrik untuk **evaporator** harus dihitung bersamaan agar tidak ada change order besar.\n\n## Kesimpulan\n\nEstimasi akurat membutuhkan **gambar layout**, **beban dingin**, dan **spesifikasi finishing**; konsultasikan dengan vendor berpengalaman refrigerasi industri.",
+      "metaDescription": "Faktor yang mempengaruhi harga sandwich panel cold room: ketebalan, sambungan, pintu, dan pekerjaan sipil yang sering terlupakan di BOQ.",
+      "bodyMarkdown": "## Yang paling menggerakkan harga per m²\n\n**Tebal inti** PU/PIR dan densitasnya naik cepat kalau ruangnya freezer, bukan sekadar chiller. Freezer butuh panel lebih tebal supaya tidak “bocor” panas ke dalam—kalau tipis, mesin yang kompensasi.\n\n## Sambungan dan pintu\n\nSistem **cam-lock** memang biasanya lebih cepat pasang di lapangan. Tapi begitu masuk pintu sliding bertingkat, jendela, ramp, atau floor insulation, totalnya naik di luar kalkulasi panel dinding saja.\n\n## MEP dan sipil\n\nDrainase, titik listrik evaporator, keramik lantai—sering masuk pekerjaan lain tapi harus **dirundingkan bareng** supaya tidak ada change order mendadak saat mesin mau naik.\n\n## Realistis saat minta estimasi\n\nAngka yang masuk akal butuh **sketsa ruang**, **target suhu**, dan **jam operasi** kasar. Tanpa itu, range quotation memang lebar—bukan karena vendor enggan jelas, tapi karena variabelnya memang belum lengkap.",
       "faq": [
         {
           "id": "f5e5e5e5-1111-4111-8111-111111111111",
           "question": "Mengapa panel freezer lebih mahal?",
-          "answerMarkdown": "Panel freezer membutuhkan **inti lebih tebal** dan detail joint yang lebih ketat untuk mencegah embun dan es pada struktur."
+          "answerMarkdown": "Tebal inti naik, detail sambungan lebih diperketat, dan finishing yang tahan embun biasanya ikut naik kelas. Bukan sekadar label “freezer” di penawaran."
         }
       ],
       "relatedSlugs": ["ruang-pendingin-industri", "cara-kerja-cold-storage", "cold-storage-untuk-restoran"]
@@ -131,22 +131,22 @@
       "id": "a6666666-6666-4666-8666-666666666666",
       "slug": "ruang-pendingin-industri",
       "title": "Ruang pendingin industri: skala pabrik, redundansi, dan safety",
-      "deck": "Mulai dari cold storage gudang hingga line produksi berpendingin: redundansi mesin, monitoring energi, dan desain untuk operasi 24/7.",
+      "deck": "Gudang dingin pabrik beda dengan cold room outlet: truk, forklift, shift malam, dan downtime yang hitungannya per jam. Desainnya harus ikut cara orang kerja di sana.",
       "primaryKeyword": "ruang pendingin industri",
       "tags": ["industri", "cold storage", "redundansi", "pabrik"],
-      "heroImage": "",
+      "heroImage": "/images/layanan/instalasi-sistem-pendingin/2.jpg",
       "published": true,
       "publishedAt": "2026-05-06T08:00:00.000Z",
-      "updatedAt": "2026-05-11T09:00:00.000Z",
+      "updatedAt": "2026-05-12T14:30:00.000Z",
       "authorName": "Tim Teknis AYTI",
       "metaTitle": "Ruang pendingin industri — desain & operasi",
-      "metaDescription": "Gambaran ruang pendingin industri: redundansi, partition cold chain, integrasi blast freezer, dan pemantauan suhu.",
-      "bodyMarkdown": "## Skala dan partisi\n\nPabrik sering membutuhkan **beberapa zona suhu** dan jalur logistik terpisah. Partisi panel memungkinkan ekspansi modular tanpa menghentikan seluruh gudang.\n\n## Redundansi dan pemeliharaan\n\nUntuk operasi kritis, **N+1** pada kompresor atau sirkuit tertentu mengurangi risiko downtime. Jadwalkan defrost coil dan cek superheat/subcooling secara berkala.\n\n### Integrasi dengan produksi\n\nLine yang butuh **temperatur intermediate** dapat dihubungkan ke cold room staging sebelum distribusi ke truk berpendingin.\n\n## Kesimpulan\n\nRuang pendingin industri andal memadukan **kapasitas termal**, **insulasi**, dan **budaya maintenance** agar produk dan energi terkendali.",
+      "metaDescription": "Partisi zona, cadangan mesin bila perlu, dan integrasi cold room dengan lalu lintas pabrik—tanpa jargon berlebihan.",
+      "bodyMarkdown": "## Zona suhu, bukan satu kotak raksasa\n\nPabrik sering butuh **beberapa suhu** dalam satu kompleks: chiller staging, freezer stok, ante room untuk orang. Partisi panel membuat ekspansi bertahap lebih masuk akal daripada roboh total tiap kali kapasitas naik.\n\n## Redundansi: untuk siapa saja?\n\nCadangan kompresor (skema **N+1**) mahal, tapi downtime satu shift saja kadang sudah melebihi biaya spare sirkuit. Ini keputusan bisnis: seberapa besar kerugian kalau ruang dingin mati beberapa jam.\n\n## Integrasi dengan line produksi\n\nAda pabrik yang butuh ruang staging dingin sebelum barang masuk truk berpendingin. Kalau jalur forklift dan pintu high-speed tidak dipikirkan dari awal, macetnya alur baru kerasa saat operasi.\n\n## Catatan akhir\n\nRuang pendingin industri yang jalan mulus biasanya campuran **kapasitas mesin pas**, **panel dan pintu yang tidak rewel**, dan **jadwal perawatan** yang benar-benar dijalankan di lapangan, bukan cuma tertulis di dokumen.",
       "faq": [
         {
           "id": "f6f6f6f6-1111-4111-8111-111111111111",
           "question": "Kapan redundansi mesin disarankan?",
-          "answerMarkdown": "Jika downtime berarti **kerugian besar** atau risiko keamanan pangan, redundansi sebagian sirkuit atau cadangan kompresor layak dipertimbangkan."
+          "answerMarkdown": "Kalau mati beberapa jam saja sudah kena kontrak penalti, mutu produk, atau keselamatan pangan. Kalau tidak separah itu, kadang cadangan suku cadang + SLA teknisi sudah cukup—tergantung profil risiko."
         }
       ],
       "relatedSlugs": ["cara-kerja-cold-storage", "harga-sandwich-panel", "blast-freezer-seafood"]

@@ -75,9 +75,10 @@ type Props = {
   secondaryClassName: string;
   heroWhatsAppLabel: string;
   heroWhatsAppMessage: string;
+  heroWhatsAppAriaLabel: string;
   secondaryLabel: string;
   secondaryHref: string;
-  secondaryAria: string;
+  secondaryAriaLabel: string;
 };
 
 export function CmsHeroPrimaryActions({
@@ -85,9 +86,10 @@ export function CmsHeroPrimaryActions({
   secondaryClassName,
   heroWhatsAppLabel,
   heroWhatsAppMessage,
+  heroWhatsAppAriaLabel,
   secondaryLabel,
   secondaryHref,
-  secondaryAria,
+  secondaryAriaLabel,
 }: Props) {
   const cms = useSiteCmsOptional();
   const [msgDraft, setMsgDraft] = useState(heroWhatsAppMessage);
@@ -132,19 +134,51 @@ export function CmsHeroPrimaryActions({
     }
   }, [cms, heroWhatsAppMessage, msgDraft]);
 
+  const openSecondaryAriaEditor = useCallback(async () => {
+    if (!cms) return;
+    const ok = await cms.ensureWriteSession();
+    if (!ok) return;
+    const next = window.prompt("Label aksesibilitas tombol sekunder (aria-label):", secondaryAriaLabel);
+    if (next === null) return;
+    try {
+      await cms.patchContent("hero.ctaSecondary.ariaLabel", next.trim());
+      cms.refreshPage();
+    } catch (e) {
+      console.error(e);
+    }
+  }, [cms, secondaryAriaLabel]);
+
+  const openWhatsAppAriaEditor = useCallback(async () => {
+    if (!cms) return;
+    const ok = await cms.ensureWriteSession();
+    if (!ok) return;
+    const next = window.prompt("Label aksesibilitas tombol WhatsApp (aria-label):", heroWhatsAppAriaLabel);
+    if (next === null) return;
+    try {
+      await cms.patchContent("hero.ctaWhatsApp.ariaLabel", next.trim());
+      cms.refreshPage();
+    } catch (e) {
+      console.error(e);
+    }
+  }, [cms, heroWhatsAppAriaLabel]);
+
   if (!edit) {
     return (
       <>
         <WhatsAppCTAButton
-          ariaLabel="Hubungi kami melalui WhatsApp"
+          ariaLabel={heroWhatsAppAriaLabel}
           className={whatsappClassName}
           message={heroWhatsAppMessage}
         >
           <IconWhatsApp className="h-5 w-5 shrink-0 text-[#25D366]" />
-          {heroWhatsAppLabel}
+          <CmsText path="hero.ctaWhatsApp.label" text={heroWhatsAppLabel} />
         </WhatsAppCTAButton>
-        <HeroSecondaryNavLink href={secondaryHref} ariaLabel={secondaryAria} className={secondaryClassName}>
-          {secondaryLabel}
+        <HeroSecondaryNavLink
+          href={secondaryHref}
+          ariaLabel={secondaryAriaLabel}
+          className={secondaryClassName}
+        >
+          <CmsText path="hero.ctaSecondary.label" text={secondaryLabel} />
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -166,7 +200,11 @@ export function CmsHeroPrimaryActions({
   return (
     <>
       <div className="flex w-full min-w-0 flex-col items-stretch gap-1 md:flex-1">
-        <WhatsAppCTAButton ariaLabel="Hubungi kami melalui WhatsApp" className={whatsappClassName} message={msgDraft}>
+        <WhatsAppCTAButton
+          ariaLabel={heroWhatsAppAriaLabel}
+          className={whatsappClassName}
+          message={msgDraft}
+        >
           <IconWhatsApp className="h-5 w-5 shrink-0 text-[#25D366]" />
           <CmsText path="hero.ctaWhatsApp.label" text={heroWhatsAppLabel} />
         </WhatsAppCTAButton>
@@ -177,9 +215,20 @@ export function CmsHeroPrimaryActions({
         >
           Edit pesan WhatsApp
         </button>
+        <button
+          type="button"
+          onClick={() => void openWhatsAppAriaEditor()}
+          className="self-center rounded-lg border border-white/15 bg-white/5 px-2 py-1 text-[10px] font-medium uppercase tracking-[0.14em] text-white/80 hover:bg-white/10"
+        >
+          Edit label aria WhatsApp
+        </button>
       </div>
       <div className="flex w-full min-w-0 flex-col items-stretch gap-1 md:flex-1">
-        <HeroSecondaryNavLink href={hrefDraft || secondaryHref} ariaLabel={secondaryAria} className={secondaryClassName}>
+        <HeroSecondaryNavLink
+          href={hrefDraft || secondaryHref}
+          ariaLabel={secondaryAriaLabel}
+          className={secondaryClassName}
+        >
           <CmsText path="hero.ctaSecondary.label" text={secondaryLabel} />
           <svg
             viewBox="0 0 24 24"
@@ -201,6 +250,13 @@ export function CmsHeroPrimaryActions({
           className="self-center rounded-lg border border-white/15 bg-white/5 px-2 py-1 text-[10px] font-medium uppercase tracking-[0.14em] text-white/80 hover:bg-white/10"
         >
           Edit link tombol
+        </button>
+        <button
+          type="button"
+          onClick={() => void openSecondaryAriaEditor()}
+          className="self-center rounded-lg border border-white/15 bg-white/5 px-2 py-1 text-[10px] font-medium uppercase tracking-[0.14em] text-white/80 hover:bg-white/10"
+        >
+          Edit label aria tombol
         </button>
       </div>
     </>

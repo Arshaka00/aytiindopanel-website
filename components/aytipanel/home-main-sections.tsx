@@ -57,8 +57,8 @@ type Props = {
  * Id section selaras dengan anchor navigasi / CMS.
  *
  * Setiap section (kecuali `beranda` / hero — selalu di atas-fold dan punya animasi
- * masuk sendiri) dibungkus `ScrollRevealSection` agar saat scroll mendekati viewport
- * fade-in halus + translateY ringan secara satu kali (premium, cinematic, GPU-friendly).
+ * masuk sendiri) dibungkus `ScrollRevealSection` dengan `sectionKey` — preset reveal
+ * bervariasi per section (deterministik), plus pulse ringan saat navigasi hash (`LandingSectionHashFlash`).
  *
  * Section di bawah hero dimuat lewat `dynamic()` agar chunk JS client terpecah
  * (SSR tetap aktif — HTML & SEO tidak dikorbankan).
@@ -81,47 +81,47 @@ export function HomeMainSections({
       />
     ),
     tentang: (
-      <ScrollRevealSection>
+      <ScrollRevealSection sectionKey="tentang">
         <TentangSection tentang={content.tentang} />
       </ScrollRevealSection>
     ),
     layanan: (
-      <ScrollRevealSection>
+      <ScrollRevealSection sectionKey="layanan">
         <LayananRingkasSection layanan={content.layanan} />
       </ScrollRevealSection>
     ),
     produk: (
-      <ScrollRevealSection>
+      <ScrollRevealSection sectionKey="produk">
         <SectionProducts produk={content.produk} />
       </ScrollRevealSection>
     ),
     "service-maintenance": (
-      <ScrollRevealSection>
+      <ScrollRevealSection sectionKey="service-maintenance">
         <ServiceMaintenanceSection maintenance={content.serviceMaintenance} />
       </ScrollRevealSection>
     ),
     proyek: (
-      <ScrollRevealSection>
+      <ScrollRevealSection sectionKey="proyek">
         <PortfolioSection portfolio={content.portfolio} />
       </ScrollRevealSection>
     ),
     "customers-partners": (
-      <ScrollRevealSection>
+      <ScrollRevealSection sectionKey="customers-partners">
         <CustomersPartnersSectionClient data={content.customersPartners} />
       </ScrollRevealSection>
     ),
     keunggulan: (
-      <ScrollRevealSection>
+      <ScrollRevealSection sectionKey="keunggulan">
         <KeunggulanOperationalSection keunggulan={content.keunggulan} />
       </ScrollRevealSection>
     ),
     faq: (
-      <ScrollRevealSection>
+      <ScrollRevealSection sectionKey="faq">
         <FaqSection faq={content.faq} />
       </ScrollRevealSection>
     ),
     kontak: (
-      <ScrollRevealSection>
+      <ScrollRevealSection sectionKey="kontak">
         <KontakSection
           kontak={content.kontak}
           social={content.footer.social}

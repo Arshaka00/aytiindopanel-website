@@ -12,17 +12,23 @@ export function SeoArticleToc({
   if (!items.length) return null;
   const shell =
     variant === "plain"
-      ? "seo-article-toc px-1 pt-1"
-      : "seo-article-toc rounded-2xl border border-border bg-card/70 p-4 shadow-[var(--shadow-card)] backdrop-blur-sm";
+      ? "seo-article-toc border-l-2 border-accent/30 pl-4 pr-1 pt-0.5"
+      : "seo-article-toc rounded-2xl border border-border/90 bg-gradient-to-b from-card/95 to-card/75 p-4 shadow-[var(--shadow-card)] ring-1 ring-black/[0.04] backdrop-blur-[2px] dark:from-card/85 dark:to-card/60 dark:ring-white/[0.05] md:p-5";
   return (
     <nav aria-label="Daftar isi" className={shell}>
-      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent/90">Daftar isi</p>
-      <ol className="mt-3 list-none space-y-2 text-sm">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-accent/95">Daftar isi</p>
+      <ol className="mt-4 list-none space-y-0.5 text-[13px] leading-snug tracking-tight text-foreground/90 md:text-sm">
         {items.map((item) => (
-          <li key={item.id} className={item.level === 3 ? "pl-4 text-muted-foreground" : "text-foreground"}>
+          <li key={item.id} className={item.level === 3 ? "pl-2.5 md:pl-3.5" : ""}>
             <Link
               href={`#${encodeURIComponent(item.id)}`}
-              className="inline-flex text-left text-accent underline-offset-4 hover:text-primary hover:underline"
+              className={[
+                "block rounded-lg px-2 py-1.5 transition-colors duration-200",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                item.level === 3
+                  ? "text-muted-foreground hover:bg-muted/70 hover:text-foreground"
+                  : "font-medium text-foreground hover:bg-muted/70",
+              ].join(" ")}
             >
               {item.text}
             </Link>

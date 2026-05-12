@@ -22,6 +22,7 @@ import { CmsImage } from "@/components/site-cms/cms-image";
 import { CmsText } from "@/components/site-cms/cms-text";
 import { useSiteCmsOptional } from "@/components/site-cms/site-cms-provider";
 import { createDefaultSiteContent } from "@/lib/site-content-defaults";
+import type { SeoArticle } from "@/lib/seo-articles/types";
 import type { SiteContent } from "@/lib/site-content-model";
 
 /** Di bawah lapisan ini = konten halaman; di atas = bilah header + menu mobile. */
@@ -32,7 +33,7 @@ const MOBILE_MENU_MQ = "(max-width: 767.98px)";
 const HOME_NAV_HREF = "/#beranda";
 const FALLBACK_HEADER = createDefaultSiteContent().header;
 
-/** Item nav yang tidak ditampilkan di bilah (section tetap bisa diakses lewat URL/hash). */
+/** Item nav tidak ditampilkan di bilah / sheet (section tetap lewat `/#keunggulan` & pencarian). */
 const HEADER_NAV_SUPPRESSED_IDS = new Set<string>(["nav-keunggulan"]);
 
 /** Fallback statis — dipakai hanya jika CMS tidak mengisi logo terang maupun gelap. */
@@ -201,7 +202,7 @@ function shouldSkipMobileNavInteraction(e: React.PointerEvent | React.MouseEvent
  * Mobile sheet: tipografi rapi, border kiri halus saat aktif — tanpa glow berat.
  */
 const desktopLinkBase =
-  "relative rounded-[10px] px-3.5 py-2 text-[0.8125rem] font-semibold leading-none tracking-wide text-foreground/82 transition-[color,background-color,box-shadow,transform] duration-[380ms] [transition-timing-function:var(--ease-premium-out)] hover:bg-white/[0.06] hover:text-foreground hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] dark:text-white/82 dark:hover:bg-white/[0.05] dark:hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400/50";
+  "relative inline-flex min-h-9 items-center rounded-[10px] px-3.5 py-2 text-[0.8125rem] font-semibold leading-none tracking-wide text-foreground/82 transition-[color,background-color,box-shadow,transform] duration-[380ms] [transition-timing-function:var(--ease-premium-out)] hover:bg-white/[0.06] hover:text-foreground hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] dark:text-white/82 dark:hover:bg-white/[0.05] dark:hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400/50 md:min-h-8 md:rounded-lg md:px-2 md:py-1.5 md:text-[0.78rem] md:tracking-normal lg:px-2.5 lg:text-[0.8125rem]";
 
 const desktopLinkActive =
   "bg-white/[0.1] text-sky-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_0_0_1px_rgba(56,189,248,0.22)_inset] ring-1 ring-sky-400/28 dark:bg-sky-500/[0.14] dark:text-sky-100 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_0_0_1px_rgba(56,189,248,0.18)_inset] dark:ring-sky-400/35";
@@ -219,6 +220,7 @@ export function SiteHeader({
   homeLayout,
   siteContent,
   siteSettings,
+  seoArticles,
 }: {
   header?: SiteContent["header"];
   /** Urutan & penyembunyian section beranda — untuk daftar pencarian header */
@@ -227,6 +229,8 @@ export function SiteHeader({
   siteContent?: SiteContent;
   /** Opsional: logo terang/gelap dari Site Settings CMS */
   siteSettings?: SiteContent["siteSettings"];
+  /** Tulisan /artikel yang dipublikasikan — indeks pencarian header (judul, isi, FAQ). */
+  seoArticles?: readonly SeoArticle[];
 }) {
   const { logoLightSrc, logoDarkSrc } = useMemo(
     () => resolveHeaderBrandLogoSrcs(siteSettings),
@@ -235,14 +239,31 @@ export function SiteHeader({
 
   const navItems = header.navItems;
   const siteSearchTargets = useMemo(
-    () => buildHeaderSiteSearchTargets(header, homeLayout, siteContent),
-    [header, homeLayout, siteContent],
+    () => buildHeaderSiteSearchTargets(header, homeLayout, siteContent, seoArticles),
+    [header, homeLayout, siteContent, seoArticles],
   );
 
   const visibleNavItems = useMemo(
     () => navItems.filter((item) => !HEADER_NAV_SUPPRESSED_IDS.has(item.id)),
     [navItems],
   );
+
+  /** Desktop: item Tulisan (/artikel) di kiri tombol pencarian — setelah Galery proyek bila ada. */
+  const desktopNavItemsOrdered = useMemo(() => {
+    const artikel = visibleNavItems.find((i) => i.id === "nav-artikel");
+    const withoutArtikel = visibleNavItems.filter((i) => i.id !== "nav-artikel");
+    if (!artikel) return visibleNavItems;
+    const galleryIdx = withoutArtikel.findIndex((i) => i.id === "nav-gallery-proyek");
+    if (galleryIdx < 0) return [...withoutArtikel, artikel];
+    return [...withoutArtikel.slice(0, galleryIdx + 1), artikel, ...withoutArtikel.slice(galleryIdx + 1)];
+  }, [visibleNavItems]);
+
+  /** Sisipkan pencarian setelah item ini: Tulisan jika ada, selain itu Galery proyek. */
+  const desktopSearchAfterItemId = useMemo(
+    () => (visibleNavItems.some((i) => i.id === "nav-artikel") ? "nav-artikel" : "nav-gallery-proyek"),
+    [visibleNavItems],
+  );
+
   const mobileNavItems = useMemo(
     () =>
       header.mobileNavIds
@@ -642,11 +663,11 @@ export function SiteHeader({
             data-header-compact={scrollCompact ? "true" : "false"}
           >
             <div
-              className={`relative z-[2] mx-auto flex min-w-0 w-full max-w-6xl items-center justify-between gap-3 sm:gap-4 md:gap-7 ${toolbarPad}`}
+              className={`relative z-[2] mx-auto flex min-w-0 w-full max-w-6xl flex-nowrap items-center justify-between gap-2 sm:gap-3 md:gap-3 lg:gap-5 ${toolbarPad}`}
             >
           <Link
             href="/"
-            className="group pointer-events-auto flex min-w-0 shrink-0 items-center gap-2.5 rounded-xl py-0.5 pl-0.5 pr-1.5 outline-none transition-[color,background-color,transform] duration-[380ms] [transition-timing-function:var(--ease-premium-soft)] motion-safe:active:scale-[0.995] hover:bg-white/[0.04] focus-visible:ring-2 focus-visible:ring-sky-400/45 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent dark:hover:bg-white/[0.04] sm:gap-3 md:gap-3.5 md:pr-2"
+            className="group pointer-events-auto flex min-w-0 max-w-[min(100%,12.5rem)] shrink-0 items-center gap-2 rounded-xl py-0.5 pl-0.5 pr-1 outline-none transition-[color,background-color,transform] duration-[380ms] [transition-timing-function:var(--ease-premium-soft)] motion-safe:active:scale-[0.995] hover:bg-white/[0.04] focus-visible:ring-2 focus-visible:ring-sky-400/45 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent dark:hover:bg-white/[0.04] sm:max-w-[min(100%,14rem)] sm:gap-2.5 md:max-w-[min(100%,16rem)] md:gap-2 md:pr-1.5 lg:max-w-[min(100%,20rem)] lg:gap-3 lg:pr-2"
             aria-label={header.logoAriaLabel}
             onClick={onLogoClick}
           >
@@ -658,24 +679,25 @@ export function SiteHeader({
               />
             </span>
             <span
-              className={`truncate font-semibold tracking-tight text-foreground/95 transition-[font-size] duration-500 [transition-timing-function:var(--ease-premium-soft)] dark:text-white/95 ${scrollCompact ? "text-[0.875rem] sm:text-[0.9375rem] md:text-[1.03rem]" : "text-[0.9375rem] sm:text-[1.0625rem] md:text-[1.125rem]"}`}
+              className={`truncate font-semibold tracking-tight text-foreground/95 transition-[font-size] duration-500 [transition-timing-function:var(--ease-premium-soft)] dark:text-white/95 ${scrollCompact ? "text-[0.875rem] sm:text-[0.9375rem] md:text-[0.92rem]" : "text-[0.9375rem] sm:text-[1.02rem] md:text-[0.95rem] lg:text-[1.0625rem]"}`}
             >
               <CmsText path="header.brandName" text={header.brandName} as="span" className="inline" />
             </span>
           </Link>
 
           <nav
-            className="hidden items-center gap-0.5 md:flex"
+            data-site-header-desktop-nav=""
+            className="hidden min-w-0 flex-1 shrink items-center justify-end overflow-x-auto overflow-y-visible [scrollbar-width:thin] md:flex"
             aria-label={header.navAriaLabel}
           >
-            <ul className="flex flex-wrap items-center justify-end gap-1 md:gap-1.5 lg:gap-2">
-              {visibleNavItems.map((item) => {
+            <ul className="flex min-w-max flex-nowrap items-center justify-end gap-x-0.5 md:gap-x-1 lg:gap-x-1.5">
+              {desktopNavItemsOrdered.map((item) => {
                 const itemIndex = navItems.findIndex((n) => n.id === item.id);
                 const isActive = isNavItemActive(item.href, pathname, active);
                 const cls = `${desktopLinkBase} ${isActive ? desktopLinkActive : ""}`;
                 return (
                   <Fragment key={item.id}>
-                    <li>
+                    <li className="flex shrink-0 items-center">
                       <Link
                         href={item.href}
                         className={cls}
@@ -702,11 +724,11 @@ export function SiteHeader({
                         </span>
                       </Link>
                     </li>
-                    {item.id === "nav-gallery-proyek" ? (
-                      <li key={`${item.id}-header-search`} className="flex items-center">
+                    {item.id === desktopSearchAfterItemId ? (
+                      <li key={`${item.id}-header-search`} className="flex shrink-0 items-center">
                         <button
                           type="button"
-                          className={`${headerIconBtnBase} inline-flex min-h-9 min-w-9 items-center justify-center px-2 py-2`}
+                          className={`${headerIconBtnBase} inline-flex min-h-8 min-w-8 items-center justify-center px-1.5 py-1.5 md:min-h-8 md:min-w-8 lg:min-h-9 lg:min-w-9`}
                           aria-label="Pencarian"
                           onClick={openSiteSearch}
                         >
@@ -825,6 +847,8 @@ export function SiteHeader({
         onClose={() => setSiteSearchOpen(false)}
         targets={siteSearchTargets}
         onSelectHref={onSiteSearchPick}
+        searchPlaceholder={header.siteSearchPlaceholder}
+        noResultsText={header.siteSearchNoResultsText}
       />
     </>
   );

@@ -103,6 +103,7 @@
     "mobileMenuAriaLabel": "Menu utama (mobile)",
     "mobileMenuOpenAriaLabel": "Buka menu",
     "mobileMenuCloseAriaLabel": "Tutup menu",
+    "siteSearchPlaceholder": "Masukkan kata kunci",
     "navItems": [
       {
         "id": "nav-home",
@@ -142,13 +143,13 @@
       },
       {
         "id": "nav-keunggulan",
-        "label": "Keunggulan kami",
+        "label": "Keunggulan",
         "shortLabel": "Keunggulan",
         "href": "/#keunggulan"
       },
       {
         "id": "nav-kontak",
-        "label": "Kontak kami",
+        "label": "Kontak",
         "shortLabel": "Kontak",
         "href": "/#kontak"
       },
@@ -157,6 +158,12 @@
         "label": "Galery proyek",
         "shortLabel": "Galery proyek",
         "href": "/gallery-project"
+      },
+      {
+        "id": "nav-artikel",
+        "label": "Artikel",
+        "shortLabel": "Artikel",
+        "href": "/artikel"
       }
     ],
     "mobileNavIds": [
@@ -164,10 +171,13 @@
       "nav-tentang",
       "nav-layanan",
       "nav-produk",
+      "nav-service",
       "nav-proyek",
       "nav-kontak",
-      "nav-gallery-proyek"
-    ]
+      "nav-gallery-proyek",
+      "nav-artikel"
+    ],
+    "siteSearchNoResultsText": "Tidak ada halaman yang cocok dengan pencarian Anda. Coba kata lain atau periksa ejaan."
   },
   "hero": {
     "brandLabel": "PT AYTI INDO PANEL",
@@ -186,11 +196,13 @@
     "prosesBadge": "Alur kerja yang mudah",
     "ctaWhatsApp": {
       "label": "Hubungi kami",
-      "message": "Halo PT AYTI INDO PANEL,\nSaya ingin berkonsultasi terkait kebutuhan solusi cold storage dan refrigerasi.\nTerima kasih."
+      "message": "Halo PT AYTI INDO PANEL,\nSaya ingin berkonsultasi terkait kebutuhan solusi cold storage dan refrigerasi.\nTerima kasih.",
+      "ariaLabel": "Hubungi kami melalui WhatsApp"
     },
     "ctaSecondary": {
       "label": "LIHAT KATALOG PRODUK",
-      "href": "#produk"
+      "href": "#produk",
+      "ariaLabel": "Lihat section produk utama"
     },
     "slides": [
       {
@@ -373,8 +385,8 @@
   },
   "produk": {
     "sectionLabel": "Produk",
-    "heading": "Produk & solusi terintegrasi",
-    "lead": "Mulai dari sandwich panel, cold storage system, hingga komponen pendukung seperti pintu insulated, dock, dan refrigerasi untuk kebutuhan operasional industri.",
+    "heading": "",
+    "lead": "",
     "closingBlurb": "Untuk informasi produk lebih lanjut, hubungi kami.",
     "closingCtaLabel": "Hubungi via WhatsApp",
     "closingCtaMessage": "Halo PT AYTI INDO PANEL,\nSaya ingin berkonsultasi terkait kebutuhan produk cold storage dan refrigerasi.\nTerima kasih.",
@@ -851,7 +863,7 @@
     ]
   },
   "keunggulan": {
-    "sectionLabel": "Keunggulan kami",
+    "sectionLabel": "Keunggulan",
     "heading": "Berpengalaman dalam bidangnya",
     "lead": "Pendekatan kerja terintegrasi untuk mendukung implementasi sistem cold storage dan refrigerasi yang lebih stabil, efisien dan terukur.",
     "statsHeading": "Terbukti Di Berbagai Proyek",
@@ -945,7 +957,7 @@
     "ctaMessage": "Halo PT AYTI INDO PANEL,\nSaya ingin berkonsultasi terkait kebutuhan solusi cold storage dan refrigerasi.\nTerima kasih."
   },
   "kontak": {
-    "heading": "Kontak Kami",
+    "heading": "Kontak",
     "badge": "PT AYTI INDO PANEL",
     "intro": "",
     "waCtaLabel": "",

@@ -49,9 +49,9 @@ export function resolveSeoArticleMetadata(article: SeoArticle, content: SiteCont
 export function resolveSeoArticlesIndexMetadata(content: SiteContent): Metadata {
   const ss = content.siteSettings;
   const brand = ss.siteName.trim() || "PT AYTI INDO PANEL";
-  const title = `Artikel refrigerasi industri | ${brand}`;
+  const title = `Tulisan refrigerasi industri | ${brand}`;
   const description =
-    "Panduan cold storage, cold room, blast freezer seafood, sandwich panel, dan ruang pendingin industri — disusun untuk pemilik proyek dan tim engineering.";
+    "Tulisan singkat soal cold storage, cold room, blast freezer, dan sandwich panel—buat yang baca sambil cek lapangan, bukan skripsi.";
   const originBase = resolvePublicSiteOrigin(ss.siteUrl).origin;
   const canonical = absoluteUrlFromSite(originBase, "/artikel");
   const ogImage = resolveOgImageUrl(content, "");

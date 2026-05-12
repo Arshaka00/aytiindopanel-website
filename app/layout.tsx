@@ -10,6 +10,7 @@ import { HeroCrystalIceFilters } from "@/components/common/hero-crystal-ice-filt
 import { UaClassFlags } from "@/components/common/ua-class-flags";
 import { SiteCmsRoot } from "@/components/site-cms/site-cms-root";
 import { validateRuntimeEnvOrThrow } from "@/lib/env-validate";
+import { listPublishedSeoArticles } from "@/lib/seo-articles/repository";
 import { getDraftSiteContent, getSiteContent } from "@/lib/site-content";
 import { getPreviewCookieName, verifyPreviewToken } from "@/lib/preview-token";
 import { resolveOgImageUrl } from "@/lib/site-seo-resolve";
@@ -125,7 +126,10 @@ export default async function RootLayout({
   const cookieStore = await cookies();
   const previewToken = cookieStore.get(getPreviewCookieName())?.value ?? "";
   const previewMode = verifyPreviewToken(previewToken);
-  const content = previewMode ? await getDraftSiteContent() : await getSiteContent();
+  const [content, seoArticles] = await Promise.all([
+    previewMode ? getDraftSiteContent() : getSiteContent(),
+    listPublishedSeoArticles(),
+  ]);
 
   const pm = content.siteSettings.performanceMode;
 
@@ -151,6 +155,7 @@ export default async function RootLayout({
             homeLayout={content.homeLayout}
             siteContent={content}
             siteSettings={content.siteSettings}
+            seoArticles={seoArticles}
           />
           <div className="flex min-h-0 flex-1 flex-col pt-[var(--site-header-height,4.25rem)]">
             {children}

@@ -2,6 +2,9 @@
 
 /** URL hash menuju section beranda (`/#layanan`) — digunakan SiteHeader */
 
+/** Event setelah navigasi hash beranda — dipakai pulse ringan pada section target. */
+export const LANDING_SECTION_ENTER_EVENT = "landing-section-enter";
+
 /** Jarak udara antara bawah sticky header dan tepi atas section target (px). */
 const ANCHOR_BELOW_HEADER_GAP_PX = 12;
 
@@ -28,6 +31,14 @@ function scrollWindowToY(top: number): void {
     behavior = "smooth";
   }
   window.scrollTo({ top: y, behavior });
+}
+
+/** Setelah scroll ke anchor, beri sinyal agar section target bisa dipulse (animasi “pindah section”). */
+function dispatchLandingSectionEnter(hash: string, delayMs: number): void {
+  if (typeof window === "undefined") return;
+  window.setTimeout(() => {
+    window.dispatchEvent(new CustomEvent(LANDING_SECTION_ENTER_EVENT, { detail: { hash } }));
+  }, delayMs);
 }
 
 /** Posisikan tepi atas `el` tepat di bawah bilah sticky (tinggi aktual dari layout). */
@@ -77,6 +88,15 @@ export function scrollToLandingNavHref(href: string): void {
     const el = landingScrollTarget(effectiveHash);
     if (el) {
       scrollTargetBelowStickyHeader(el);
+      let motionDelay = 420;
+      try {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          motionDelay = 80;
+        }
+      } catch {
+        motionDelay = 420;
+      }
+      dispatchLandingSectionEnter(effectiveHash, motionDelay);
       return;
     }
     if (attempts <= 36) window.setTimeout(run, 42);

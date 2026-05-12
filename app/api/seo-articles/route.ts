@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
     const file = await readSeoArticlesFile();
     return noStoreJson(file);
   } catch {
-    return NextResponse.json({ error: "Gagal membaca artikel SEO." }, { status: 500 });
+    return NextResponse.json({ error: "Gagal membaca daftar artikel." }, { status: 500 });
   }
 }
 
@@ -74,7 +74,7 @@ export async function PUT(req: NextRequest) {
       const first = error.issues[0];
       return NextResponse.json({ error: first?.message ?? "Validasi gagal." }, { status: 400 });
     }
-    const msg = error instanceof Error ? error.message : "Gagal menyimpan artikel SEO.";
+    const msg = error instanceof Error ? error.message : "Gagal menyimpan daftar artikel.";
     return NextResponse.json({ error: msg }, { status: 400 });
   }
 }

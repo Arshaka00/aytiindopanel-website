@@ -14,6 +14,7 @@ import {
 import { useRouter } from "next/navigation";
 
 import { CmsToastStack, type ToastItem } from "@/components/site-cms/cms-toast-stack";
+import { isSiteCmsSurfaceOriginAllowed } from "@/lib/cms-chrome-gate";
 import type { SiteContent } from "@/lib/site-content";
 
 const SiteMediaLibraryModal = dynamic(
@@ -191,7 +192,9 @@ export function SiteCmsProvider({ children }: { children: ReactNode }) {
       try {
         const r = await fetch("/api/gallery-admin/eligibility", { credentials: "include" });
         const j = (await r.json().catch(() => ({}))) as { eligible?: boolean };
-        if (!cancelled) setEligible(r.ok && j.eligible === true);
+        const apiOk = r.ok && j.eligible === true;
+        const originOk = isSiteCmsSurfaceOriginAllowed();
+        if (!cancelled) setEligible(apiOk && originOk);
       } catch {
         if (!cancelled) setEligible(false);
       }

@@ -47,6 +47,8 @@ const siteContentSchemaBase = z
       mobileMenuAriaLabel: z.string().min(1),
       mobileMenuOpenAriaLabel: z.string().min(1),
       mobileMenuCloseAriaLabel: z.string().min(1),
+      siteSearchPlaceholder: z.string().min(1).optional(),
+      siteSearchNoResultsText: z.string().min(1).optional(),
       navItems: z.array(navItemSchema).min(1),
       mobileNavIds: z.array(z.string().min(1)),
     }),
@@ -56,8 +58,16 @@ const siteContentSchemaBase = z
         headingMiddle: cmsRichTextField.optional(),
         headingLine2: cmsRichTextField,
         slides: z.array(z.object({ src: z.string().min(1) })).min(1),
-        ctaWhatsApp: z.object({ label: z.string().min(1), message: z.string().min(1) }),
-        ctaSecondary: z.object({ label: z.string().min(1), href: z.string().min(1) }),
+        ctaWhatsApp: z.object({
+          label: z.string().min(1),
+          message: z.string().min(1),
+          ariaLabel: z.string().min(1).optional(),
+        }),
+        ctaSecondary: z.object({
+          label: z.string().min(1),
+          href: z.string().min(1),
+          ariaLabel: z.string().min(1).optional(),
+        }),
       })
       .passthrough(),
     tentang: z.object({ heading: z.string().min(1), lead: z.string().min(1), body: z.string().min(1) }),

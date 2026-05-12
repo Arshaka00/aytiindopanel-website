@@ -37,7 +37,7 @@ function resolveRelated(article: SeoArticle, published: SeoArticle[]) {
   return article.relatedSlugs
     .map((s) => bySlug.get(s))
     .filter((x): x is SeoArticle => Boolean(x))
-    .map((a) => ({ slug: a.slug, title: a.title, deck: a.deck }));
+    .map((a) => ({ slug: a.slug, title: a.title, deck: a.deck, heroImage: a.heroImage }));
 }
 
 export default async function ArtikelDetailPage({ params }: Props) {

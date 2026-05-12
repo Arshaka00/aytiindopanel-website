@@ -199,6 +199,10 @@ export type SiteContent = {
     mobileMenuAriaLabel: string;
     mobileMenuOpenAriaLabel: string;
     mobileMenuCloseAriaLabel: string;
+    /** Petunjuk di kotak pencarian header (dialog). */
+    siteSearchPlaceholder: string;
+    /** Teks saat tidak ada hasil di dialog pencarian. */
+    siteSearchNoResultsText: string;
     navItems: { id: string; label: string; shortLabel: string; href: string }[];
     mobileNavIds: string[];
   };
@@ -210,8 +214,8 @@ export type SiteContent = {
     headingLine2: CmsRichTextValue;
     intro: HeroIntroParts;
     prosesBadge: string;
-    ctaWhatsApp: { label: string; message: string };
-    ctaSecondary: { label: string; href: string };
+    ctaWhatsApp: { label: string; message: string; ariaLabel: string };
+    ctaSecondary: { label: string; href: string; ariaLabel: string };
     slides: HeroSlideEntry[];
     backgroundVideo: null | {
       src: string;

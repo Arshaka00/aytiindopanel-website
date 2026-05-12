@@ -347,7 +347,15 @@ export function SiteSettingsPanel({
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-300/90">CMS</p>
         <h1 className="text-2xl font-semibold text-white md:text-3xl">Site Settings</h1>
         <p className="text-sm text-slate-400">
-          Domain, kontak, SEO, draft→live, backup, dan mode publikasi — tanpa deploy ulang.
+          Domain, kontak, meta default beranda, organisasi/schema, draft→live, backup, dan mode publikasi —{" "}
+          <span className="text-slate-300">bukan</span> editor halaman{" "}
+          <code className="rounded bg-white/10 px-1 py-0.5 text-[11px] text-sky-200/90">/artikel</code>.
+        </p>
+        <p className="text-xs text-slate-500">
+          Tulisan di <code className="rounded bg-white/10 px-1 py-0.5 text-[11px] text-sky-200/90">/artikel</code>:{" "}
+          <Link href="/site-admin/seo-articles" className="font-medium text-emerald-300/95 hover:text-emerald-200 hover:underline">
+            Editor →
+          </Link>
         </p>
         <Link
           href="/site-admin"
@@ -1005,13 +1013,18 @@ export function SiteSettingsPanel({
       <div className={divider} />
 
       <section className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 shadow-lg backdrop-blur-md">
-        <h2 className="text-base font-semibold text-white">SEO & konten</h2>
-        <p className="mt-2 text-xs text-slate-400">
-          Terhubung ke metadata global, Open Graph, schema, dan blok footer opsional.
+        <h2 className="text-base font-semibold text-white">Meta default beranda &amp; pratinjau tautan</h2>
+        <p className="mt-2 text-xs leading-relaxed text-slate-400">
+          Untuk beranda (<code className="text-slate-300">/</code>) dan pratinjau default bila halaman lain kosong. Tiap
+          URL <code className="text-slate-300">/artikel/…</code> punya meta sendiri — sunting lewat{" "}
+          <Link href="/site-admin/seo-articles" className="text-emerald-300/95 hover:text-emerald-200 hover:underline">
+            editor /artikel
+          </Link>
+          .
         </p>
         <div className="mt-4 space-y-4">
           <div>
-            <FieldLabel>Meta title</FieldLabel>
+            <FieldLabel hint="Judul default situs (bukan judul per artikel).">Meta title (beranda)</FieldLabel>
             <input
               type="text"
               value={settings.seoContent.metaTitle}
@@ -1020,7 +1033,7 @@ export function SiteSettingsPanel({
             />
           </div>
           <div>
-            <FieldLabel>Meta description</FieldLabel>
+            <FieldLabel hint="Ringkasan default untuk beranda & pratinjau sosial.">Meta description (beranda)</FieldLabel>
             <textarea
               value={settings.seoContent.metaDescription}
               onChange={(e) => updateSeo({ metaDescription: e.target.value })}
@@ -1029,7 +1042,9 @@ export function SiteSettingsPanel({
             />
           </div>
           <div>
-            <FieldLabel hint="Pisahkan dengan koma.">Keywords</FieldLabel>
+            <FieldLabel hint="Kata kunci umum situs; pisahkan dengan koma. Bukan daftar keyword artikel.">
+              Keywords (situs)
+            </FieldLabel>
             <textarea
               value={settings.seoContent.keywords}
               onChange={(e) => updateSeo({ keywords: e.target.value })}
@@ -1037,8 +1052,22 @@ export function SiteSettingsPanel({
               className="mt-2 w-full rounded-xl border border-white/15 bg-slate-950/50 px-3 py-2.5 text-sm text-white outline-none focus:border-sky-400/40 focus:ring-2 focus:ring-sky-500/25"
             />
           </div>
+        </div>
+      </section>
+
+      <div className={divider} />
+
+      <section className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 shadow-lg backdrop-blur-md">
+        <h2 className="text-base font-semibold text-white">Organisasi, layanan lokal &amp; footer</h2>
+        <p className="mt-2 text-xs leading-relaxed text-slate-400">
+          Schema organisasi, wilayah layanan, footer — tidak menggantikan isi tulisan di{" "}
+          <code className="text-slate-300">/artikel</code>.
+        </p>
+        <div className="mt-4 space-y-4">
           <div>
-            <FieldLabel>Deskripsi perusahaan (SEO / schema)</FieldLabel>
+            <FieldLabel hint="Teks deskripsi bisnis untuk schema & konteks SEO situs.">
+              Deskripsi perusahaan (schema)
+            </FieldLabel>
             <textarea
               value={settings.seoContent.companyDescription}
               onChange={(e) => updateSeo({ companyDescription: e.target.value })}
@@ -1059,8 +1088,8 @@ export function SiteSettingsPanel({
             />
           </div>
           <div>
-            <FieldLabel hint="Teks tambahan (mis. paragraf informasi) — tidak wajib.">
-              Konten SEO tambahan
+            <FieldLabel hint="Paragraf tambahan situs (opsional). Bukan isi halaman /artikel.">
+              Konten tambahan situs
             </FieldLabel>
             <textarea
               value={settings.seoContent.additionalSeoContent}
@@ -1070,9 +1099,7 @@ export function SiteSettingsPanel({
             />
           </div>
           <div>
-            <FieldLabel hint="Ditampilkan di footer situs (teks biasa, ramah SEO).">
-              Footer SEO text
-            </FieldLabel>
+            <FieldLabel hint="Ditampilkan di footer situs (teks biasa, ramah SEO).">Footer SEO text</FieldLabel>
             <textarea
               value={settings.seoContent.footerSeoText}
               onChange={(e) => updateSeo({ footerSeoText: e.target.value })}

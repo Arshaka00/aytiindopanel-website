@@ -10,6 +10,9 @@ export type ProdukCatalogViewProps = {
   content: SiteContent;
 };
 
+const H1_CLASS =
+  "text-balance bg-gradient-to-b from-foreground to-foreground/80 bg-clip-text text-[clamp(1.5rem,4.5vw+0.6rem,2.25rem)] font-semibold leading-[1.15] tracking-[-0.03em] text-transparent dark:from-white dark:via-slate-100 dark:to-slate-300/90 md:text-4xl md:leading-[1.12] lg:text-[2.4rem]";
+
 /**
  * Katalog produk — hero & shell server-rendered; filter, pencarian, grid, & motion di client.
  */
@@ -18,6 +21,9 @@ export function ProdukCatalogView({ content }: ProdukCatalogViewProps) {
   const items = buildProdukCatalogList(content);
   const segmentCount = new Set(items.map((i) => i.sectionKey)).size;
   const totalEntries = items.length;
+
+  /** Hero katalog terpisah dari `produk.heading` / `produk.lead` (itu untuk section `/#produk`). */
+  const catalogH1 = "Katalog produk";
 
   return (
     <div className="relative min-h-full overflow-x-clip">
@@ -34,21 +40,18 @@ export function ProdukCatalogView({ content }: ProdukCatalogViewProps) {
         aria-hidden
       />
 
-      <div className="mx-auto max-w-[min(100%,80rem)] px-3.5 py-5 sm:px-6 sm:py-7 md:px-9 md:py-9 lg:px-10 lg:py-10">
+      <div className="mx-auto max-w-[min(100%,80rem)] px-3.5 py-4 sm:px-6 sm:py-5 md:px-9 md:py-6 lg:px-10 lg:py-7">
         <header className="mx-auto max-w-3xl text-center">
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.28em] text-sky-800/95 dark:text-sky-300/88">
-            Katalog produk
+          <h1 className={`${H1_CLASS} mt-0`}>{catalogH1}</h1>
+          <p className="mt-1.5 text-xs font-medium leading-snug text-muted-foreground/90 md:mt-2 md:text-sm">
+            {brand}
           </p>
-          <p className="mt-1 text-xs font-medium leading-snug text-muted-foreground/90 md:text-sm">{brand}</p>
-          <div className="mx-auto mt-2 h-px w-20 rounded-full bg-gradient-to-r from-transparent via-sky-500/40 to-transparent dark:via-sky-400/40 md:mt-2.5" />
-          <h1 className="mt-3 text-balance bg-gradient-to-b from-foreground to-foreground/80 bg-clip-text text-[clamp(1.5rem,4.5vw+0.6rem,2.25rem)] font-semibold leading-[1.15] tracking-[-0.03em] text-transparent dark:from-white dark:via-slate-100 dark:to-slate-300/90 md:mt-4 md:text-4xl md:leading-[1.12] lg:mt-5 lg:text-[2.4rem]">
-            {content.produk.heading}
-          </h1>
-          <p className="mx-auto mt-2 max-w-2xl text-pretty text-[0.9375rem] leading-[1.58] text-muted-foreground sm:text-base sm:leading-[1.62] md:mt-3 md:max-w-3xl md:text-lg md:leading-[1.68]">
-            {content.produk.lead}
-          </p>
+          <div
+            className="mx-auto mt-2 h-px w-20 rounded-full bg-gradient-to-r from-transparent via-sky-500/40 to-transparent dark:via-sky-400/40 md:mt-2.5"
+            aria-hidden
+          />
 
-          <div className="mx-auto mt-4 grid max-w-2xl grid-cols-2 gap-1.5 sm:mt-5 sm:flex sm:max-w-xl sm:flex-wrap sm:justify-center sm:gap-2.5 md:mt-6 md:gap-3">
+          <div className="mx-auto mt-3 grid max-w-2xl grid-cols-2 gap-1.5 sm:mt-3.5 sm:flex sm:max-w-xl sm:flex-wrap sm:justify-center sm:gap-2.5 md:mt-4 md:gap-3">
             <div
               className={mergeAytiCardClass(
                 "rounded-lg border border-border/60 bg-background/90 px-2 py-2.5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] backdrop-blur-sm sm:min-w-[10rem] sm:flex-1 sm:rounded-2xl sm:px-5 sm:py-3 dark:border-white/[0.07] dark:bg-white/[0.04] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]",
@@ -79,7 +82,7 @@ export function ProdukCatalogView({ content }: ProdukCatalogViewProps) {
         {items.length === 0 ? (
           <div
             className={mergeAytiCardClass(
-              "mx-auto mt-7 max-w-lg rounded-2xl border border-dashed border-border/80 bg-muted-bg/30 px-5 py-7 text-center md:mt-9 md:py-9",
+              "mx-auto mt-5 max-w-lg rounded-2xl border border-dashed border-border/80 bg-muted-bg/30 px-5 py-7 text-center md:mt-6 md:py-9",
             )}
           >
             <p className="text-lg font-semibold text-foreground">Belum ada entri katalog</p>
@@ -88,9 +91,9 @@ export function ProdukCatalogView({ content }: ProdukCatalogViewProps) {
             </p>
           </div>
         ) : (
-          <div className="mt-4 md:mt-6 lg:mt-7">
+          <div className="mt-3 md:mt-4 lg:mt-5">
             <div
-              className="mx-auto mb-3 h-px max-w-4xl bg-gradient-to-r from-transparent via-border to-transparent dark:via-white/10 md:mb-5"
+              className="mx-auto mb-2.5 h-px max-w-4xl bg-gradient-to-r from-transparent via-border to-transparent dark:via-white/10 md:mb-3.5"
               aria-hidden
             />
             <ProdukCatalogExperience items={items} />
@@ -98,7 +101,7 @@ export function ProdukCatalogView({ content }: ProdukCatalogViewProps) {
         )}
 
         <footer
-          className={`mx-auto mt-4 max-w-2xl border-t border-border/60 pt-4 text-center md:mt-5 md:pt-5 ${
+          className={`mx-auto mt-3 max-w-2xl border-t border-border/60 pt-3 text-center md:mt-4 md:pt-4 ${
             items.length > 0
               ? "pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] md:pb-8"
               : "pb-5 md:pb-8"

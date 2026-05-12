@@ -2,15 +2,16 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
+import { pickScrollRevealPreset } from "@/lib/scroll-reveal-preset";
+
 /**
- * Premium scroll-reveal: fade + translateY ringan, satu kali saat masuk viewport.
+ * Premium scroll-reveal: fade + transform ringan, satu kali saat masuk viewport.
  *
  * Karakter visual (lihat juga `app/globals.css` → `.scroll-reveal-section`):
- *   - opacity 0 → 1
- *   - translateY 16–24px → 0 (tergantung viewport)
- *   - durasi: mobile fade `--mobile-scroll-reveal-duration` di globals (tanpa translate); tablet/desktop lebih panjang + geser
+ *   - opacity 0 → 1 + translate / scale halus (preset bervariasi per `sectionKey`, stabil per build)
+ *   - desktop: jarak & durasi lebih cinematic; mobile: `translate3d` ringan + opacity (GPU-friendly)
  *   - cubic-bezier(0.22, 1, 0.36, 1) — easing premium / cinematic
- *   - tanpa rotate / blur / parallax — GPU-friendly, aman di iPhone Safari & Android Chrome
+ *   - tanpa rotate / blur / parallax — aman di iPhone Safari & Android Chrome
  *
  * Kenapa pakai IntersectionObserver + class CSS (bukan Framer Motion):
  *   - lebih ringan: tidak ada per-frame React render saat reveal
@@ -44,6 +45,12 @@ export type ScrollRevealSectionProps = {
   rootMargin?: string;
   /** Optional id pada div pembungkus (mis. anchor lokal). */
   id?: string;
+  /**
+   * Kunci section beranda — memilih preset animasi reveal secara deterministik
+   * (variasi “acak” antar section, konsisten SSR + mobile + desktop).
+   * Hanya berpengaruh jika `variant` = `"section"`.
+   */
+  sectionKey?: string;
 };
 
 /** Ambang “sudah terlihat saat mount”: jika top section < 85% tinggi viewport, anggap sudah dilihat. */
@@ -57,9 +64,15 @@ export function ScrollRevealSection({
   amount,
   rootMargin = "0px 0px -8% 0px",
   id,
+  sectionKey,
 }: ScrollRevealSectionProps) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [revealed, setRevealed] = useState(false);
+
+  const preset =
+    variant === "section" && sectionKey?.trim()
+      ? pickScrollRevealPreset(sectionKey.trim())
+      : undefined;
 
   useEffect(() => {
     const el = ref.current;
@@ -118,7 +131,7 @@ export function ScrollRevealSection({
       cancelled = true;
       io.disconnect();
     };
-  }, [variant, rootMargin, amount]);
+  }, [variant, rootMargin, amount, sectionKey]);
 
   const [revealComplete, setRevealComplete] = useState(false);
 
@@ -156,9 +169,14 @@ export function ScrollRevealSection({
       ref={ref}
       id={id}
       className={finalClass}
+      data-scroll-reveal-preset={preset}
       data-reveal-complete={revealComplete ? "1" : undefined}
       onTransitionEnd={onTransitionEnd}
-      style={delay > 0 && !revealed ? { transitionDelay: `${delay}ms` } : undefined}
+      style={
+        delay > 0 && !revealed
+          ? { transitionDelay: `${delay}ms` }
+          : undefined
+      }
     >
       {children}
     </div>
