@@ -58,6 +58,20 @@ export function SiteAdminDashboard() {
           </span>
         </Link>
 
+        <Link
+          href="/site-admin/seo-articles"
+          className="group block rounded-2xl border border-emerald-400/35 bg-gradient-to-br from-emerald-500/15 to-slate-900/60 p-6 shadow-lg backdrop-blur-md transition hover:border-emerald-300/55 hover:from-emerald-500/25"
+        >
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-emerald-300/90">SEO</p>
+          <h2 className="mt-2 text-lg font-semibold text-white md:text-xl">Artikel SEO</h2>
+          <p className="mt-2 text-sm leading-relaxed text-slate-300">
+            Cold storage, cold room, blast freezer — konten panjang dengan TOC, FAQ, schema, dan internal link.
+          </p>
+          <span className="mt-4 inline-block text-sm font-semibold text-emerald-200 group-hover:underline">
+            Buka editor artikel →
+          </span>
+        </Link>
+
         <div className="grid gap-4 sm:grid-cols-2">
           <Link
             href="/"

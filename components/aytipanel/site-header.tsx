@@ -86,7 +86,10 @@ function CmsBrandLogoImg({
       width={HEADER_LOGO_IMG_WIDTH}
       height={HEADER_LOGO_IMG_HEIGHT}
       className={className}
-      priority
+      priority={false}
+      fetchPriority="low"
+      decoding="async"
+      loading="eager"
     />
   );
 }
@@ -136,7 +139,10 @@ function HeaderLogoMark({
         alt=""
         width={HEADER_LOGO_IMG_WIDTH}
         height={HEADER_LOGO_IMG_HEIGHT}
-        priority
+        priority={false}
+        fetchPriority="low"
+        decoding="async"
+        loading="eager"
         className="dark:hidden"
         imageClassName={imgCls}
         uploadScope="partners"
@@ -151,7 +157,10 @@ function HeaderLogoMark({
         alt=""
         width={HEADER_LOGO_IMG_WIDTH}
         height={HEADER_LOGO_IMG_HEIGHT}
-        priority
+        priority={false}
+        fetchPriority="low"
+        decoding="async"
+        loading="eager"
         className="hidden dark:block"
         imageClassName={imgCls}
         uploadScope="partners"

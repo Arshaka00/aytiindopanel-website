@@ -157,6 +157,12 @@
         "label": "Galery proyek",
         "shortLabel": "Galery proyek",
         "href": "/gallery-project"
+      },
+      {
+        "id": "nav-artikel",
+        "label": "Artikel",
+        "shortLabel": "Artikel",
+        "href": "/artikel"
       }
     ],
     "mobileNavIds": [
@@ -166,7 +172,8 @@
       "nav-produk",
       "nav-proyek",
       "nav-kontak",
-      "nav-gallery-proyek"
+      "nav-gallery-proyek",
+      "nav-artikel"
     ]
   },
   "hero": {
@@ -655,7 +662,7 @@
         "id": "portfolio-cold-room-regional",
         "name": "Fasilitas Cold Chain Untuk Distribusi Supermarket",
         "location": "Karawang - Jawa Barat",
-        "workType": "Cold Storage, Chiller Room, Pembekuan Cepat (ABF), Anteroom & Loading",
+        "workType": "Cold Storage, Pembekuan Cepat (ABF), Anteroom & Loading",
         "videoSrc": "/images/gallery/WhatsApp%20Video%202026-05-07%20at%2011.02.55.mp4",
         "videoPosterSrc": "/images/layanan/instalasi-sistem-pendingin/1.jpg",
         "galleryPhotos": [
@@ -675,9 +682,9 @@
       },
       {
         "id": "portfolio-blast-freezer",
-        "name": "Food Processing Plant",
+        "name": "Pabrik Food Processing Plant",
         "location": "Tangerang - Banten",
-        "workType": "Cold Storage, Chiller Room, Pembekuan Cepat (ABF), Proses Area, Anteroom & Loading",
+        "workType": "Cold Storage, Chiller Room, Pembekuan Cepat (ABF) & Proses Area",
         "videoSrc": "/images/gallery/WhatsApp%20Video%202026-05-07%20at%2011.02.55.mp4",
         "videoPosterSrc": "/images/layanan/testing-commissioning/1.jpg",
         "galleryPhotos": [
@@ -697,9 +704,9 @@
       },
       {
         "id": "portfolio-chiller-logistik",
-        "name": "Gudang chiller logistik",
-        "location": "Nasional",
-        "workType": "Panel PU + zonasi suhu untuk SLA distribusi",
+        "name": "Rumah Pemotongan Ayam (RPA)",
+        "location": "Rembang - Jawa Tengah",
+        "workType": "Cold Storage, Pembekuan Cepat (ABF), Proses & Loading Area",
         "videoSrc": "/images/gallery/WhatsApp%20Video%202026-05-07%20at%2011.02.55.mp4",
         "videoPosterSrc": "/images/layanan/produksi-panel-pu-eps/1.jpg",
         "galleryPhotos": [
@@ -719,9 +726,9 @@
       },
       {
         "id": "portfolio-lini-fnb",
-        "name": "Lini produksi F&B",
-        "location": "Jakarta & sekitarnya",
-        "workType": "Cold room higienis + pintu industri",
+        "name": "Gudang Penyimpanan Ikan Laut 6.000 Ton",
+        "location": "Juwana - Jawa Tengah",
+        "workType": "Cold Storage, Anteroom & Loading Area",
         "videoSrc": "/images/gallery/WhatsApp%20Video%202026-05-07%20at%2011.02.55.mp4",
         "videoPosterSrc": "/images/layanan/konsultasi-desain-sistem/1.jpg",
         "galleryPhotos": [

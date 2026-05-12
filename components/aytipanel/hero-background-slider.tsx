@@ -22,8 +22,9 @@ export type HeroBackgroundSliderProps = {
   initialViewportIsMobile?: boolean;
 };
 
-/** `sizes`: mobile ~lebar viewport; tablet/desktop cap 1920px decode (cukup untuk full-bleed hero). */
-const HERO_SLIDE_SIZES = "(max-width: 767px) 100vw, min(100vw, 1920px)";
+/** `sizes`: bantu Next pilih lebar decode mendekati viewport (mobile-first, LCP). */
+const HERO_SLIDE_SIZES =
+  "(max-width: 480px) 100vw, (max-width: 767px) 100vw, (max-width: 1536px) 100vw, 1920px";
 
 const HERO_IMG_BASELINE = { width: 1920, height: 1080 } as const;
 
@@ -89,9 +90,9 @@ function useDeferNonPrimaryHeroSlides(slideCount: number) {
     };
     const idleId =
       typeof window.requestIdleCallback === "function"
-        ? window.requestIdleCallback(unlock, { timeout: 2200 })
+        ? window.requestIdleCallback(unlock, { timeout: 2000 })
         : undefined;
-    const timeoutId = window.setTimeout(unlock, 2800);
+    const timeoutId = window.setTimeout(unlock, 2600);
     return () => {
       cancelled = true;
       if (idleId !== undefined && typeof window.cancelIdleCallback === "function") {

@@ -78,9 +78,9 @@ function VisitorAnalyticsTrackerInner() {
       | ((cb: () => void, opts?: { timeout: number }) => number)
       | undefined;
     if (typeof ric === "function") {
-      ric(() => run(), { timeout: 2500 });
+      ric(() => run(), { timeout: 3200 });
     } else {
-      globalThis.setTimeout(run, 1200);
+      globalThis.setTimeout(run, 1600);
     }
   }, [pathname, searchParams]);
 
@@ -104,8 +104,9 @@ function VisitorAnalyticsTrackerInner() {
       });
     };
 
-    document.addEventListener("click", onWaClick, true);
-    return () => document.removeEventListener("click", onWaClick, true);
+    const opts = { capture: true, passive: true } as const;
+    document.addEventListener("click", onWaClick, opts);
+    return () => document.removeEventListener("click", onWaClick, opts);
   }, []);
 
   return null;

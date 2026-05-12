@@ -21,6 +21,8 @@ const geistSans = Geist({
   subsets: ["latin"],
   display: "swap",
   adjustFontFallback: true,
+  /** Kurangi kontensi preload dengan gambar hero (LCP) — Sora tetap preload untuk judul hero. */
+  preload: false,
 });
 
 const geistMono = Geist_Mono({

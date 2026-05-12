@@ -157,6 +157,12 @@
         "label": "Galery proyek",
         "shortLabel": "Galery proyek",
         "href": "/gallery-project"
+      },
+      {
+        "id": "nav-artikel",
+        "label": "Artikel",
+        "shortLabel": "Artikel",
+        "href": "/artikel"
       }
     ],
     "mobileNavIds": [
@@ -166,7 +172,8 @@
       "nav-produk",
       "nav-proyek",
       "nav-kontak",
-      "nav-gallery-proyek"
+      "nav-gallery-proyek",
+      "nav-artikel"
     ]
   },
   "hero": {
