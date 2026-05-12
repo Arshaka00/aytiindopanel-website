@@ -1,9 +1,10 @@
 /**
- * CMS file storage di Vercel: pakai Blob jika `BLOB_READ_WRITE_TOKEN` ada.
- * Tanpa Blob di Vercel, fallback filesystem gagal menulis (`EROFS` di `/var/task`).
+ * File CMS (`live.json`, `draft.json`, …) disimpan di Vercel Blob jika env token ada.
+ * Berlaku di **localhost dan Vercel**: set `BLOB_READ_WRITE_TOKEN` di `.env.local` dengan token
+ * yang sama seperti Production agar konten identik dengan https://www.aytiindopanel.com/ .
+ * Tanpa token: fallback `data/site-content/` (lokal, tidak tersinkron dengan Blob production).
  */
 export function isProductionStorage(): boolean {
-  if (process.env.VERCEL !== "1") return false;
   return hasVercelBlobEnv();
 }
 
