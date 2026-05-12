@@ -2,6 +2,7 @@ import { del, get, head, list, put } from "@vercel/blob";
 
 import { getCmsBlobAccessMode } from "@/lib/cms-storage/env";
 import { captureException } from "@/lib/observability";
+import { logEvent } from "@/lib/structured-log";
 import type {
   BackupRow,
   CmsStorageMode,
@@ -67,6 +68,15 @@ function concatUint8Chunks(chunks: Uint8Array[]): Uint8Array {
   return out;
 }
 
+/** Baca gagal karena token/store — jangan spam `captureException` (bukan bug aplikasi). */
+function isExpectedBlobReadFailure(err: unknown): boolean {
+  const m = err instanceof Error ? err.message : String(err);
+  return (
+    /403|401|Forbidden|suspended|not authorized|store has been suspended|Failed to fetch blob/i.test(m) ||
+    /BlobStoreSuspended|BlobNotFound/i.test(m)
+  );
+}
+
 async function readStreamAsUtf8(stream: ReadableStream<Uint8Array>): Promise<string> {
   const reader = stream.getReader();
   const chunks: Uint8Array[] = [];
@@ -88,7 +98,14 @@ async function getCmsBlobText(pathname: string): Promise<string | null> {
     if (!res || res.statusCode !== 200 || !res.stream) return null;
     return await readStreamAsUtf8(res.stream);
   } catch (error) {
-    void captureException(error, { area: "vercel-blob-site-content-storage.getCmsBlobText", pathname });
+    if (isExpectedBlobReadFailure(error)) {
+      logEvent("warn", "vercel_blob_read_skipped", {
+        pathname,
+        message: error instanceof Error ? error.message : String(error),
+      });
+    } else {
+      void captureException(error, { area: "vercel-blob-site-content-storage.getCmsBlobText", pathname });
+    }
     return null;
   }
 }

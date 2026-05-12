@@ -13,6 +13,7 @@ import {
   writeSiteContentToStorage,
 } from "@/lib/site-content-storage";
 import { validateSiteContentStrict, type SiteContentValidationError } from "@/lib/site-content-schema";
+import { logEvent } from "@/lib/structured-log";
 
 export type { HeroIntroParts, SiteContent, SiteContentOverridesFile } from "@/lib/site-content-model";
 
@@ -116,9 +117,18 @@ async function migrateLegacyOverridesIfNeeded(defaults: SiteContent): Promise<Si
   const overrides = await readSiteContentOverrides();
   const merged = mergeDefaultsWithOverrides(defaults, overrides);
   const normalized = normalizeSiteContent(merged);
-  await Promise.all([
-    writeSiteContentToStorage("live", normalized),
-    writeSiteContentToStorage("draft", normalized),
-  ]);
-  return normalized;
+  try {
+    await Promise.all([
+      writeSiteContentToStorage("live", normalized),
+      writeSiteContentToStorage("draft", normalized),
+    ]);
+    return normalized;
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    logEvent("warn", "site_content_legacy_migrate_skipped", {
+      message: msg.slice(0, 280),
+      hint: "Periksa Vercel Blob: store aktif, token cocok dengan store, CMS_BLOB_PREFIX benar.",
+    });
+    return null;
+  }
 }

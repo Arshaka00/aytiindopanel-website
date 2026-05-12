@@ -7,6 +7,7 @@ import type { SiteContent } from "@/lib/site-content-model";
 import { deepMergeSitePatch, validateSiteContentMinimal } from "@/lib/site-content-merge";
 import { normalizeSiteContent } from "@/lib/site-content-normalize";
 import { validateSiteContentStrict } from "@/lib/site-content-schema";
+import { logEvent } from "@/lib/structured-log";
 
 const MAX_BACKUPS = 20;
 
@@ -123,11 +124,20 @@ export async function readSiteContentFromStorage(mode: StorageMode, fallback: Si
   const originalJson = JSON.stringify(parsed);
   const mergedJson = JSON.stringify(normalizedMerged);
   if (originalJson !== mergedJson) {
-    await runSerialized(async () => {
-      await createBackupForMode(mode);
-      await port.writeJsonByMode(mode, normalizedMerged);
-      await writeStateVersion();
-    });
+    try {
+      await runSerialized(async () => {
+        await createBackupForMode(mode);
+        await port.writeJsonByMode(mode, normalizedMerged);
+        await writeStateVersion();
+      });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      logEvent("warn", "site_content_normalize_persist_skipped", {
+        mode,
+        message: msg.slice(0, 240),
+        reason: "blob_or_storage_write_failed",
+      });
+    }
   }
 
   return normalizedMerged;
