@@ -125,7 +125,7 @@ async function migrateLegacyOverridesIfNeeded(defaults: SiteContent): Promise<Si
   } catch (error) {
     logEvent("warn", "site_content_migrate_persist_skipped", {
       message: error instanceof Error ? error.message : String(error),
-      hint: "Blob/token tidak valid, store ditangguhkan, atau EROFS — migrasi overrides ke penyimpanan CMS dilewati; pakai fallback baked defaults.",
+      hint: "Penyimpanan `data/site-content/` tidak dapat ditulis (EROFS / izin). Migrasi overrides dilewati; pakai fallback baked defaults.",
     });
     return null;
   }

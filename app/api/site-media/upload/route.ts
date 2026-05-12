@@ -6,7 +6,6 @@ import sharp from "sharp";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { rateLimitRequest } from "@/lib/api-rate-limit";
-import { hasVercelBlobEnv } from "@/lib/cms-storage/env";
 import { hasValidAdminSessionFromRequest, isAllowedAdminDevice } from "@/lib/gallery-admin-auth";
 import { uploadSiteMediaToPublicBlobIfConfigured } from "@/lib/site-media-blob-upload";
 import {
@@ -105,7 +104,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Scope tidak dikenal." }, { status: 400 });
   }
 
-  /** Dengan `BLOB_READ_WRITE_TOKEN`, simpan ke Blob **`public`** — URL langsung dipakai di production tanpa Git. */
+  /** Opsional: dengan `BLOB_READ_WRITE_TOKEN`, unggah ke Blob publik; jika tidak, simpan ke `public/`. */
   try {
     const blobResult = await uploadSiteMediaToPublicBlobIfConfigured({
       scope,
@@ -120,16 +119,6 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Upload gagal.";
     return NextResponse.json({ error: msg }, { status: 400 });
-  }
-
-  if (process.env.VERCEL === "1" && !hasVercelBlobEnv()) {
-    return NextResponse.json(
-      {
-        error:
-          "Upload di hosting ini memerlukan BLOB_READ_WRITE_TOKEN (filesystem deployment tidak bisa menyimpan berkas secara tetap).",
-      },
-      { status: 503 },
-    );
   }
 
   if (scope === "hero") {

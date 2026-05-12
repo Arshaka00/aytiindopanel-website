@@ -3,7 +3,7 @@ import path from "node:path";
 
 import sharp from "sharp";
 
-import { hasVercelBlobEnv } from "@/lib/cms-storage/env";
+import { isSiteMediaBlobUploadEnabled } from "@/lib/site-media-blob-env";
 import { MEDIA_SCOPE_TO_DIR, type MediaLibraryScope } from "@/lib/site-media-constants";
 import { blobSiteMediaUploadPrefix, putPublicSiteMediaBlob } from "@/lib/site-media-public-blob";
 
@@ -57,8 +57,8 @@ export type SiteMediaBlobUploadResult = {
 };
 
 /**
- * Jika `BLOB_READ_WRITE_TOKEN` ada, unggah ke Vercel Blob **`access: public`**
- * sehingga URL langsung dipakai di production tanpa commit file ke Git.
+ * Jika `BLOB_READ_WRITE_TOKEN` di-set, unggah ke Vercel Blob **`access: public`** (opsional).
+ * Tanpa token, upload memakai `public/` di repo. Konten CMS JSON tidak pernah disimpan di Blob.
  */
 export async function uploadSiteMediaToPublicBlobIfConfigured(params: {
   scope: string;
@@ -67,7 +67,7 @@ export async function uploadSiteMediaToPublicBlobIfConfigured(params: {
   file: File;
   mime: string;
 }): Promise<SiteMediaBlobUploadResult | null> {
-  if (!hasVercelBlobEnv()) return null;
+  if (!isSiteMediaBlobUploadEnabled()) return null;
 
   const { scope, segment, projectId, file, mime } = params;
   const isImage = mime.startsWith("image/");

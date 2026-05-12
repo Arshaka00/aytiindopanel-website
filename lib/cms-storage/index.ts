@@ -1,9 +1,6 @@
-import { isProductionStorage } from "@/lib/cms-storage/env";
 import { createFilesystemSiteContentStorage } from "@/lib/cms-storage/filesystem-site-content-storage";
 import type { SiteContentFileStoragePort } from "@/lib/cms-storage/site-content-file-storage-port";
-import { createVercelBlobSiteContentStorage } from "@/lib/cms-storage/vercel-blob-site-content-storage";
 
-export { hasVercelBlobEnv, isProductionStorage } from "@/lib/cms-storage/env";
 export type {
   BackupRow,
   CmsStorageMode,
@@ -11,17 +8,14 @@ export type {
   SiteContentStateFile,
 } from "@/lib/cms-storage/site-content-file-storage-port";
 
-/** Adapter filesystem lokal (`data/site-content/…`). */
+/** Adapter filesystem: `data/site-content/` (ikut repository / build). */
 export { createFilesystemSiteContentStorage as filesystemStorage } from "@/lib/cms-storage/filesystem-site-content-storage";
-
-/** Adapter Vercel Blob (pathname prefix `CMS_BLOB_PREFIX`). */
-export { createVercelBlobSiteContentStorage as vercelBlobStorage } from "@/lib/cms-storage/vercel-blob-site-content-storage";
 
 let cachedPort: SiteContentFileStoragePort | null = null;
 
 export function getSiteContentFileStoragePort(): SiteContentFileStoragePort {
   if (!cachedPort) {
-    cachedPort = isProductionStorage() ? createVercelBlobSiteContentStorage() : createFilesystemSiteContentStorage();
+    cachedPort = createFilesystemSiteContentStorage();
   }
   return cachedPort;
 }

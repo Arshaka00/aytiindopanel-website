@@ -10,7 +10,7 @@ export type SiteContentStateFile = {
 export type BackupRow = { file: string; createdAt: string; size: number };
 
 /**
- * Penyimpanan file CMS (live/draft/state/audit/backups) — filesystem lokal atau Vercel Blob.
+ * Penyimpanan file CMS (live/draft/state/audit/backups) — implementasi filesystem (`data/site-content/`).
  */
 export interface SiteContentFileStoragePort {
   readJsonByMode(mode: CmsStorageMode): Promise<unknown | null>;

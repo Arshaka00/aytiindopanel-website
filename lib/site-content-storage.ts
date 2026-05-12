@@ -134,7 +134,7 @@ export async function readSiteContentFromStorage(mode: StorageMode, fallback: Si
       logEvent("warn", "site_content_normalize_persist_skipped", {
         mode,
         message: error instanceof Error ? error.message : String(error),
-        hint: "Normalisasi konten tidak bisa ditulis ke penyimpanan (Blob ditangguhkan/403/token salah). Halaman tetap memakai hasil normalisasi di memori.",
+        hint: "Normalisasi konten tidak bisa ditulis ke `data/site-content/` (EROFS / izin). Halaman tetap memakai hasil normalisasi di memori.",
       });
     }
   }

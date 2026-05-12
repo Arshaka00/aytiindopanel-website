@@ -1,8 +1,8 @@
 import { put } from "@vercel/blob";
 
 /**
- * Prefix pathname Blob untuk upload media situs (public URL).
- * Default: `{CMS_BLOB_PREFIX}/media-uploads` agar terpisah dari JSON CMS (private).
+ * Prefix pathname Blob untuk upload media situs (public URL), opsional.
+ * Default: `{CMS_BLOB_PREFIX}/media-uploads` (bukan file JSON CMS).
  */
 export function blobSiteMediaUploadPrefix(): string {
   const explicit = process.env.CMS_BLOB_MEDIA_PREFIX?.trim().replace(/^\/+|\/+$/g, "");
