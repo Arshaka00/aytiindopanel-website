@@ -45,7 +45,13 @@ export async function POST(req: NextRequest) {
 
     if (!result.ok) {
       const status =
-        result.code === "LOCK_BUSY" ? 409 : result.code === "DEBOUNCED" ? 429 : result.code === "PUBLISH_FAILED" ? 400 : 500;
+        result.code === "LOCK_BUSY"
+          ? 409
+          : result.code === "DEBOUNCED"
+            ? 429
+            : result.code === "PUBLISH_FAILED" || result.code === "GLOBAL_PUBLISH_DISABLED"
+              ? 400
+              : 500;
       return NextResponse.json({ ok: false, code: result.code, error: result.message }, { status });
     }
 

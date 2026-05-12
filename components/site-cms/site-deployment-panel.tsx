@@ -43,6 +43,7 @@ function truncateMiddle(s: string | null, max = 44): string {
 }
 
 type GlobalPublishStatusView = {
+  globalPublishWorkflowEnabled?: boolean;
   status: {
     lastAttemptAt: string | null;
     lastSuccessAt: string | null;
@@ -521,7 +522,7 @@ function DeployProductionStrip({
           <p className="m-0 mt-1.5 text-amber-50/90">
             Host ini memakai <code className="rounded bg-black/25 px-1">VERCEL_ENV=preview</code>. Variabel yang di Vercel hanya di-scope{" "}
             <strong>Production</strong> (mis. <code className="rounded bg-black/25 px-1">CMS_DEPLOY_HOOK_URL</code>){" "}
-            <strong>tidak terbaca</strong> di deployment preview. Buka Deployment Center dari domain production (mis.{" "}
+            <strong>tidak terbaca</strong> di deployment preview. Buka Git Deployment Flow dari domain production (mis.{" "}
             <strong>www.aytiindopanel.com</strong>), atau di Vercel salin env yang sama untuk environment{" "}
             <strong>Preview</strong> juga.
           </p>
@@ -700,7 +701,13 @@ export function SiteDeploymentPanel({
     };
   }, [loadGlobalPublishStatus]);
 
+  const gpEnabled = gpSnapshot?.globalPublishWorkflowEnabled !== false;
+
   useEffect(() => {
+    if (gpSnapshot?.globalPublishWorkflowEnabled === false) {
+      setVercelPoll(null);
+      return;
+    }
     const mon = gpSnapshot?.vercelBuildMonitor;
     const terminal = new Set(["READY", "ERROR", "CANCELED", "DELETED"]);
     if (!mon?.supported || !mon.deploymentUid) {
@@ -753,6 +760,7 @@ export function SiteDeploymentPanel({
       if (iv) clearInterval(iv);
     };
   }, [
+    gpSnapshot?.globalPublishWorkflowEnabled,
     gpSnapshot?.vercelBuildMonitor?.supported,
     gpSnapshot?.vercelBuildMonitor?.deploymentUid,
     gpSnapshot?.vercelBuildMonitor?.readyState,
@@ -760,6 +768,7 @@ export function SiteDeploymentPanel({
   ]);
 
   const publishGlobal = async () => {
+    if (gpSnapshot?.globalPublishWorkflowEnabled === false) return;
     if (globalPublishBusy) return;
     setGlobalPublishBusy(true);
     setGlobalPublishFeedback("Menjalankan: publish → cache → deploy production…");
@@ -820,7 +829,7 @@ export function SiteDeploymentPanel({
         } else {
           const rawSkip = j.deployHookMessage ?? "dilewati.";
           const skipUi = isOutdatedDeployHookSkippedMessage(rawSkip)
-            ? "dilewati (pesan konfigurasi lama dari server — jika env hook sudah benar, abaikan dan cek Deployment Center)."
+            ? "dilewati (pesan konfigurasi lama dari server — jika env hook sudah benar, abaikan dan cek Git Deployment Flow)."
             : rawSkip.slice(0, 160);
           deployLine = ` Deploy: ${skipUi}`;
         }
@@ -844,14 +853,28 @@ export function SiteDeploymentPanel({
     <div className="mx-auto max-w-3xl space-y-6 pb-16 md:max-w-4xl md:space-y-8">
       <header className="space-y-3 text-center md:space-y-4">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-200/80">CMS · operations</p>
-        <h1 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">Deployment Center</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">Git Deployment Flow</h1>
         <p className="mx-auto max-w-lg text-sm leading-relaxed text-slate-400">
-          Mission control untuk tayang/maintenance pengunjung, publish global, deploy production, cache, dan monitoring.
-          Domain &amp; SEO ada di{" "}
-          <Link className="font-medium text-cyan-300/90 hover:text-cyan-200 hover:underline" href="/site-admin/site-settings">
-            Site Settings
-          </Link>
-          .
+          {gpEnabled ? (
+            <>
+              Mission control untuk tayang/maintenance pengunjung, publish global, deploy production, cache, dan monitoring.
+              Domain &amp; SEO ada di{" "}
+              <Link className="font-medium text-cyan-300/90 hover:text-cyan-200 hover:underline" href="/site-admin/site-settings">
+                Site Settings
+              </Link>
+              .
+            </>
+          ) : (
+            <>
+              Production mengikuti deployment terbaru dari Git/Vercel. Semua perubahan frontend mengikuti hasil deploy branch{" "}
+              <strong className="font-medium text-slate-300">main</strong>. Workflow: localhost → git push → Vercel deploy →
+              live. Tayang/maintenance pengunjung tetap di{" "}
+              <Link className="font-medium text-cyan-300/90 hover:text-cyan-200 hover:underline" href="/site-admin/site-settings">
+                Site Settings
+              </Link>{" "}
+              dan kartu di bawah.
+            </>
+          )}
         </p>
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs">
           <Link
@@ -893,9 +916,16 @@ export function SiteDeploymentPanel({
             <code className="rounded bg-black/30 px-1">no-store</code> — waktu server:{" "}
             {formatIsoDateTime(gpSnapshot.deployRuntime.serverNowIso)}.
           </p>
+          {!gpEnabled ? (
+            <p className="mt-2 border-t border-white/[0.06] pt-2 text-[11px] leading-relaxed text-slate-400">
+              Publish global dinonaktifkan (<code className="rounded bg-black/30 px-1 text-[10px]">CMS_ENABLE_GLOBAL_PUBLISH=false</code>
+              ). Bandingkan marker ini dengan commit deployment Vercel production Anda.
+            </p>
+          ) : null}
         </section>
       ) : null}
 
+      {gpEnabled ? (
       <section
         id="deployment-center"
         aria-labelledby="deployment-center-heading"
@@ -1059,6 +1089,40 @@ export function SiteDeploymentPanel({
           </button>
         </div>
       </section>
+      ) : (
+        <section
+          id="deployment-center"
+          aria-labelledby="deployment-center-heading"
+          className="scroll-mt-24 rounded-2xl border border-violet-400/18 bg-gradient-to-br from-violet-500/[0.05] via-slate-950/58 to-slate-950/92 p-6 shadow-md shadow-black/20 backdrop-blur-md md:p-8"
+        >
+          <h2 id="deployment-center-heading" className="text-lg font-semibold tracking-tight text-white md:text-xl">
+            Ringkas
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">
+            Orkestrasi publish global, deploy hook, dan polling build dinonaktifkan. Gunakan marker build di atas dan
+            dashboard Vercel untuk memastikan production sesuai <code className="rounded bg-black/25 px-1 text-xs">main</code>.
+          </p>
+          <p className="mt-4">
+            <a
+              href="https://vercel.com/dashboard"
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm font-semibold text-sky-300/95 hover:text-sky-200 hover:underline"
+            >
+              Buka dashboard Vercel →
+            </a>
+          </p>
+          <div className="mt-6 flex flex-col gap-3 border-t border-white/[0.08] pt-6 sm:flex-row sm:justify-end">
+            <button
+              type="button"
+              onClick={() => void loadGlobalPublishStatus()}
+              className="rounded-lg border border-white/12 bg-white/[0.05] px-4 py-2.5 text-xs font-semibold text-slate-200 transition hover:bg-white/[0.08]"
+            >
+              Segarkan marker
+            </button>
+          </div>
+        </section>
+      )}
 
       <SitePublicationSettingsCard
         gateToken={gateToken}

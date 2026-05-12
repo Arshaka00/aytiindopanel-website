@@ -363,10 +363,10 @@ export function SiteSettingsPanel({
         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-300/75">System configuration</p>
         <p className="mx-auto max-w-lg text-sm leading-relaxed text-slate-400">
           Domain, brand, kontak, SEO, backup, dan utilitas lanjutan.{" "}
-          <strong className="font-semibold text-slate-300">Publikasi &amp; maintenance pengunjung</strong>, publish global
-          &amp; monitoring deploy ada di{" "}
+          <strong className="font-semibold text-slate-300">Publikasi &amp; maintenance pengunjung</strong> dan ringkasan
+          deployment ada di{" "}
           <Link className="font-medium text-violet-200/90 hover:text-violet-100 hover:underline" href="/site-admin/deployment">
-            Deployment Center
+            Git Deployment Flow
           </Link>
           .
         </p>
@@ -381,7 +381,7 @@ export function SiteSettingsPanel({
             href="/site-admin/deployment"
             className="font-medium text-violet-200/90 hover:text-violet-100 hover:underline"
           >
-            Deployment Center →
+            Git Deployment Flow →
           </Link>
         </div>
       </header>
@@ -401,15 +401,14 @@ export function SiteSettingsPanel({
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">
             Form konfigurasi situs: identitas, kontak, SEO, cadangan, dan utilitas manual. Untuk{" "}
-            <strong className="font-semibold text-slate-300">Published / maintenance</strong>, publish global &amp; status
-            deployment buka{" "}
+            <strong className="font-semibold text-slate-300">Published / maintenance</strong> dan ringkasan deployment buka{" "}
             <Link className="font-medium text-violet-200/85 hover:text-violet-100 hover:underline" href="/site-admin/deployment">
-              Deployment Center
+              Git Deployment Flow
             </Link>
             .
           </p>
           <p className="mt-3 text-xs leading-relaxed text-slate-400">
-            <span className="font-semibold text-slate-500">Ringkasan mode tayang (diset di Deployment Center):</span>{" "}
+            <span className="font-semibold text-slate-500">Ringkasan mode tayang (diset di Git Deployment Flow):</span>{" "}
             <span className="text-slate-100">{sitePublishStateLabel(settings)}</span>
           </p>
         </div>

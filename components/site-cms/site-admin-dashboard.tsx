@@ -21,17 +21,17 @@ export function SiteAdminDashboard() {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-300/85">Internal</p>
           <h1 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">Panel CMS</h1>
           <p className="mx-auto max-w-lg text-sm leading-relaxed text-slate-400">
-            <span className="text-slate-300">Deployment Center</span> untuk publish global, status deploy, cache, dan
-            monitoring. <span className="text-slate-300">Site Settings</span> untuk konfigurasi domain, SEO, kontak,
-            backup, dan utilitas lanjutan.
-          </p>
+          <span className="text-slate-300">Git Deployment Flow</span> untuk marker build deployment dan (opsional) publish
+          global. <span className="text-slate-300">Site Settings</span> untuk konfigurasi domain, SEO, kontak, backup, dan
+          utilitas lanjutan.
+        </p>
         </header>
 
         <section aria-labelledby="ops-deployment-heading" className="space-y-3 md:space-y-4">
           <div className="flex flex-col gap-1 border-b border-white/[0.06] pb-3 px-0.5 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h2 id="ops-deployment-heading" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-violet-200/85">
-                Deployment Center
+                Git Deployment Flow
               </h2>
               <p className="mt-1 text-xs text-slate-500">Mission control operasional — bukan konfigurasi situs.</p>
             </div>

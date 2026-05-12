@@ -3,6 +3,7 @@ import path from "node:path";
 import { cache } from "react";
 
 import { getSiteContentFileStoragePort } from "@/lib/cms-storage";
+import { isGlobalPublishWorkflowEnabled } from "@/lib/cms-storage/env";
 import { createDefaultSiteContent } from "@/lib/site-content-defaults";
 import { deepMergeSitePatch, validateSiteContentMinimal } from "@/lib/site-content-merge";
 import { normalizeSiteContent } from "@/lib/site-content-normalize";
@@ -88,6 +89,9 @@ export async function applySiteContentPatch(patch: unknown): Promise<SiteContent
 }
 
 export async function getDraftSiteContent(): Promise<SiteContent> {
+  if (!isGlobalPublishWorkflowEnabled()) {
+    return getSiteContent();
+  }
   return repository.read("draft", getDefaultSiteContentRef());
 }
 

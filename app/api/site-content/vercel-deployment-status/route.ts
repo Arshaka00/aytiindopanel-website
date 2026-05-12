@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { rateLimitRequest } from "@/lib/api-rate-limit";
+import { isGlobalPublishWorkflowEnabled } from "@/lib/cms-storage/env";
 import { readGlobalPublishStatus, writeGlobalPublishStatus } from "@/lib/global-publish-status";
 import { getVercelDeploymentByUid, resolveVercelApiToken, resolveVercelTeamId } from "@/lib/vercel-deployment-api";
 import { hasValidAdminSessionFromRequest, isAllowedAdminDevice } from "@/lib/gallery-admin-auth";
@@ -16,6 +17,17 @@ export async function GET(req: NextRequest) {
   }
   if (!rateLimitRequest(req, "vercel-deployment-status", 45, 60_000)) {
     return NextResponse.json({ error: "Terlalu banyak permintaan status." }, { status: 429 });
+  }
+  if (!isGlobalPublishWorkflowEnabled()) {
+    return NextResponse.json(
+      {
+        ok: true,
+        enabled: false,
+        globalPublishWorkflowDisabled: true,
+        message: "Monitoring build Vercel dinonaktifkan (CMS_ENABLE_GLOBAL_PUBLISH=false).",
+      },
+      { headers: { "cache-control": "no-store" } },
+    );
   }
 
   const token = resolveVercelApiToken();

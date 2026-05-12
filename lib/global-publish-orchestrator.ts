@@ -19,13 +19,14 @@ import {
 import { getDraftLiveMtimeHint } from "@/lib/global-publish-draft-live-hint";
 import { acquireGlobalPublishLock } from "@/lib/global-publish-lock";
 import {
+  DEFAULT_GLOBAL_PUBLISH_STATUS,
   readGlobalPublishStatus,
   writeGlobalPublishStatus,
   type GlobalPublishStatus,
 } from "@/lib/global-publish-status";
 import { runAfterSiteContentLiveUpdated } from "@/lib/site-content-after-publish";
 import { getSiteContentVersionToken, publishSiteContentDraft } from "@/lib/site-content";
-import { hasVercelKvEnv } from "@/lib/cms-storage/env";
+import { hasVercelKvEnv, isGlobalPublishWorkflowEnabled } from "@/lib/cms-storage/env";
 import { getDeployRuntimeFingerprint } from "@/lib/deploy-build-marker";
 import { captureException } from "@/lib/observability";
 import { appendAuditLog, type AuditEntry } from "@/lib/site-content-storage";
@@ -52,7 +53,7 @@ export type GlobalPublishOrchestratorResult =
     }
   | {
       ok: false;
-      code: "LOCK_BUSY" | "DEBOUNCED" | "PUBLISH_FAILED" | "UNKNOWN";
+      code: "LOCK_BUSY" | "DEBOUNCED" | "PUBLISH_FAILED" | "UNKNOWN" | "GLOBAL_PUBLISH_DISABLED";
       message: string;
     };
 
@@ -124,6 +125,16 @@ export async function executeGlobalPublish(params: {
   userAgent: string;
   deviceBound: boolean;
 }): Promise<GlobalPublishOrchestratorResult> {
+  if (!isGlobalPublishWorkflowEnabled()) {
+    logEvent("info", "global_publish_disabled_skip", { actorId: params.actorId });
+    return {
+      ok: false,
+      code: "GLOBAL_PUBLISH_DISABLED",
+      message:
+        "Publish global dinonaktifkan (CMS_ENABLE_GLOBAL_PUBLISH=false). Production mengikuti commit terbaru di branch main + deploy Vercel — simpan konten lewat Git/deploy sesuai workflow tim.",
+    };
+  }
+
   const lock = await acquireGlobalPublishLock(params.actorId);
   if (!lock) {
     return {
@@ -434,6 +445,8 @@ function getServerDeploymentEnv(): "production" | "preview" | "development" | nu
 }
 
 export async function getGlobalPublishStatusPayload(): Promise<{
+  /** `false` saat CMS_ENABLE_GLOBAL_PUBLISH=false — UI Deployment Center mode ringkas. */
+  globalPublishWorkflowEnabled: boolean;
   status: GlobalPublishStatus;
   draftLiveHint: Awaited<ReturnType<typeof getDraftLiveMtimeHint>>;
   deployHookConfigured: boolean;
@@ -457,6 +470,37 @@ export async function getGlobalPublishStatusPayload(): Promise<{
     errorMessage: string | null;
   };
 }> {
+  if (!isGlobalPublishWorkflowEnabled()) {
+    const liveContentVersion = await getSiteContentVersionToken();
+    const { meta: deployHookMeta } = resolveDeployHookResolution();
+    return {
+      globalPublishWorkflowEnabled: false,
+      status: { ...DEFAULT_GLOBAL_PUBLISH_STATUS },
+      draftLiveHint: { draftMtimeMs: null, liveMtimeMs: null, likelyDraftAheadOfLive: null },
+      deployHookConfigured: false,
+      deployHookMeta,
+      publishGlobalStatusPersistence: hasVercelKvEnv()
+        ? "kv"
+        : process.env.VERCEL === "1"
+          ? "vercel_tmp"
+          : "local",
+      serverDeploymentEnv: getServerDeploymentEnv(),
+      deployRuntime: {
+        ...getDeployRuntimeFingerprint(),
+        liveContentVersion,
+      },
+      vercelBuildMonitor: {
+        supported: false,
+        integrationUrlParsed: false,
+        apiTokenConfigured: false,
+        deploymentUid: null,
+        readyState: null,
+        inspectorUrl: null,
+        errorMessage: null,
+      },
+    };
+  }
+
   const [statusRaw, draftLiveHint, liveContentVersion] = await Promise.all([
     readGlobalPublishStatus(),
     getDraftLiveMtimeHint(),
@@ -493,6 +537,7 @@ export async function getGlobalPublishStatusPayload(): Promise<{
     }
   }
   return {
+    globalPublishWorkflowEnabled: true,
     status,
     draftLiveHint,
     deployHookConfigured: deployHookMeta.configured,
