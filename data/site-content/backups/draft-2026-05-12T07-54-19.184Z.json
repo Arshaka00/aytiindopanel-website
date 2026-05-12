@@ -88,8 +88,8 @@
       "disableVideoBackground": false
     },
     "redirects": [],
-    "published": true,
-    "maintenanceMode": false,
+    "published": false,
+    "maintenanceMode": true,
     "maintenanceHeadline": "Website Sedang Dalam Pemeliharaan",
     "maintenanceSubtext": "Kami sedang melakukan peningkatan sistem untuk pengalaman yang lebih baik. Tim kami tetap standby untuk membantu kebutuhan proyek Anda.",
     "maintenanceShowWhatsApp": true,
@@ -655,7 +655,7 @@
         "id": "portfolio-cold-room-regional",
         "name": "Fasilitas Cold Chain Untuk Distribusi Supermarket",
         "location": "Karawang - Jawa Barat",
-        "workType": "Cold Storage, Chiller Room, Pembekuan Cepat (ABF), Anteroom & Loading",
+        "workType": "Cold Storage, Pembekuan Cepat (ABF), Anteroom & Loading",
         "videoSrc": "/images/gallery/WhatsApp%20Video%202026-05-07%20at%2011.02.55.mp4",
         "videoPosterSrc": "/images/layanan/instalasi-sistem-pendingin/1.jpg",
         "galleryPhotos": [
