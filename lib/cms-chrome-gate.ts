@@ -1,6 +1,7 @@
 /**
- * Bilah mengambang "Edit mode" + tautan CMS hanya untuk pengguna yang
- * membuka Panel dari host production canonical (dan localhost untuk dev).
+ * Bilah mengambang "Edit mode" + tautan CMS:
+ * - Production (`www.…`): hanya setelah membuka `/site-admin` sekali di tab (sessionStorage).
+ * - Localhost / 127.0.0.1 / `*.local`: selalu diizinkan agar dev tidak perlu langkah ekstra.
  * @see SiteCmsChrome — sembunyikan bila gate false.
  */
 
@@ -25,11 +26,12 @@ export function grantCmsChromeSurfaceFromSiteAdminVisit(): void {
   }
 }
 
-/** True = boleh menampilkan SiteCmsChrome (setelah Panel dibuka sekali di tab ini). */
+/** True = boleh menampilkan SiteCmsChrome (prod: setelah `/site-admin`; dev host: langsung). */
 export function isSiteCmsChromeSurfaceAllowed(): boolean {
   if (typeof window === "undefined") return false;
   const h = window.location.hostname;
   if (h !== CMS_CHROME_PRODUCTION_HOST && !isLocalDevHost(h)) return false;
+  if (isLocalDevHost(h)) return true;
   try {
     return sessionStorage.getItem(STORAGE_KEY) === "1";
   } catch {

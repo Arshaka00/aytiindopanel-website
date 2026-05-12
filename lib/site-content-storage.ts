@@ -7,6 +7,7 @@ import type { SiteContent } from "@/lib/site-content-model";
 import { deepMergeSitePatch, validateSiteContentMinimal } from "@/lib/site-content-merge";
 import { normalizeSiteContent } from "@/lib/site-content-normalize";
 import { validateSiteContentStrict } from "@/lib/site-content-schema";
+import { logEvent } from "@/lib/structured-log";
 
 const MAX_BACKUPS = 20;
 
@@ -123,11 +124,19 @@ export async function readSiteContentFromStorage(mode: StorageMode, fallback: Si
   const originalJson = JSON.stringify(parsed);
   const mergedJson = JSON.stringify(normalizedMerged);
   if (originalJson !== mergedJson) {
-    await runSerialized(async () => {
-      await createBackupForMode(mode);
-      await port.writeJsonByMode(mode, normalizedMerged);
-      await writeStateVersion();
-    });
+    try {
+      await runSerialized(async () => {
+        await createBackupForMode(mode);
+        await port.writeJsonByMode(mode, normalizedMerged);
+        await writeStateVersion();
+      });
+    } catch (error) {
+      logEvent("warn", "site_content_normalize_persist_skipped", {
+        mode,
+        message: error instanceof Error ? error.message : String(error),
+        hint: "Normalisasi konten tidak bisa ditulis ke penyimpanan (Blob ditangguhkan/403/token salah). Halaman tetap memakai hasil normalisasi di memori.",
+      });
+    }
   }
 
   return normalizedMerged;

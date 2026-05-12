@@ -13,6 +13,7 @@ import {
   writeSiteContentToStorage,
 } from "@/lib/site-content-storage";
 import { validateSiteContentStrict, type SiteContentValidationError } from "@/lib/site-content-schema";
+import { logEvent } from "@/lib/structured-log";
 
 export type { HeroIntroParts, SiteContent, SiteContentOverridesFile } from "@/lib/site-content-model";
 
@@ -116,9 +117,17 @@ async function migrateLegacyOverridesIfNeeded(defaults: SiteContent): Promise<Si
   const overrides = await readSiteContentOverrides();
   const merged = mergeDefaultsWithOverrides(defaults, overrides);
   const normalized = normalizeSiteContent(merged);
-  await Promise.all([
-    writeSiteContentToStorage("live", normalized),
-    writeSiteContentToStorage("draft", normalized),
-  ]);
+  try {
+    await Promise.all([
+      writeSiteContentToStorage("live", normalized),
+      writeSiteContentToStorage("draft", normalized),
+    ]);
+  } catch (error) {
+    logEvent("warn", "site_content_migrate_persist_skipped", {
+      message: error instanceof Error ? error.message : String(error),
+      hint: "Blob/token tidak valid, store ditangguhkan, atau EROFS — migrasi overrides ke penyimpanan CMS dilewati; pakai fallback baked defaults.",
+    });
+    return null;
+  }
   return normalized;
 }
