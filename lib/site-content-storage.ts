@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { getSiteContentFileStoragePort } from "@/lib/cms-storage";
 import type { SiteContentStateFile } from "@/lib/cms-storage/site-content-file-storage-port";
 import { captureException } from "@/lib/observability";
+import { createDefaultSiteContent } from "@/lib/site-content-defaults";
 import type { SiteContent } from "@/lib/site-content-model";
 import { deepMergeSitePatch, validateSiteContentMinimal } from "@/lib/site-content-merge";
 import { normalizeSiteContent } from "@/lib/site-content-normalize";
@@ -187,18 +188,29 @@ export async function publishDraftToLive(): Promise<void> {
     const port = getSiteContentFileStoragePort();
     let draftRaw = await port.readRawByMode("draft");
     let usedLiveFallback = false;
-    /** Draft belum pernah ditulis (Blob baru) atau baca draft gagal — coba `live.json` sebagai sumber (republish idempoten). */
+    let usedBakedDefaultsFallback = false;
     if (draftRaw === null) {
       draftRaw = await port.readRawByMode("live");
-      usedLiveFallback = true;
+      if (draftRaw !== null) usedLiveFallback = true;
+    }
+    if (draftRaw === null) {
+      const baked = normalizeSiteContent(createDefaultSiteContent());
+      const defOk = validateSiteContentStrict(baked);
+      if (defOk.ok) {
+        draftRaw = JSON.stringify(defOk.content);
+        usedBakedDefaultsFallback = true;
+      }
     }
     if (draftRaw === null) {
       throw new Error(
-        "Draft tidak ditemukan dan live.json juga kosong atau tidak dapat dibaca. Buka Site Settings, simpan sekali, atau perbaiki Vercel Blob (store aktif, BLOB_READ_WRITE_TOKEN, CMS_BLOB_PREFIX).",
+        "Tidak ada draft, live, maupun fallback default yang valid. Perbaiki Vercel Blob (store aktif, BLOB_READ_WRITE_TOKEN, CMS_BLOB_PREFIX) lalu simpan Site Settings sekali.",
       );
     }
     if (usedLiveFallback) {
       logEvent("info", "publish_draft_to_live_used_live_fallback", {});
+    }
+    if (usedBakedDefaultsFallback) {
+      logEvent("info", "publish_draft_to_live_used_baked_defaults_fallback", {});
     }
     const parsed = JSON.parse(draftRaw) as unknown;
     const validated = validateSiteContentStrict(parsed);
