@@ -90,24 +90,57 @@ async function readStreamAsUtf8(stream: ReadableStream<Uint8Array>): Promise<str
   return new TextDecoder().decode(concatUint8Chunks(chunks));
 }
 
+/**
+ * Baca blob dengan `access` sesuai env — lalu fallback mode lawannya jika gagal (403/401 sering karena
+ * blob di-upload private tetapi `CMS_BLOB_ACCESS` default di Vercel = public, atau sebaliknya).
+ */
 async function getCmsBlobText(pathname: string): Promise<string | null> {
   const token = blobToken();
-  const access = getCmsBlobAccessMode();
-  try {
-    const res = await get(pathname, { access, token });
-    if (!res || res.statusCode !== 200 || !res.stream) return null;
-    return await readStreamAsUtf8(res.stream);
-  } catch (error) {
-    if (isExpectedBlobReadFailure(error)) {
+  const configured = getCmsBlobAccessMode();
+  const order: Array<"public" | "private"> =
+    configured === "public" ? ["public", "private"] : ["private", "public"];
+
+  for (let attempt = 0; attempt < order.length; attempt++) {
+    const access = order[attempt];
+    try {
+      const res = await get(pathname, { access, token });
+      if (res && res.statusCode === 200 && res.stream) {
+        if (attempt > 0) {
+          logEvent("info", "vercel_blob_read_access_fallback", {
+            pathname,
+            resolvedAccess: access,
+            configuredAccess: configured,
+            hint: "Set CMS_BLOB_ACCESS on Vercel to match the Blob store (private vs public) to avoid alternate reads.",
+          });
+        }
+        return await readStreamAsUtf8(res.stream);
+      }
+      if (attempt < order.length - 1) continue;
+      logEvent("warn", "vercel_blob_read_skipped", {
+        pathname,
+        message: `get returned status ${res?.statusCode ?? "unknown"} (no body)`,
+        triedAccessModes: order.join(","),
+        configuredAccess: configured,
+      });
+      return null;
+    } catch (error) {
+      if (!isExpectedBlobReadFailure(error)) {
+        void captureException(error, { area: "vercel-blob-site-content-storage.getCmsBlobText", pathname, access });
+        return null;
+      }
+      if (attempt < order.length - 1) continue;
       logEvent("warn", "vercel_blob_read_skipped", {
         pathname,
         message: error instanceof Error ? error.message : String(error),
+        triedAccessModes: order.join(","),
+        configuredAccess: configured,
+        hint: "403/401: wrong BLOB_READ_WRITE_TOKEN store, or CMS_BLOB_ACCESS does not match how blobs were uploaded.",
       });
-    } else {
-      void captureException(error, { area: "vercel-blob-site-content-storage.getCmsBlobText", pathname });
+      return null;
     }
-    return null;
   }
+
+  return null;
 }
 
 async function putCmsBlobText(pathname: string, body: string, opts: ReturnType<typeof putJsonOpts>): Promise<void> {

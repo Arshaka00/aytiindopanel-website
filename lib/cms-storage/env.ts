@@ -18,6 +18,7 @@ export function hasVercelBlobEnv(): boolean {
  * - **Vercel** tanpa `CMS_BLOB_ACCESS`: default **public** — menghindari build gagal saat store
  *   hanya mendukung blob publik (error "Cannot use private access on a public store").
  *   Pakai store dengan akses private? Set **`CMS_BLOB_ACCESS=private`** di semua env (Production + Preview).
+ *   Bila baca `live.json` di log memunculkan **403 Forbidden**, token/store biasanya benar tetapi **mode access tidak cocok** dengan blob lama — samakan `CMS_BLOB_ACCESS` dengan cara upload, atau biarkan runtime mencoba fallback public/private sekali per bacaan.
  * - `CMS_BLOB_ACCESS=public` / `1` / `true`: pakai blob publik eksplisit.
  */
 export type CmsBlobAccessMode = "private" | "public";
