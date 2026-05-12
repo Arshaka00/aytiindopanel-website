@@ -91,7 +91,7 @@ export function buildSeoArticleBreadcrumbJsonLd(args: {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Beranda", item: origin },
-      { "@type": "ListItem", position: 2, name: "Tulisan", item: artikelIndex },
+      { "@type": "ListItem", position: 2, name: "Artikel", item: artikelIndex },
       { "@type": "ListItem", position: 3, name: title, item: canonicalHref },
     ],
   };

@@ -8,7 +8,7 @@ export function SeoArticleBodyHtml({ html }: { html: string }) {
         "[&_.seo-article-body__h3]:mt-9 [&_.seo-article-body__h3]:scroll-mt-28 [&_.seo-article-body__h3]:font-[family-name:var(--font-sora)] [&_.seo-article-body__h3]:text-lg [&_.seo-article-body__h3]:font-semibold [&_.seo-article-body__h3]:tracking-tight [&_.seo-article-body__h3]:text-foreground [&_.seo-article-body__h3]:md:mt-10 [&_.seo-article-body__h3]:md:text-xl",
         "[&_.seo-article-body__link]:rounded-sm [&_.seo-article-body__link]:font-medium [&_.seo-article-body__link]:text-accent [&_.seo-article-body__link]:underline [&_.seo-article-body__link]:decoration-accent/35 [&_.seo-article-body__link]:underline-offset-[3px] [&_.seo-article-body__link]:transition-colors [&_.seo-article-body__link]:decoration-2 hover:[&_.seo-article-body__link]:decoration-accent/80 hover:[&_.seo-article-body__link]:text-primary",
         "[&_.seo-article-body__p]:mt-[1.125em] [&_.seo-article-body__p]:text-muted-foreground [&_.seo-article-body__p]:first:mt-0",
-        "[&_img]:my-6 [&_img]:max-w-full [&_img]:rounded-xl [&_img]:border [&_img]:border-border/50 [&_img]:shadow-sm",
+        "[&_img]:my-6 [&_img]:mx-auto [&_img]:block [&_img]:max-h-[min(52vh,20rem)] [&_img]:w-auto [&_img]:max-w-full [&_img]:rounded-xl [&_img]:border [&_img]:border-border/50 [&_img]:object-contain [&_img]:shadow-sm",
         "[&_strong]:font-semibold [&_strong]:text-foreground/95",
       ].join(" ")}
       dangerouslySetInnerHTML={{ __html: html }}

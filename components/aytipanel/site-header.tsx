@@ -229,7 +229,7 @@ export function SiteHeader({
   siteContent?: SiteContent;
   /** Opsional: logo terang/gelap dari Site Settings CMS */
   siteSettings?: SiteContent["siteSettings"];
-  /** Tulisan /artikel yang dipublikasikan — indeks pencarian header (judul, isi, FAQ). */
+  /** Artikel /artikel yang dipublikasikan — indeks pencarian header (judul, isi, FAQ). */
   seoArticles?: readonly SeoArticle[];
 }) {
   const { logoLightSrc, logoDarkSrc } = useMemo(
@@ -248,7 +248,7 @@ export function SiteHeader({
     [navItems],
   );
 
-  /** Desktop: item Tulisan (/artikel) di kiri tombol pencarian — setelah Galery proyek bila ada. */
+  /** Desktop: item Artikel (/artikel) di kiri tombol pencarian — setelah Galery proyek bila ada. */
   const desktopNavItemsOrdered = useMemo(() => {
     const artikel = visibleNavItems.find((i) => i.id === "nav-artikel");
     const withoutArtikel = visibleNavItems.filter((i) => i.id !== "nav-artikel");
@@ -258,7 +258,7 @@ export function SiteHeader({
     return [...withoutArtikel.slice(0, galleryIdx + 1), artikel, ...withoutArtikel.slice(galleryIdx + 1)];
   }, [visibleNavItems]);
 
-  /** Sisipkan pencarian setelah item ini: Tulisan jika ada, selain itu Galery proyek. */
+  /** Sisipkan pencarian setelah item ini: Artikel jika ada, selain itu Galery proyek. */
   const desktopSearchAfterItemId = useMemo(
     () => (visibleNavItems.some((i) => i.id === "nav-artikel") ? "nav-artikel" : "nav-gallery-proyek"),
     [visibleNavItems],

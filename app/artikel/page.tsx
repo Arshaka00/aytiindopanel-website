@@ -48,7 +48,7 @@ export default async function ArtikelIndexPage() {
               <li aria-hidden="true" className="select-none text-border/90">
                 /
               </li>
-              <li className="font-medium tracking-tight text-foreground/95">Tulisan</li>
+              <li className="font-medium tracking-tight text-foreground/95">Artikel</li>
             </ol>
           </nav>
 
@@ -57,11 +57,11 @@ export default async function ArtikelIndexPage() {
               Catatan lapangan
             </p>
             <h1 className="mt-6 font-[family-name:var(--font-sora)] text-balance text-3xl font-semibold tracking-tight text-foreground md:text-4xl md:leading-[1.12] lg:text-[2.55rem]">
-              Tulisan refrigerasi industri
+              Artikel refrigerasi industri
             </h1>
             <span className="mt-6 block h-0.5 w-16 rounded-full bg-gradient-to-r from-accent to-accent/40" aria-hidden />
             <p className="mt-6 text-pretty text-lg leading-[1.65] text-muted-foreground md:text-xl md:leading-[1.65]">
-              Tulisan ringkas untuk yang kerja di proyek: cold room, gudang beku, blast freezer, panel PU—bukan
+              Artikel ringkas untuk yang kerja di proyek: cold room, gudang beku, blast freezer, panel PU—bukan
               ringkasan teori panjang.
             </p>
           </header>
@@ -82,7 +82,7 @@ export default async function ArtikelIndexPage() {
                     href={`/artikel/${a.slug}`}
                     className="group flex h-full flex-col overflow-hidden rounded-[1.25rem] border border-border/90 bg-gradient-to-b from-card/95 to-card/80 shadow-[var(--shadow-card)] ring-1 ring-black/[0.04] transition duration-300 hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-lg dark:from-card/90 dark:to-card/70 dark:ring-white/[0.06]"
                   >
-                    <div className="relative aspect-[5/3] w-full shrink-0 overflow-hidden bg-muted sm:aspect-[16/10] lg:aspect-[5/3]">
+                    <div className="relative h-44 w-full shrink-0 overflow-hidden bg-muted sm:h-[13.25rem] md:h-56">
                       {imgRemote ? (
                         // eslint-disable-next-line @next/next/no-img-element -- URL eksternal / blob opsional
                         <img
@@ -99,7 +99,7 @@ export default async function ArtikelIndexPage() {
                           fill
                           quality={86}
                           className="object-cover object-center transition duration-700 ease-out group-hover:scale-[1.03]"
-                          sizes="(max-width: 640px) 100vw, (max-width: 1152px) calc(50vw - 2.5rem), min(520px, 45vw)"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1152px) calc(50vw - 2.5rem), 480px"
                         />
                       )}
                       <div

@@ -81,11 +81,11 @@ const primaryLinks: {
   {
     href: "/site-admin/seo-articles",
     tone: "emerald",
-    kicker: "Tulisan",
-    title: "Editor tulisan /artikel",
+    kicker: "Artikel",
+    title: "Editor artikel /artikel",
     description:
       "Judul, slug, Markdown, FAQ, taut terkait — file `data/seo-articles/live.json`. Khusus URL /artikel; beda jalur dengan Site Settings.",
-    cta: "Buka editor /artikel",
+    cta: "Buka editor artikel",
   },
 ];
 
@@ -125,7 +125,7 @@ export function SiteAdminDashboard() {
           <h1 className="mt-5 text-2xl font-semibold tracking-tight text-white sm:text-3xl">Panel CMS</h1>
           <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-slate-400 sm:text-[15px]">
             <span className="text-slate-300">Site Settings</span> mengatur situs global;{" "}
-            <span className="text-slate-300">Editor tulisan /artikel</span> mengisi halaman{" "}
+            <span className="text-slate-300">Editor artikel /artikel</span> mengisi halaman{" "}
             <code className="rounded bg-white/10 px-1 py-px text-[12px] text-sky-200/90">/artikel</code> saja. Di bawah:
             deploy, analytics, Site Settings + editor itu, lalu konten beranda/galeri.
           </p>
@@ -136,7 +136,7 @@ export function SiteAdminDashboard() {
           <p className="mt-2 max-w-2xl text-xs leading-relaxed text-slate-500">
             Dua kartu pertama: build &amp; trafik. Dua kartu berikutnya saling terpisah —{" "}
             <span className="text-slate-400">Site Settings</span> (meta beranda, domain, draft→live) dan{" "}
-            <span className="text-slate-400">Editor tulisan /artikel</span> (file{" "}
+            <span className="text-slate-400">Editor artikel /artikel</span> (file{" "}
             <code className="text-slate-400">data/seo-articles/live.json</code>).
           </p>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">

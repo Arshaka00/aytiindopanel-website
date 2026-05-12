@@ -79,7 +79,7 @@ function stripMarkdownForSearchHaystack(md: string, maxChars = 4000): string {
     .trim();
 }
 
-/** Tulisan publik /artikel + indeks — pencarian header mengindeks judul, isi, FAQ, tag. */
+/** Artikel publik /artikel + indeks — pencarian header mengindeks judul, isi, FAQ, tag. */
 function appendSeoArticlesSearch(byHref: Map<string, HeaderSiteSearchTarget>, articles: readonly SeoArticle[]): void {
   if (!articles.length) return;
 
@@ -92,16 +92,16 @@ function appendSeoArticlesSearch(byHref: Map<string, HeaderSiteSearchTarget>, ar
       indexEntry,
       normalizeHaystack([
         indexHay,
-        "indeks tulisan cold storage cold room blast freezer sandwich panel refrigerasi lapangan artikel blog",
+        "indeks artikel cold storage cold room blast freezer sandwich panel refrigerasi lapangan blog",
       ]),
     );
   } else {
     byHref.set("/artikel", {
       id: "page-artikel-index",
-      title: "Tulisan",
+      title: "Artikel",
       href: "/artikel",
       haystack: normalizeHaystack([
-        "indeks tulisan refrigerasi cold storage artikel blog",
+        "indeks artikel refrigerasi cold storage blog panduan",
         indexHay,
       ]),
     });
@@ -125,7 +125,7 @@ function appendSeoArticlesSearch(byHref: Map<string, HeaderSiteSearchTarget>, ar
         stripMarkdownForSearchHaystack(a.bodyMarkdown),
         stripMarkdownForSearchHaystack(faqJoined, 2500),
         a.slug.replace(/-/g, " "),
-        "tulisan cold room cold storage refrigerasi industri",
+        "artikel cold room cold storage refrigerasi industri panduan",
       ]),
     });
   }
@@ -411,7 +411,7 @@ function enrichFromSiteContent(byHref: Map<string, HeaderSiteSearchTarget>, site
 
 /**
  * Gabungan tautan nav (CMS) + section beranda + halaman situs + nomor/email/alamat/produk (jika `site` diisi)
- * + tulisan publik (`seoArticles`) untuk pencarian isi `/artikel/…`.
+ * + artikel publik (`seoArticles`) untuk pencarian isi `/artikel/…`.
  */
 export function buildHeaderSiteSearchTargets(
   header: SiteContent["header"],

@@ -352,7 +352,7 @@ export function SiteSettingsPanel({
           <code className="rounded bg-white/10 px-1 py-0.5 text-[11px] text-sky-200/90">/artikel</code>.
         </p>
         <p className="text-xs text-slate-500">
-          Tulisan di <code className="rounded bg-white/10 px-1 py-0.5 text-[11px] text-sky-200/90">/artikel</code>:{" "}
+          Artikel di <code className="rounded bg-white/10 px-1 py-0.5 text-[11px] text-sky-200/90">/artikel</code>:{" "}
           <Link href="/site-admin/seo-articles" className="font-medium text-emerald-300/95 hover:text-emerald-200 hover:underline">
             Editor →
           </Link>
@@ -1018,7 +1018,7 @@ export function SiteSettingsPanel({
           Untuk beranda (<code className="text-slate-300">/</code>) dan pratinjau default bila halaman lain kosong. Tiap
           URL <code className="text-slate-300">/artikel/…</code> punya meta sendiri — sunting lewat{" "}
           <Link href="/site-admin/seo-articles" className="text-emerald-300/95 hover:text-emerald-200 hover:underline">
-            editor /artikel
+            editor artikel
           </Link>
           .
         </p>
@@ -1060,7 +1060,7 @@ export function SiteSettingsPanel({
       <section className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 shadow-lg backdrop-blur-md">
         <h2 className="text-base font-semibold text-white">Organisasi, layanan lokal &amp; footer</h2>
         <p className="mt-2 text-xs leading-relaxed text-slate-400">
-          Schema organisasi, wilayah layanan, footer — tidak menggantikan isi tulisan di{" "}
+          Schema organisasi, wilayah layanan, footer — tidak menggantikan isi artikel di{" "}
           <code className="text-slate-300">/artikel</code>.
         </p>
         <div className="mt-4 space-y-4">

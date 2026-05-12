@@ -230,7 +230,7 @@ Terima kasih.`,
           shortLabel: "Galery proyek",
           href: "/gallery-project",
         },
-        { id: "nav-artikel", label: "Tulisan", shortLabel: "Tulisan", href: "/artikel" },
+        { id: "nav-artikel", label: "Artikel", shortLabel: "Artikel", href: "/artikel" },
       ],
       mobileNavIds: [
         "nav-home",

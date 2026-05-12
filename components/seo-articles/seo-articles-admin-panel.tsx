@@ -149,7 +149,7 @@ export function SeoArticlesAdminPanel() {
           </Link>
           .
         </p>
-        <p className="mt-3 border-t border-emerald-500/20 pt-3 font-semibold text-emerald-100/95">Tip nada tulisan</p>
+        <p className="mt-3 border-t border-emerald-500/20 pt-3 font-semibold text-emerald-100/95">Tip nada artikel</p>
         <ul className="mt-1.5 list-disc space-y-1 pl-4 marker:text-emerald-400/80">
           <li>Deck: boleh langsung ke masalah lapangan, hindari definisi panjang.</li>
           <li>Hindari rangkaian H2 + bullet kosong; satu istilah teknis per paragraf biasanya cukup.</li>

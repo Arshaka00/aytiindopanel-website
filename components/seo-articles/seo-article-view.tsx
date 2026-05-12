@@ -31,7 +31,7 @@ function Breadcrumb({ title }: { title: string }) {
               href="/artikel"
               className="text-accent underline-offset-[3px] transition hover:text-primary hover:underline"
             >
-              Tulisan
+              Artikel
             </Link>
           </li>
           <li aria-hidden="true" className="select-none text-border/90">
@@ -47,7 +47,7 @@ function Breadcrumb({ title }: { title: string }) {
         <span aria-hidden className="text-muted-foreground">
           ←
         </span>
-        Semua tulisan
+        Semua artikel
       </Link>
     </div>
   );
@@ -120,7 +120,7 @@ export function SeoArticleView({
           </div>
         </header>
 
-        <div className="relative mt-9 w-full max-w-4xl overflow-hidden rounded-2xl border border-border/90 bg-muted shadow-md ring-1 ring-black/[0.05] aspect-[4/3] dark:ring-white/[0.07] sm:aspect-[3/2] sm:mt-10 md:mt-11 md:aspect-[2/1] md:rounded-[1.25rem] lg:aspect-[21/9]">
+        <div className="relative mx-auto mt-9 h-[14.5rem] w-full max-w-3xl overflow-hidden rounded-2xl border border-border/90 bg-muted shadow-md ring-1 ring-black/[0.05] dark:ring-white/[0.07] sm:mt-10 sm:h-[16.25rem] md:mt-11 md:h-[17.5rem] md:rounded-[1.25rem] lg:h-[18.5rem]">
           {heroRemote ? (
             // eslint-disable-next-line @next/next/no-img-element -- URL eksternal / blob opsional
             <img src={hero} alt="" className="h-full w-full object-cover object-center" />
@@ -129,9 +129,9 @@ export function SeoArticleView({
               src={hero}
               alt=""
               fill
-              quality={88}
+              quality={86}
               className="object-cover object-center"
-              sizes="(max-width: 640px) 100vw, (max-width: 1152px) min(896px, 92vw), 896px"
+              sizes="(max-width: 640px) 100vw, (max-width: 768px) min(100vw, 36rem), 48rem"
               priority
             />
           )}
@@ -177,7 +177,7 @@ export function SeoArticleView({
                   id="seo-article-related-heading"
                   className="font-[family-name:var(--font-sora)] text-lg font-semibold tracking-tight text-foreground md:text-xl"
                 >
-                  Tulisan terkait
+                  Artikel terkait
                 </h2>
                 <p className="mt-2 max-w-lg text-sm leading-relaxed text-muted-foreground">
                   Masih satu topik besar; beda sudut saja.
@@ -192,7 +192,7 @@ export function SeoArticleView({
                           href={`/artikel/${r.slug}`}
                           className="group flex min-h-[5.25rem] gap-3 rounded-xl border border-border/90 bg-gradient-to-b from-card/95 to-card/75 p-3.5 shadow-sm ring-1 ring-black/[0.03] transition duration-200 hover:-translate-y-px hover:border-accent/30 hover:shadow-[var(--shadow-card)] dark:from-card/90 dark:to-card/65 dark:ring-white/[0.04] sm:min-h-0 sm:gap-3.5 sm:p-4"
                         >
-                          <div className="relative aspect-square w-[3.75rem] shrink-0 overflow-hidden rounded-[0.65rem] bg-muted ring-1 ring-inset ring-black/[0.06] dark:ring-white/[0.08] sm:w-20">
+                          <div className="relative size-[4.25rem] shrink-0 overflow-hidden rounded-[0.7rem] bg-muted ring-1 ring-inset ring-black/[0.06] dark:ring-white/[0.08] sm:size-[4.5rem]">
                             {relRemote ? (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img
@@ -208,7 +208,7 @@ export function SeoArticleView({
                                 fill
                                 quality={82}
                                 className="object-cover object-center transition duration-500 group-hover:scale-[1.04]"
-                                sizes="(max-width: 640px) 60px, 80px"
+                                sizes="(max-width: 640px) 68px, 72px"
                               />
                             )}
                           </div>
