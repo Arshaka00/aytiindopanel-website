@@ -34,7 +34,7 @@ const HOME_NAV_HREF = "/#beranda";
 const FALLBACK_HEADER = createDefaultSiteContent().header;
 
 /** Item nav tidak ditampilkan di bilah / sheet (section tetap lewat `/#keunggulan` & pencarian). */
-const HEADER_NAV_SUPPRESSED_IDS = new Set<string>(["nav-keunggulan"]);
+const HEADER_NAV_SUPPRESSED_IDS = new Set<string>(["nav-keunggulan", "nav-artikel"]);
 
 /** Fallback statis — dipakai hanya jika CMS tidak mengisi logo terang maupun gelap. */
 const FALLBACK_HEADER_LOGO = "/images/logo_ayti.png";
@@ -114,8 +114,8 @@ function HeaderLogoMark({
   const cms = useSiteCmsOptional();
   const edit = Boolean(cms?.eligible && cms.editMode);
   const imgCls = compact
-    ? "h-8 w-auto max-h-10 object-contain transition-[height,max-height] duration-500 [transition-timing-function:var(--ease-premium-soft)] sm:h-10 sm:max-h-12 md:h-11 md:max-h-[3.25rem]"
-    : "h-9 w-auto max-h-11 object-contain transition-[height,max-height] duration-500 [transition-timing-function:var(--ease-premium-soft)] sm:h-11 sm:max-h-[3.25rem] md:h-[3.35rem] md:max-h-[3.75rem]";
+    ? "h-7 w-auto max-h-9 object-contain transition-[height,max-height] duration-500 [transition-timing-function:var(--ease-premium-soft)] sm:h-8 sm:max-h-10 md:h-9 md:max-h-[2.5rem]"
+    : "h-8 w-auto max-h-10 object-contain transition-[height,max-height] duration-500 [transition-timing-function:var(--ease-premium-soft)] sm:h-9 sm:max-h-[2.75rem] md:h-[2.75rem] md:max-h-[3rem]";
   /** Satu node flex di dalam Link + ruang untuk kontrol CMS yang absolute */
   const wrapCls = `relative inline-flex shrink-0 items-center ${edit ? "overflow-visible" : ""}`;
 
@@ -202,7 +202,7 @@ function shouldSkipMobileNavInteraction(e: React.PointerEvent | React.MouseEvent
  * Mobile sheet: tipografi rapi, border kiri halus saat aktif — tanpa glow berat.
  */
 const desktopLinkBase =
-  "relative inline-flex min-h-9 items-center rounded-[10px] px-3.5 py-2 text-[0.8125rem] font-semibold leading-none tracking-wide text-foreground/82 transition-[color,background-color,box-shadow,transform] duration-[380ms] [transition-timing-function:var(--ease-premium-out)] hover:bg-white/[0.06] hover:text-foreground hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] dark:text-white/82 dark:hover:bg-white/[0.05] dark:hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400/50 md:min-h-8 md:rounded-lg md:px-2 md:py-1.5 md:text-[0.78rem] md:tracking-normal lg:px-2.5 lg:text-[0.8125rem]";
+  "relative inline-flex min-h-7 items-center rounded-[10px] px-3 py-1 text-[0.8125rem] font-semibold leading-none tracking-wide text-foreground/82 transition-[color,background-color,box-shadow,transform] duration-[380ms] [transition-timing-function:var(--ease-premium-out)] hover:bg-white/[0.06] hover:text-foreground hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] dark:text-white/82 dark:hover:bg-white/[0.05] dark:hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400/50 md:min-h-[1.625rem] md:rounded-lg md:px-1.5 md:py-0.5 md:text-[0.78rem] md:tracking-normal lg:px-2.5 lg:text-[0.8125rem]";
 
 const desktopLinkActive =
   "bg-white/[0.1] text-sky-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.55),0_0_0_1px_rgba(56,189,248,0.22)_inset] ring-1 ring-sky-400/28 dark:bg-sky-500/[0.14] dark:text-sky-100 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_0_0_1px_rgba(56,189,248,0.18)_inset] dark:ring-sky-400/35";
@@ -639,8 +639,8 @@ export function SiteHeader({
   const active = activeHash || navHash;
 
   const toolbarPad = scrollCompact
-    ? "px-3.5 py-2 sm:px-4 sm:py-2.5 md:px-6 md:py-2.5"
-    : "px-4 py-2.5 sm:px-5 sm:py-3 md:px-7 md:py-3.5";
+    ? "px-3 py-1.5 sm:px-3.5 sm:py-1.5 md:px-5 md:py-1.5"
+    : "px-3.5 py-2 sm:px-4 sm:py-2.5 md:px-6 md:py-2.5";
 
   return (
     <>
@@ -655,7 +655,7 @@ export function SiteHeader({
       >
         <div
           ref={toolbarRef}
-          className={`pointer-events-auto relative mx-auto min-w-0 w-full max-w-6xl px-0 pb-2 pt-[max(0.375rem,env(safe-area-inset-top))] sm:pb-2.5 md:max-w-none md:px-0 md:pb-0 ${scrollCompact ? "md:pt-[max(0.2rem,env(safe-area-inset-top))]" : "md:pt-[max(0.35rem,env(safe-area-inset-top))]"}`}
+          className={`pointer-events-auto relative mx-auto min-w-0 w-full max-w-6xl px-0 pb-1.5 pt-[max(0.3rem,env(safe-area-inset-top))] sm:pb-2 md:max-w-none md:px-0 md:pb-0 ${scrollCompact ? "md:pt-[max(0.1rem,env(safe-area-inset-top))]" : "md:pt-[max(0.18rem,env(safe-area-inset-top))]"}`}
         >
           <div
             className={`site-header-shell relative rounded-[1.125rem] md:rounded-none ${menuOpen ? "overflow-visible" : "overflow-hidden"}`}
@@ -663,15 +663,15 @@ export function SiteHeader({
             data-header-compact={scrollCompact ? "true" : "false"}
           >
             <div
-              className={`relative z-[2] mx-auto flex min-w-0 w-full max-w-6xl flex-nowrap items-center justify-between gap-2 sm:gap-3 md:gap-3 lg:gap-5 ${toolbarPad}`}
+              className={`relative z-[2] mx-auto flex min-w-0 w-full max-w-6xl flex-nowrap items-center justify-between gap-1.5 sm:gap-2.5 md:gap-2.5 lg:gap-4 ${toolbarPad}`}
             >
           <Link
             href="/"
-            className="group pointer-events-auto flex min-w-0 max-w-[min(100%,12.5rem)] shrink-0 items-center gap-2 rounded-xl py-0.5 pl-0.5 pr-1 outline-none transition-[color,background-color,transform] duration-[380ms] [transition-timing-function:var(--ease-premium-soft)] motion-safe:active:scale-[0.995] hover:bg-white/[0.04] focus-visible:ring-2 focus-visible:ring-sky-400/45 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent dark:hover:bg-white/[0.04] sm:max-w-[min(100%,14rem)] sm:gap-2.5 md:max-w-[min(100%,16rem)] md:gap-2 md:pr-1.5 lg:max-w-[min(100%,20rem)] lg:gap-3 lg:pr-2"
+            className="group pointer-events-auto flex min-w-0 max-w-[min(100%,12.5rem)] shrink-0 items-center gap-2 rounded-xl py-0 pl-0.5 pr-1 outline-none transition-[color,background-color,transform] duration-[380ms] [transition-timing-function:var(--ease-premium-soft)] motion-safe:active:scale-[0.995] hover:bg-white/[0.04] focus-visible:ring-2 focus-visible:ring-sky-400/45 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent dark:hover:bg-white/[0.04] sm:max-w-[min(100%,14rem)] sm:gap-2.5 md:max-w-[min(100%,16rem)] md:gap-2 md:pr-1.5 lg:max-w-[min(100%,20rem)] lg:gap-3 lg:pr-2"
             aria-label={header.logoAriaLabel}
             onClick={onLogoClick}
           >
-            <span className="relative inline-flex shrink-0 rounded-[11px] bg-white/[0.06] p-[3px] ring-1 ring-slate-900/[0.07] shadow-[0_0_32px_-18px_rgba(14,165,233,0.14)] transition-[box-shadow,ring-color] duration-500 dark:bg-white/[0.04] dark:ring-white/[0.09] dark:shadow-[0_0_40px_-18px_rgba(56,189,248,0.2)] md:rounded-xl md:p-1">
+            <span className="relative inline-flex shrink-0 rounded-[10px] bg-white/[0.06] p-[2px] ring-1 ring-slate-900/[0.07] shadow-[0_0_32px_-18px_rgba(14,165,233,0.14)] transition-[box-shadow,ring-color] duration-500 dark:bg-white/[0.04] dark:ring-white/[0.09] dark:shadow-[0_0_40px_-18px_rgba(56,189,248,0.2)] md:rounded-lg md:p-[2px]">
               <HeaderLogoMark
                 logoLightSrc={logoLightSrc}
                 logoDarkSrc={logoDarkSrc}
@@ -679,7 +679,7 @@ export function SiteHeader({
               />
             </span>
             <span
-              className={`truncate font-semibold tracking-tight text-foreground/95 transition-[font-size] duration-500 [transition-timing-function:var(--ease-premium-soft)] dark:text-white/95 ${scrollCompact ? "text-[0.875rem] sm:text-[0.9375rem] md:text-[0.92rem]" : "text-[0.9375rem] sm:text-[1.02rem] md:text-[0.95rem] lg:text-[1.0625rem]"}`}
+              className={`truncate font-semibold tracking-tight text-foreground/95 transition-[font-size] duration-500 [transition-timing-function:var(--ease-premium-soft)] dark:text-white/95 ${scrollCompact ? "text-[0.78rem] sm:text-[0.8125rem] md:text-[0.8125rem]" : "text-[0.8125rem] sm:text-[0.9375rem] md:text-[0.875rem] lg:text-[0.9375rem]"}`}
             >
               <CmsText path="header.brandName" text={header.brandName} as="span" className="inline" />
             </span>
@@ -718,7 +718,7 @@ export function SiteHeader({
                           {isActive ? (
                             <span
                               aria-hidden
-                              className="pointer-events-none absolute -bottom-1.5 left-1/2 h-[2px] w-5 -translate-x-1/2 rounded-full bg-sky-500/90 shadow-[0_0_14px_rgba(56,189,248,0.35)] motion-safe:animate-[fadeUpSoft_280ms_cubic-bezier(0.22,0.61,0.36,1)_both] dark:bg-sky-400/85 dark:shadow-[0_0_16px_rgba(56,189,248,0.28)]"
+                              className="pointer-events-none absolute -bottom-1 left-1/2 h-[2px] w-5 -translate-x-1/2 rounded-full bg-sky-500/90 shadow-[0_0_14px_rgba(56,189,248,0.35)] motion-safe:animate-[fadeUpSoft_280ms_cubic-bezier(0.22,0.61,0.36,1)_both] dark:bg-sky-400/85 dark:shadow-[0_0_16px_rgba(56,189,248,0.28)]"
                             />
                           ) : null}
                         </span>
@@ -728,7 +728,7 @@ export function SiteHeader({
                       <li key={`${item.id}-header-search`} className="flex shrink-0 items-center">
                         <button
                           type="button"
-                          className={`${headerIconBtnBase} inline-flex min-h-8 min-w-8 items-center justify-center px-1.5 py-1.5 md:min-h-8 md:min-w-8 lg:min-h-9 lg:min-w-9`}
+                          className={`${headerIconBtnBase} inline-flex min-h-[1.625rem] min-w-[1.625rem] items-center justify-center px-1 py-1 md:min-h-[1.625rem] md:min-w-[1.625rem] lg:min-h-7 lg:min-w-7`}
                           aria-label="Pencarian"
                           onClick={openSiteSearch}
                         >
@@ -801,7 +801,7 @@ export function SiteHeader({
             "border-t border-white/[0.12] bg-[color-mix(in_srgb,var(--header-glass-fill-solid)_94%,transparent)] backdrop-blur-xl backdrop-saturate-125 dark:border-white/[0.1] dark:bg-[color-mix(in_srgb,var(--header-glass-fill-solid)_92%,transparent)]",
             "motion-safe:transition-[opacity,transform] motion-safe:duration-[320ms] motion-safe:[transition-timing-function:var(--ease-premium-soft)] motion-reduce:transition-none",
             menuOpen
-              ? "pointer-events-auto max-h-[min(60dvh,calc(100dvh-var(--site-header-height,5rem)))] translate-y-0 overflow-y-auto overscroll-contain rounded-b-[1.125rem] py-2 opacity-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] md:rounded-b-[1.35rem]"
+              ? "pointer-events-auto max-h-[min(60dvh,calc(100dvh-var(--site-header-height,3.75rem)))] translate-y-0 overflow-y-auto overscroll-contain rounded-b-[1.125rem] py-2 opacity-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] md:rounded-b-[1.35rem]"
               : "pointer-events-none max-h-0 -translate-y-1 overflow-hidden border-transparent py-0 opacity-0 shadow-none motion-reduce:translate-y-0",
           ].join(" ")}
         >

@@ -22,9 +22,8 @@ export type HeroBackgroundSliderProps = {
   initialViewportIsMobile?: boolean;
 };
 
-/** `sizes`: bantu Next pilih lebar decode mendekati viewport (mobile-first, LCP). */
-const HERO_SLIDE_SIZES =
-  "(max-width: 480px) 100vw, (max-width: 767px) 100vw, (max-width: 1536px) 100vw, 1920px";
+/** `sizes`: mobile ~lebar viewport; tablet/desktop cap decode (tidak memaksa 100vw lebar penuh sampai desktop besar). */
+const HERO_SLIDE_SIZES = "(max-width: 767px) 100vw, min(100vw, 1920px)";
 
 const HERO_IMG_BASELINE = { width: 1920, height: 1080 } as const;
 
@@ -241,11 +240,11 @@ export function HeroBackgroundSlider({
           )}
         </div>
         <div
-          className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_100%_92%_at_50%_44%,transparent_22%,rgba(5,11,24,0.38)_62%,rgba(5,11,24,0.62)_100%)]"
+          className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_100%_92%_at_50%_44%,transparent_40%,rgba(5,11,24,0.1)_72%,rgba(5,11,24,0.24)_100%)]"
           aria-hidden
         />
         <div
-          className="pointer-events-none absolute inset-0 z-[2] shadow-[inset_0_-60px_80px_-20px_rgba(5,11,24,0.35),inset_0_0_60px_rgba(5,11,24,0.18)]"
+          className="pointer-events-none absolute inset-0 z-[2] shadow-[inset_0_-44px_64px_-16px_rgba(5,11,24,0.07),inset_0_0_40px_rgba(5,11,24,0.028)]"
           aria-hidden
         />
       </div>
@@ -278,11 +277,11 @@ export function HeroBackgroundSlider({
           ))}
         </div>
         <div
-          className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_100%_92%_at_50%_44%,transparent_22%,rgba(5,11,24,0.38)_62%,rgba(5,11,24,0.62)_100%)]"
+          className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_100%_92%_at_50%_44%,transparent_40%,rgba(5,11,24,0.1)_72%,rgba(5,11,24,0.24)_100%)]"
           aria-hidden
         />
         <div
-          className="pointer-events-none absolute inset-0 z-[2] shadow-[inset_0_-60px_80px_-20px_rgba(5,11,24,0.35),inset_0_0_60px_rgba(5,11,24,0.18)]"
+          className="pointer-events-none absolute inset-0 z-[2] shadow-[inset_0_-44px_64px_-16px_rgba(5,11,24,0.07),inset_0_0_40px_rgba(5,11,24,0.028)]"
           aria-hidden
         />
       </div>

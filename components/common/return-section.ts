@@ -40,7 +40,7 @@ export function clearHomeScrollY(): void {
   }
 }
 
-/** Simpan URL saat ini (path + hash) sebelum buka `/produk/…`, `/proses/…`, dsb. */
+/** Simpan URL saat ini (path + hash) sebelum buka `/produk/…`, `/artikel/…`, dsb. */
 export function saveInternalReturnPath(): void {
   if (typeof window === "undefined") return;
   try {

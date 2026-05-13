@@ -406,6 +406,23 @@ export function IconProcessInstall({ className, ...props }: IconProps) {
   );
 }
 
+/** Sandwich Panel PU — cross-section: dua skin metal tipis + core PU foam (hatching diagonal). */
+export function IconSandwichPanelPU({ className, ...props }: IconProps) {
+  return (
+    <svg
+      className={mergeAytiIconClass(className)}
+      viewBox="0 0 24 24"
+      aria-hidden
+      {...strokeIcon}
+      {...props}
+    >
+      <rect x="2.5" y="6" width="19" height="12" rx="0.75" />
+      <path d="M2.5 8.75h19M2.5 15.25h19" />
+      <path d="M6 14.75l2.5-4M10.25 14.75l2.5-4M14.5 14.75l2.5-4" />
+    </svg>
+  );
+}
+
 /** Proses kerja: selesai */
 export function IconProcessComplete({ className, ...props }: IconProps) {
   return (

@@ -172,6 +172,7 @@
       "nav-tentang",
       "nav-layanan",
       "nav-produk",
+      "nav-service",
       "nav-proyek",
       "nav-kontak",
       "nav-gallery-proyek",
@@ -184,15 +185,22 @@
     "headingMiddle": "PENDINGIN",
     "headingLine2": "Terintegrasi",
     "intro": {
-      "before1": "Kami menghadirkan ",
-      "bold1": "solusi terintegrasi",
-      "middle": " untuk menjawab semua kebutuhan Anda dalam membangun ",
+      "before1": "Untuk memenuhi kebutuhan",
+      "bold1": "bisnis",
+      "middle": "anda dalam membangun",
       "bold2": "ruang pendingin",
-      "after2": " yang ",
-      "bold3": "stabil & efisien",
-      "after3": " untuk jangka panjang."
+      "after2": "yang",
+      "bold3": "stabil dan efisien",
+      "after3": "untuk jangka panjang."
     },
     "prosesBadge": "Alur kerja yang mudah",
+    "prosesStepImages": {
+      "konsultasi": "/images/spesialisasi/spesialisasi-pu.jpg",
+      "survey": "/images/spesialisasi/spesialisasi-eps.jpg",
+      "produksi": "/images/spesialisasi/spesialisasi-coldstorage.jpg",
+      "instalasi": "/images/spesialisasi/spesialisasi-refrigerasi.jpg",
+      "selesai": "/images/spesialisasi/spesialisasi-doordock.jpg"
+    },
     "ctaWhatsApp": {
       "label": "Hubungi kami",
       "message": "Halo PT AYTI INDO PANEL,\nSaya ingin berkonsultasi terkait kebutuhan solusi cold storage dan refrigerasi.\nTerima kasih.",
@@ -205,39 +213,28 @@
     },
     "slides": [
       {
-        "src": "/images/gambar_hero/1778482431316-c5012dcbda47.webp",
-        "objectFit": "contain",
+        "src": "/images/gambar_hero/1778688702886-b7e9f0162f0b.webp",
+        "objectFit": "fill",
         "focalX": 50.09958422746781,
-        "focalY": 50.26836832061068,
-        "zoom": 1.28,
+        "focalY": 50.3542461832061,
+        "zoom": 1,
         "mobile": {
-          "focalX": 50.00452655579399,
-          "focalY": 50.26836832061068,
+          "focalX": 50.09958422746781,
+          "focalY": 50.43744036259542,
+          "objectFit": "cover",
           "zoom": 1.26
         }
       },
       {
-        "src": "/images/gambar_hero/1778484629686-f59f1bb84b02.webp",
+        "src": "/images/gambar_hero/1778688951179-697aeebe0237.webp",
         "objectFit": "contain",
         "focalX": 49.95322559012875,
         "focalY": 50.08319417938932,
         "zoom": 1.14,
         "mobile": {
-          "objectFit": "contain",
-          "focalX": 49.89890692060086,
-          "focalY": 50.182490458015266,
-          "zoom": 1.16
-        }
-      },
-      {
-        "src": "/images/gambar_hero/1778484794241-13e3f46f6186.webp",
-        "objectFit": "fill",
-        "focalX": 55.664230150214586,
-        "focalY": 89.35621421755727,
-        "zoom": 1,
-        "mobile": {
-          "focalX": 47.74577521459227,
-          "focalY": 90.34380963740459,
+          "objectFit": "cover",
+          "focalX": 49.90796003218883,
+          "focalY": 50.26031727099235,
           "zoom": 1
         }
       }

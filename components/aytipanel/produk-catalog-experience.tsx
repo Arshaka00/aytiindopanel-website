@@ -316,7 +316,7 @@ export function ProdukCatalogExperience({ items }: ProdukCatalogExperienceProps)
 
   return (
     <>
-      <div className="sticky top-[calc(var(--site-header-height,4.25rem)+0.5rem+env(safe-area-inset-top,0px))] z-40 mb-2 sm:mb-3 md:mb-5">
+      <div className="sticky top-[calc(var(--site-header-height,3.65rem)+0.5rem+env(safe-area-inset-top,0px))] z-40 mb-2 sm:mb-3 md:mb-5">
         <div className="w-full">
           <div
             className={mergeAytiCardClass(

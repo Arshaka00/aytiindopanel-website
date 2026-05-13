@@ -157,7 +157,7 @@ export default async function RootLayout({
             siteSettings={content.siteSettings}
             seoArticles={seoArticles}
           />
-          <div className="flex min-h-0 flex-1 flex-col pt-[var(--site-header-height,4.25rem)]">
+          <div className="flex min-h-0 flex-1 flex-col pt-[var(--site-header-height,3.65rem)]">
             {children}
           </div>
         </SiteCmsRoot>

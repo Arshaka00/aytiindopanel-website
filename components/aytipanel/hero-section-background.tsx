@@ -169,11 +169,11 @@ export function HeroSectionBackground(props?: {
           />
           {/* Samakan vignette dengan HeroBackgroundSlider (satu gambar). */}
           <div
-            className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_100%_92%_at_50%_44%,transparent_22%,rgba(5,11,24,0.38)_62%,rgba(5,11,24,0.62)_100%)]"
+            className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_100%_92%_at_50%_44%,transparent_40%,rgba(5,11,24,0.1)_72%,rgba(5,11,24,0.24)_100%)]"
             aria-hidden
           />
           <div
-            className="pointer-events-none absolute inset-0 z-[2] shadow-[inset_0_-60px_80px_-20px_rgba(5,11,24,0.35),inset_0_0_60px_rgba(5,11,24,0.18)]"
+            className="pointer-events-none absolute inset-0 z-[2] shadow-[inset_0_-44px_64px_-16px_rgba(5,11,24,0.07),inset_0_0_40px_rgba(5,11,24,0.028)]"
             aria-hidden
           />
         </div>

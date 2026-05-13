@@ -146,7 +146,7 @@ export function SeoArticleView({
         </div>
 
         <div className="mt-14 grid gap-12 lg:mt-16 lg:grid-cols-[minmax(0,15.75rem)_minmax(0,1fr)] lg:gap-16 xl:grid-cols-[minmax(0,17rem)_minmax(0,1fr)]">
-          <aside className="lg:sticky lg:top-[calc(var(--site-header-height,4.25rem)+1.25rem)] lg:self-start">
+          <aside className="lg:sticky lg:top-[calc(var(--site-header-height,3.65rem)+1.25rem)] lg:self-start">
             <div className="lg:hidden">
               <details className="group overflow-hidden rounded-2xl border border-border/90 bg-gradient-to-b from-card/95 to-card/80 shadow-[var(--shadow-card)] ring-1 ring-black/[0.04] dark:ring-white/[0.05]">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-4 text-sm font-medium text-foreground marker:content-none [&::-webkit-details-marker]:hidden">

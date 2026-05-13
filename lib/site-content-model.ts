@@ -214,6 +214,17 @@ export type SiteContent = {
     headingLine2: CmsRichTextValue;
     intro: HeroIntroParts;
     prosesBadge: string;
+    /**
+     * Gambar kecil per-step pada strip "proses kerja" hero — string kosong = pakai fallback SVG icon.
+     * Diedit lewat CMS (upload ke scope=hero).
+     */
+    prosesStepImages: {
+      konsultasi: string;
+      survey: string;
+      produksi: string;
+      instalasi: string;
+      selesai: string;
+    };
     ctaWhatsApp: { label: string; message: string; ariaLabel: string };
     ctaSecondary: { label: string; href: string; ariaLabel: string };
     slides: HeroSlideEntry[];

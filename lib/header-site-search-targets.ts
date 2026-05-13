@@ -1,6 +1,5 @@
 import { plainTextFromRichValue } from "@/lib/cms-rich-text";
 import { GALLERY_PROJECTS } from "@/components/aytipanel/gallery-project-data";
-import { PROSES_KERJA_STEPS } from "@/components/aytipanel/proses-kerja-data";
 import { PRODUCTS } from "@/components/aytipanel/products-catalog";
 import { DEFAULT_HOME_LAYOUT } from "@/lib/home-layout-defaults";
 import type { SeoArticle } from "@/lib/seo-articles/types";
@@ -362,24 +361,6 @@ function enrichFromSiteContent(byHref: Map<string, HeaderSiteSearchTarget>, site
         item.description,
         item.slug.replace(/-/g, " "),
         "produk detail sandwich panel refrigerasi",
-      ]),
-    });
-  }
-
-  for (const step of PROSES_KERJA_STEPS) {
-    const href = `/proses/${step.slug}`;
-    if (byHref.has(href)) continue;
-    const bodies = step.page.sections.flatMap((s) => [s.title, s.body]);
-    byHref.set(href, {
-      id: `proses-${step.slug}`,
-      title: step.title,
-      href,
-      haystack: normalizeHaystack([
-        step.title,
-        step.page.description,
-        step.page.intro,
-        ...bodies,
-        "alur proses kerja workflow konsultasi instalasi",
       ]),
     });
   }

@@ -32,7 +32,6 @@ const PAGE_SEO_LABELS: { key: SitePageSeoKey; label: string; path: string }[] = 
   { key: "produk", label: "Produk", path: "/produk" },
   { key: "coldStorage", label: "Cold storage", path: "/cold-storage" },
   { key: "gallery", label: "Gallery", path: "/gallery-project" },
-  { key: "process", label: "Proses (default)", path: "/proses/*" },
 ];
 
 export function SiteSettingsEnterpriseSection({ settings, update, gateHeaders }: Props) {

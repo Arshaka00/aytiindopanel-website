@@ -7,7 +7,7 @@
  */
 :root {
   /* Diisi runtime oleh SiteHeader (tinggi bar toolbar + safe area); fallback sampai ukuran pertama */
-  --site-header-height: 4.25rem;
+  --site-header-height: 3.65rem;
   --bg-main: #ffffff;
   --text-main: #111827;
   --card-bg: #ffffff;
@@ -647,69 +647,75 @@ html {
   --hero-canvas: #050b18;
   --hero-overlay-diag: linear-gradient(
     118deg,
-    rgba(5, 11, 24, 0.84) 0%,
-    rgba(7, 19, 46, 0.52) 34%,
-    rgba(11, 30, 68, 0.34) 68%,
-    rgba(5, 11, 24, 0.22) 100%
+    rgba(5, 11, 24, 0.92) 0%,
+    rgba(7, 20, 50, 0.62) 32%,
+    rgba(12, 34, 76, 0.44) 66%,
+    rgba(5, 11, 24, 0.3) 100%
   );
   --hero-overlay-vert: linear-gradient(
     180deg,
-    rgba(2, 7, 18, 0.4) 0%,
-    rgba(4, 12, 28, 0.18) 44%,
-    rgba(2, 6, 17, 0.48) 100%
+    rgba(2, 7, 18, 0.5) 0%,
+    rgba(4, 13, 32, 0.26) 44%,
+    rgba(2, 6, 17, 0.56) 100%
   );
   --hero-overlay-glow: radial-gradient(
-      ellipse 58% 44% at 17% 15%,
-      rgba(89, 216, 255, 0.078),
-      transparent 63%
+      ellipse 62% 48% at 16% 14%,
+      rgba(89, 216, 255, 0.11),
+      transparent 62%
     ),
-    radial-gradient(ellipse 50% 36% at 83% 69%, rgba(56, 132, 255, 0.048), transparent 61%),
-    radial-gradient(circle at 52% 90%, rgba(127, 231, 255, 0.03), transparent 58%);
+    radial-gradient(ellipse 54% 40% at 84% 68%, rgba(56, 132, 255, 0.068), transparent 60%),
+    radial-gradient(circle at 52% 90%, rgba(127, 231, 255, 0.045), transparent 56%),
+    radial-gradient(ellipse 80% 55% at 50% 38%, rgba(30, 90, 180, 0.04), transparent 70%);
   --hero-overlay-bottom: linear-gradient(
     to top,
-    rgba(2, 6, 17, 0.56) 0%,
-    rgba(5, 11, 24, 0.14) 46%,
+    rgba(2, 6, 17, 0.68) 0%,
+    rgba(5, 11, 24, 0.2) 42%,
     transparent 100%
   );
-  --hero-overlay-bottom-soft: linear-gradient(to top, rgba(3, 9, 23, 0.34) 0%, transparent 100%);
+  --hero-overlay-bottom-soft: linear-gradient(to top, rgba(3, 9, 23, 0.46) 0%, transparent 100%);
   --hero-overlay-rail: linear-gradient(
       100deg,
-      rgba(3, 10, 24, 0.76) 0%,
-      rgba(5, 17, 42, 0.34) 40%,
-      rgba(5, 11, 24, 0.1) 66%,
-      rgba(2, 6, 16, 0.18) 100%
+      rgba(3, 10, 24, 0.86) 0%,
+      rgba(5, 18, 46, 0.46) 38%,
+      rgba(5, 11, 24, 0.18) 64%,
+      rgba(2, 6, 16, 0.28) 100%
     ),
-    linear-gradient(180deg, transparent 54%, rgba(2, 6, 16, 0.13) 100%);
+    linear-gradient(180deg, transparent 52%, rgba(2, 6, 16, 0.2) 100%);
 }
 
 @media (max-width: 767.98px) {
   #beranda.hero.hero-section-fixed-dark {
     --hero-overlay-diag: linear-gradient(
       118deg,
-      rgba(5, 11, 24, 0.8) 0%,
-      rgba(7, 18, 44, 0.52) 38%,
-      rgba(10, 28, 62, 0.38) 100%
+      rgba(5, 11, 24, 0.88) 0%,
+      rgba(7, 19, 48, 0.56) 36%,
+      rgba(11, 30, 68, 0.4) 100%
     );
     --hero-overlay-vert: linear-gradient(
       180deg,
-      rgba(2, 7, 18, 0.44) 0%,
-      rgba(3, 10, 26, 0.22) 42%,
-      rgba(2, 6, 17, 0.52) 100%
+      rgba(2, 7, 18, 0.52) 0%,
+      rgba(3, 11, 28, 0.28) 42%,
+      rgba(2, 6, 17, 0.58) 100%
     );
     --hero-overlay-glow: radial-gradient(
-        ellipse 62% 46% at 18% 16%,
-        rgba(89, 216, 255, 0.068),
-        transparent 64%
+        ellipse 64% 50% at 17% 15%,
+        rgba(89, 216, 255, 0.092),
+        transparent 63%
       ),
-      radial-gradient(ellipse 52% 38% at 82% 68%, rgba(56, 132, 255, 0.042), transparent 62%),
-      radial-gradient(circle at 52% 88%, rgba(127, 231, 255, 0.032), transparent 58%);
+      radial-gradient(ellipse 54% 40% at 82% 67%, rgba(56, 132, 255, 0.058), transparent 60%),
+      radial-gradient(circle at 52% 88%, rgba(127, 231, 255, 0.036), transparent 56%);
     --hero-overlay-bottom: linear-gradient(
       to top,
-      rgba(2, 6, 17, 0.5) 0%,
-      rgba(5, 11, 24, 0.12) 44%,
+      rgba(2, 6, 17, 0.64) 0%,
+      rgba(5, 11, 24, 0.16) 42%,
       transparent 100%
     );
-    --hero-overlay-bottom-soft: linear-gradient(to top, rgba(3, 9, 23, 0.32) 0%, transparent 100%);
+    --hero-overlay-bottom-soft: linear-gradient(to top, rgba(3, 9, 23, 0.4) 0%, transparent 100%);
+  }
+
+  /* Batalkan zoom CMS (scale inline) di hero ponsel — kembalikan tampilan sebelum “full crop” mobile. */
+  #beranda.hero .cms-media-fit-anchor {
+    transform: none !important;
   }
 }
 
@@ -719,6 +725,26 @@ html {
 
 #beranda.hero .hero-overlay-vertical {
   background: var(--hero-overlay-vert);
+}
+
+@media (min-width: 768px) {
+  #beranda.hero .hero-overlay-diagonal,
+  #beranda.hero .hero-overlay-vertical {
+    opacity: 0.92;
+  }
+
+  #beranda.hero .hero-overlay-glow {
+    opacity: 1;
+  }
+
+  #beranda.hero .hero-overlay-desktop-rail {
+    opacity: 1;
+  }
+
+  #beranda.hero .hero-overlay-bottom,
+  #beranda.hero .hero-overlay-bottom-soft {
+    opacity: 0.94;
+  }
 }
 
 #beranda.hero .hero-overlay-glow {
@@ -738,7 +764,7 @@ html {
 }
 
 #beranda.hero .hero-overlay-top-hairline {
-  background: linear-gradient(to right, transparent, rgba(186, 230, 253, 0.22), transparent);
+  background: linear-gradient(to right, transparent, rgba(245, 247, 255, 0.078), transparent);
 }
 
 /* Desktop standard-density refinement: fluid scaling without OS/browser detection. */
@@ -750,11 +776,11 @@ html {
 
   [data-site-header-sticky] .site-header-shell > div {
     gap: clamp(0.5rem, 1vw, 1rem);
-    padding-block: clamp(0.45rem, 0.75svh, 0.65rem);
+    padding-block: clamp(0.24rem, 0.52svh, 0.42rem);
   }
 
   [data-site-header-sticky] img {
-    max-height: clamp(2.15rem, 4.6svh, 2.65rem);
+    max-height: clamp(1.75rem, 3.8svh, 2.2rem);
   }
 
   /* Satu baris: rapatkan jarak & teks; scroll horizontal halus bila viewport sempit. */
@@ -765,16 +791,16 @@ html {
   }
 
   [data-site-header-sticky] nav a {
-    padding-block: clamp(0.28rem, 0.5svh, 0.42rem);
-    padding-inline: clamp(0.38rem, 0.48vw, 0.58rem);
+    padding-block: clamp(0.18rem, 0.36svh, 0.3rem);
+    padding-inline: clamp(0.34rem, 0.46vw, 0.54rem);
     font-size: clamp(0.68rem, 0.7vw, 0.76rem);
     white-space: nowrap;
   }
 
   [data-site-header-sticky] nav button {
-    min-height: clamp(1.85rem, 3.6svh, 2.05rem);
-    min-width: clamp(1.85rem, 3.6svh, 2.05rem);
-    padding: clamp(0.28rem, 0.55svh, 0.42rem);
+    min-height: clamp(1.55rem, 2.9svh, 1.75rem);
+    min-width: clamp(1.55rem, 2.9svh, 1.75rem);
+    padding: clamp(0.18rem, 0.4svh, 0.3rem);
   }
 
   #beranda.hero {
@@ -820,7 +846,7 @@ html {
   }
 
   #beranda.hero .hero-heading-glass-middle {
-    font-size: clamp(4.25rem, 7.25vw, 5.95rem);
+    font-size: clamp(4.5rem, 7.35vw, 6.15rem);
     line-height: 0.88;
   }
 
@@ -834,10 +860,6 @@ html {
     transform: translateY(4.4rem);
   }
 
-  #beranda.hero .hero-intro-tagline-chrome {
-    padding-block: clamp(1.75rem, 3svh, 2.35rem);
-  }
-
   #beranda.hero .hero-intro-divider {
     margin-top: 4.5rem;
     transform: translateY(1rem);
@@ -847,22 +869,30 @@ html {
     transform: translateY(0.75rem);
   }
 
-  #beranda.hero .hero-intro-tagline-chrome p {
-    max-width: clamp(28rem, 38vw, 32rem);
+  #beranda.hero .hero-intro-body {
+    max-width: clamp(30rem, 42vw, 36rem);
     overflow-wrap: break-word;
-    font-size: clamp(1rem, 1.08vw, 1.1875rem);
-    line-height: 1.46;
+    font-size: clamp(1.28rem, 1.38vw, 1.5rem);
+    line-height: 1.42;
   }
 
   #beranda.hero .hero-process-block {
-    margin-top: clamp(2.75rem, 5.2svh, 4.2rem);
-    transform: translateY(clamp(1rem, 2.2svh, 1.75rem));
+    /* Hanya margin (bukan translateY) supaya jarak intro→strip tidak mendorong CTA ke bawah */
+    margin-top: clamp(5.75rem, 10.75svh, 8.25rem);
   }
 
   #beranda.hero .hero-cta-group {
-    margin-top: clamp(1.2rem, 2.4svh, 1.8rem);
+    /* Kompensasi kenaikan margin strip proses — tombol tetap di ritme “lama” */
+    margin-top: max(0.35rem, calc(clamp(1.2rem, 2.4svh, 1.8rem) - clamp(2.5rem, 5.8svh, 4.25rem)));
     padding-top: clamp(1.75rem, 3.4svh, 2.75rem);
     transform: translateY(clamp(1rem, 2.2svh, 1.75rem));
+  }
+}
+
+/* Desktop: strip proses margin besar dari Tailwind — margin CTA dijepit ringan agar tidak “meloncat” */
+@media (min-width: 768px) {
+  #beranda.hero .hero-cta-group {
+    margin-top: max(0.35rem, calc(1.75rem - 2rem));
   }
 }
 
@@ -876,11 +906,7 @@ html {
   }
 
   #beranda.hero .hero-heading-glass-middle {
-    font-size: clamp(3.7rem, 6.25vw, 5.1rem);
-  }
-
-  #beranda.hero .hero-intro-tagline-chrome {
-    padding-block: 1.35rem;
+    font-size: clamp(3.9rem, 6.5vw, 5.35rem);
   }
 
   #beranda.hero .hero-intro-divider {
@@ -892,19 +918,18 @@ html {
     transform: translateY(0.45rem);
   }
 
-  #beranda.hero .hero-intro-tagline-chrome p {
-    max-width: clamp(27rem, 40vw, 31rem);
-    font-size: clamp(0.94rem, 0.98vw, 1.05rem);
-    line-height: 1.38;
+  #beranda.hero .hero-intro-body {
+    max-width: clamp(28rem, 42vw, 34rem);
+    font-size: clamp(1.15rem, 1.22vw, 1.32rem);
+    line-height: 1.41;
   }
 
   #beranda.hero .hero-process-block {
-    margin-top: clamp(1.9rem, 3.8svh, 2.8rem);
-    transform: translateY(clamp(0.7rem, 1.6svh, 1.15rem));
+    margin-top: clamp(4.5rem, 7.75svh, 6.5rem);
   }
 
   #beranda.hero .hero-cta-group {
-    margin-top: clamp(0.85rem, 1.7svh, 1.25rem);
+    margin-top: max(0.35rem, calc(clamp(0.85rem, 1.7svh, 1.25rem) - clamp(2rem, 4.5svh, 3.25rem)));
     padding-top: 1.25rem;
     transform: translateY(clamp(0.7rem, 1.6svh, 1.15rem));
   }
@@ -955,7 +980,7 @@ html {
   }
 
   html.ua-android #beranda.hero .hero-cta-group {
-    transform: translateY(-3.25rem);
+    transform: translateY(0);
   }
 }
 
@@ -976,7 +1001,7 @@ html {
     width: calc(100% - 1.5rem);
     max-width: calc(100% - 1.5rem);
     margin-inline: auto;
-    margin-top: 0.75rem;
+    margin-top: 0.9rem;
     padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
   }
 
@@ -1007,6 +1032,17 @@ html {
   content: " ";
 }
 
+/* Judul hero — glyph lebih tajam (bukan ubah ukuran/warna); bayangan rapat di `#hero-heading` section-top. */
+#beranda.hero #hero-heading {
+  text-rendering: geometricPrecision;
+}
+
+#beranda.hero #hero-heading .hero-heading-glass-line1,
+#beranda.hero #hero-heading .hero-heading-glass-line2,
+#beranda.hero #hero-heading .hero-heading-accent {
+  text-rendering: geometricPrecision;
+}
+
 /* Judul hero (≤767px = `max-md`): +3px dari clamp dasar & dua baris (Android/iPhone) — mirror clamp #hero-heading di section-top.tsx */
 @media (max-width: 767px) {
   html.ua-android #beranda.hero #hero-heading,
@@ -1033,6 +1069,18 @@ html {
   html.ua-iphone #beranda.hero #hero-heading .hero-heading-glass-middle {
     display: block;
   }
+
+  html.ua-android #beranda.hero #hero-heading .hero-heading-line1-row .hero-heading-glass-line1,
+  html.ua-iphone #beranda.hero #hero-heading .hero-heading-line1-row .hero-heading-glass-line1 {
+    display: inline-block;
+    max-width: calc(100% - 0.75rem);
+  }
+
+  html.ua-android #beranda.hero #hero-heading .hero-heading-line2-row .hero-heading-glass-line2,
+  html.ua-iphone #beranda.hero #hero-heading .hero-heading-line2-row .hero-heading-glass-line2 {
+    display: inline-block;
+    max-width: calc(100% - 0.75rem);
+  }
 }
 
 /*
@@ -1041,14 +1089,14 @@ html {
  */
 @media (min-width: 768px) {
   html.ua-windows #beranda.hero #hero-heading .hero-heading-glass-middle {
-    font-size: clamp(1.9rem, 10.9vw, 4.35rem);
-    letter-spacing: -0.042em;
+    font-size: clamp(2.05rem, 10.9vw, 4.65rem);
+    letter-spacing: -0.024em;
   }
 }
 
 @media (max-width: 767px) {
   html.ua-windows #beranda.hero #hero-heading .hero-heading-glass-middle {
-    font-size: clamp(1.9rem, 10.9vw, 4.35rem);
+    font-size: clamp(2.05rem, 10.9vw, 4.65rem);
   }
 }
 
@@ -1061,9 +1109,11 @@ html {
   position: relative;
   isolation: isolate;
   text-shadow: none;
+  transform: scaleX(1.07);
+  transform-origin: left center;
 }
 
-/* Bloom dingin rapat — tanpa spot ekstra di kanan yang terasa “sinar” */
+/* Bloom dingin — biru/cyan lebih nyata di belakang glyph (ice depth) */
 #beranda.hero #hero-heading .hero-heading-crystal-wrap::before {
   content: "";
   position: absolute;
@@ -1076,24 +1126,24 @@ html {
   background:
     radial-gradient(
       ellipse 72% 68% at 48% 42%,
-      rgba(103, 232, 249, 0.11) 0%,
+      rgba(103, 232, 249, 0.18) 0%,
       transparent 52%
     ),
     radial-gradient(
       ellipse 68% 64% at 50% 46%,
-      rgba(14, 165, 233, 0.22) 0%,
-      rgba(56, 189, 248, 0.14) 42%,
+      rgba(14, 165, 233, 0.32) 0%,
+      rgba(56, 189, 248, 0.22) 42%,
       transparent 70%
     ),
     radial-gradient(
       ellipse 58% 56% at 50% 100%,
-      rgba(52, 138, 190, 0.16) 0%,
+      rgba(14, 116, 175, 0.24) 0%,
       transparent 76%
     );
   opacity: 1;
 }
 
-/* Kilau halus — hanya opacity yang beranimasi (kompositor, murah) */
+/* Kilau es — lebih banyak sky + opacity sedikit naik */
 #beranda.hero #hero-heading .hero-heading-crystal-wrap::after {
   content: "";
   position: absolute;
@@ -1103,22 +1153,22 @@ html {
   border-radius: inherit;
   background-image: radial-gradient(
     ellipse 58% 46% at 44% 36%,
-    rgba(240, 253, 255, 0.38) 0%,
-    rgba(165, 243, 252, 0.22) 38%,
-    rgba(56, 189, 248, 0.14) 52%,
+    rgba(240, 253, 255, 0.42) 0%,
+    rgba(125, 211, 252, 0.32) 32%,
+    rgba(56, 189, 248, 0.24) 50%,
     transparent 74%
   );
   background-size: 112% 96%;
   background-position: 46% 38%;
   mix-blend-mode: soft-light;
-  opacity: 0.34;
+  opacity: 0.4;
   animation: hero-crystal-gloss-soft 14s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
   #beranda.hero #hero-heading .hero-heading-crystal-wrap::after {
     animation: none;
-    opacity: 0.34;
+    opacity: 0.4;
   }
 }
 
@@ -1131,12 +1181,12 @@ html {
 @keyframes hero-crystal-gloss-soft {
   0%,
   100% {
-    opacity: 0.26;
+    opacity: 0.3;
     background-position: 44% 40%;
   }
 
   50% {
-    opacity: 0.44;
+    opacity: 0.52;
     background-position: 48% 36%;
   }
 }
@@ -1147,51 +1197,52 @@ html {
   text-shadow: none;
   filter: url(#heroCrystalIceRefraction)
     drop-shadow(-0.5px -0.55px 0 rgba(255, 255, 255, 0.92))
-    drop-shadow(0 0.55px 0 rgba(186, 230, 253, 0.55))
+    drop-shadow(0 0.55px 0 rgba(186, 230, 253, 0.62))
     drop-shadow(0.55px 1.05px 0 rgba(4, 20, 52, 0.88))
     drop-shadow(0 2px 4px rgba(2, 12, 36, 0.52))
-    drop-shadow(0 0 10px rgba(56, 189, 248, 0.14))
-    drop-shadow(0 0 22px rgba(103, 232, 249, 0.09));
-  -webkit-text-stroke: 0.55px rgba(207, 250, 254, 0.88);
+    drop-shadow(0 0 14px rgba(56, 189, 248, 0.26))
+    drop-shadow(0 0 28px rgba(56, 189, 248, 0.14))
+    drop-shadow(0 0 22px rgba(103, 232, 249, 0.14));
+  -webkit-text-stroke: 0.55px rgba(186, 230, 253, 0.92);
   paint-order: stroke fill;
   background-image:
     repeating-linear-gradient(
       -14deg,
       transparent 0px,
       transparent 7px,
-      rgba(165, 243, 252, 0.038) 7px,
-      rgba(165, 243, 252, 0.038) 8px,
+      rgba(165, 243, 252, 0.055) 7px,
+      rgba(165, 243, 252, 0.055) 8px,
       transparent 8px,
       transparent 15px,
-      rgba(125, 211, 252, 0.022) 15px,
-      rgba(125, 211, 252, 0.022) 16px
+      rgba(125, 211, 252, 0.038) 15px,
+      rgba(125, 211, 252, 0.038) 16px
     ),
     radial-gradient(
       ellipse 96% 84% at 46% 54%,
-      rgba(2, 28, 72, 0.72) 0%,
-      rgba(12, 92, 148, 0.44) 40%,
-      rgba(4, 52, 108, 0.58) 56%,
+      rgba(2, 36, 88, 0.78) 0%,
+      rgba(8, 105, 158, 0.52) 38%,
+      rgba(4, 58, 108, 0.66) 54%,
       transparent 78%
     ),
     linear-gradient(
       156deg,
-      rgba(236, 254, 255, 1) 0%,
-      rgba(125, 211, 252, 0.72) 12%,
-      rgba(34, 158, 214, 0.62) 28%,
-      rgba(14, 165, 233, 0.52) 42%,
-      rgba(3, 52, 98, 0.72) 56%,
-      rgba(56, 189, 248, 0.48) 72%,
-      rgba(207, 250, 254, 0.98) 100%
+      rgba(224, 242, 254, 1) 0%,
+      rgba(125, 211, 252, 0.9) 10%,
+      rgba(34, 158, 214, 0.82) 24%,
+      rgba(14, 165, 233, 0.76) 40%,
+      rgba(3, 72, 118, 0.78) 54%,
+      rgba(56, 189, 248, 0.68) 68%,
+      rgba(191, 246, 254, 0.98) 100%
     ),
     radial-gradient(
       ellipse 52% 38% at 40% 34%,
-      rgba(255, 255, 255, 0.42) 0%,
-      rgba(56, 189, 248, 0.2) 48%,
+      rgba(255, 255, 255, 0.46) 0%,
+      rgba(56, 189, 248, 0.34) 46%,
       transparent 78%
     ),
     radial-gradient(
       ellipse 38% 28% at 62% 58%,
-      rgba(165, 243, 252, 0.26) 0%,
+      rgba(125, 211, 252, 0.36) 0%,
       transparent 74%
     );
   /* Layer statis + bg-size kompak — minimise repaint (tanpa animasi posisi) */
@@ -1217,11 +1268,12 @@ html {
 @media (max-width: 767.98px), (prefers-reduced-data: reduce), (prefers-reduced-motion: reduce) {
   #beranda.hero #hero-heading .hero-heading-crystal {
     filter: drop-shadow(-0.5px -0.55px 0 rgba(255, 255, 255, 0.92))
-      drop-shadow(0 0.55px 0 rgba(186, 230, 253, 0.55))
+      drop-shadow(0 0.55px 0 rgba(186, 230, 253, 0.62))
       drop-shadow(0.55px 1.05px 0 rgba(4, 20, 52, 0.88))
       drop-shadow(0 2px 4px rgba(2, 12, 36, 0.52))
-      drop-shadow(0 0 12px rgba(56, 189, 248, 0.16))
-      drop-shadow(0 0 24px rgba(103, 232, 249, 0.1));
+      drop-shadow(0 0 16px rgba(56, 189, 248, 0.26))
+      drop-shadow(0 0 26px rgba(56, 189, 248, 0.16))
+      drop-shadow(0 0 28px rgba(103, 232, 249, 0.14));
   }
 }
 
@@ -1355,69 +1407,24 @@ html {
 }
 
 /*
- * Alur kerja (`ProsesKerjaFlow`): garis alur premium — dash lembut, fade ujung, glow halus (hero),
- * animasi tenang & loop seamless; reduced-motion → trek statis tetap rapi.
+ * Alur kerja (`ProsesKerjaFlow`): garis & panah statis (tanpa animasi).
  */
-@keyframes proses-flow-line-x {
-  to {
-    background-position: 18px 0;
-  }
-}
-
-@keyframes proses-flow-line-y {
-  to {
-    background-position: 0 14px;
-  }
-}
-
-/* Panah: hanya transform + container query unit → kompositor halus, easing lembut */
-@keyframes proses-flow-arrow-march-x {
-  0% {
-    transform: translate3d(0, -50%, 0);
-  }
-
-  100% {
-    transform: translate3d(calc(100cqi - 100%), -50%, 0);
-  }
-}
-
-@keyframes proses-flow-arrow-march-y {
-  0% {
-    transform: translate3d(-50%, 0, 0);
-  }
-
-  100% {
-    transform: translate3d(-50%, calc(100cqb - 100%), 0);
-  }
-}
-
 .proses-flow-line--hero-h {
   background-color: transparent !important;
   border-radius: 9999px;
-  background-image: repeating-linear-gradient(
+  animation: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  background-image: linear-gradient(
     90deg,
-    transparent 0px,
-    transparent 1px,
-    rgb(255 255 255 / 0.1) 2px,
-    rgb(255 255 255 / 0.42) 4px,
-    rgb(255 255 255 / 0.62) 7px,
-    rgb(255 255 255 / 0.42) 10px,
-    rgb(255 255 255 / 0.1) 12px,
-    transparent 14px,
-    transparent 18px
-  );
-  background-size: 18px 100%;
-  background-repeat: repeat-x;
-  animation: proses-flow-line-x 1.65s linear infinite;
-  will-change: background-position;
-  -webkit-mask-image: linear-gradient(
-    90deg,
-    transparent,
-    #000 14%,
-    #000 86%,
-    transparent
-  );
-  mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+    rgb(255 255 255 / 0.06),
+    rgb(255 255 255 / 0.22) 45%,
+    rgb(255 255 255 / 0.28) 50%,
+    rgb(255 255 255 / 0.22) 55%,
+    rgb(255 255 255 / 0.06)
+  ) !important;
+  background-size: 100% 100% !important;
+  background-repeat: no-repeat !important;
   filter: drop-shadow(0 0 10px rgb(56 189 248 / 0.28)) drop-shadow(0 0 4px rgb(255 255 255 / 0.12))
     drop-shadow(0 0 1px rgb(255 255 255 / 0.1));
   backface-visibility: hidden;
@@ -1426,49 +1433,36 @@ html {
 .proses-flow-line--light-h {
   background-color: transparent !important;
   border-radius: 9999px;
-  background-image: repeating-linear-gradient(
-    90deg,
-    transparent 0px,
-    transparent 1px,
-    color-mix(in srgb, var(--accent) 22%, transparent) 2px,
-    color-mix(in srgb, var(--accent) 52%, transparent) 5px,
-    color-mix(in srgb, var(--accent) 58%, transparent) 8px,
-    color-mix(in srgb, var(--accent) 52%, transparent) 11px,
-    color-mix(in srgb, var(--accent) 22%, transparent) 14px,
-    transparent 15px,
-    transparent 18px
-  );
-  background-size: 18px 100%;
-  background-repeat: repeat-x;
-  animation: proses-flow-line-x 1.65s linear infinite;
-  will-change: background-position;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  animation: none;
   filter: drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 15%, transparent));
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent) 14%, transparent),
+    color-mix(in srgb, var(--accent) 38%, transparent) 48%,
+    color-mix(in srgb, var(--accent) 34%, var(--border) 66%) 100%
+  ) !important;
+  background-size: 100% 100% !important;
+  background-repeat: no-repeat !important;
   backface-visibility: hidden;
 }
 
 .proses-flow-line--light-v {
   background-color: transparent !important;
   border-radius: 9999px;
-  background-image: repeating-linear-gradient(
-    180deg,
-    transparent 0px,
-    transparent 1px,
-    color-mix(in srgb, var(--accent) 20%, transparent) 2px,
-    color-mix(in srgb, var(--accent) 48%, transparent) 5px,
-    color-mix(in srgb, var(--accent) 52%, transparent) 7px,
-    color-mix(in srgb, var(--accent) 48%, transparent) 10px,
-    color-mix(in srgb, var(--accent) 20%, transparent) 13px,
-    transparent 14px
-  );
-  background-size: 100% 14px;
-  background-repeat: repeat-y;
-  animation: proses-flow-line-y 1.55s linear infinite;
-  will-change: background-position;
-  -webkit-mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
-  mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
+  animation: none;
   filter: drop-shadow(0 0 3px color-mix(in srgb, var(--accent) 12%, transparent));
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 8%, #000 92%, transparent);
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent) 18%, transparent),
+    color-mix(in srgb, var(--accent) 32%, transparent) 50%,
+    var(--surface-muted)
+  ) !important;
+  background-size: 100% 100% !important;
+  background-repeat: no-repeat !important;
   backface-visibility: hidden;
 }
 
@@ -1484,12 +1478,13 @@ html {
   container-type: size;
 }
 
-/* Panah runcing bergerak sepanjang trek (seirama dash ~1.65s / 1.55s) */
+/* Panah statis di ujung trek */
 .proses-flow-arrow-march--hero-h {
   pointer-events: none;
   position: absolute;
   top: 50%;
-  left: 0;
+  left: auto;
+  right: 0;
   z-index: 2;
   width: 10px;
   height: 13px;
@@ -1500,8 +1495,9 @@ html {
   );
   clip-path: polygon(0 14%, 0 86%, 100% 50%);
   filter: drop-shadow(0 0 8px rgb(56 189 248 / 0.45)) drop-shadow(0 0 2px rgb(255 255 255 / 0.35));
-  animation: proses-flow-arrow-march-x 1.65s cubic-bezier(0.33, 0, 0.2, 1) infinite;
-  will-change: transform;
+  animation: none;
+  transform: translateY(-50%);
+  will-change: auto;
   backface-visibility: hidden;
 }
 
@@ -1509,7 +1505,8 @@ html {
   pointer-events: none;
   position: absolute;
   top: 50%;
-  left: 0;
+  left: auto;
+  right: 0;
   z-index: 2;
   width: 10px;
   height: 13px;
@@ -1520,15 +1517,17 @@ html {
   );
   clip-path: polygon(0 14%, 0 86%, 100% 50%);
   filter: drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 28%, transparent));
-  animation: proses-flow-arrow-march-x 1.65s cubic-bezier(0.33, 0, 0.2, 1) infinite;
-  will-change: transform;
+  animation: none;
+  transform: translateY(-50%);
+  will-change: auto;
   backface-visibility: hidden;
 }
 
 .proses-flow-arrow-march--light-v {
   pointer-events: none;
   position: absolute;
-  top: 0;
+  top: auto;
+  bottom: 0;
   left: 50%;
   z-index: 2;
   width: 13px;
@@ -1540,8 +1539,9 @@ html {
   );
   clip-path: polygon(0 0, 100% 0, 50% 100%);
   filter: drop-shadow(0 2px 4px color-mix(in srgb, var(--accent) 22%, transparent));
-  animation: proses-flow-arrow-march-y 1.55s cubic-bezier(0.33, 0, 0.2, 1) infinite;
-  will-change: transform;
+  animation: none;
+  transform: translateX(-50%);
+  will-change: auto;
   backface-visibility: hidden;
 }
 
@@ -1591,93 +1591,9 @@ html {
   }
 }
 
-/* Tanpa `cqi`/`cqb`: panah tetap halus (ease) dengan animasi left/top */
-@keyframes proses-flow-arrow-march-x-fallback {
-  0% {
-    left: 0;
-    transform: translateY(-50%);
-  }
-
-  100% {
-    left: 100%;
-    transform: translate(-100%, -50%);
-  }
-}
-
-@keyframes proses-flow-arrow-march-y-fallback {
-  0% {
-    top: 0;
-    transform: translateX(-50%);
-  }
-
-  100% {
-    top: 100%;
-    transform: translate(-50%, -100%);
-  }
-}
-
-@supports not (width: 1cqi) {
-  .proses-flow-arrow-march--hero-h,
-  .proses-flow-arrow-march--light-h {
-    animation-name: proses-flow-arrow-march-x-fallback;
-    will-change: left, transform;
-  }
-}
-
-@supports not (height: 1cqb) {
-  .proses-flow-arrow-march--light-v {
-    animation-name: proses-flow-arrow-march-y-fallback;
-    will-change: top, transform;
-  }
-}
-
-/* Layar sempit: Safari/WebKit kadang salah menghitung `cqi` dalam @keyframes pada grid — fallback halus. */
-@media (max-width: 1023.98px) and (prefers-reduced-motion: no-preference) {
-  .proses-flow-arrow-march--hero-h,
-  .proses-flow-arrow-march--light-h {
-    animation-name: proses-flow-arrow-march-x-fallback;
-    will-change: left, transform;
-  }
-
-  .proses-flow-arrow-march--light-v {
-    animation-name: proses-flow-arrow-march-y-fallback;
-    will-change: top, transform;
-  }
-}
-
 /*
- * Centang hanya pada kartu tahap terakhir:
- * diam beberapa detik → satu putaran → tahan tampil → pudar → ulang ("berjalan lagi").
+ * Tahap akhir: tanpa siklus animasi — glyph/gambar tetap terlihat; centang disembunyikan.
  */
-@keyframes proses-step-check-final {
-  0%,
-  30% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.28) rotate(-45deg);
-  }
-
-  31% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(0.88) rotate(0deg);
-  }
-
-  40% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1) rotate(360deg);
-  }
-
-  72% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1) rotate(360deg);
-  }
-
-  82%,
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.92) rotate(360deg);
-  }
-}
-
 .proses-step-check {
   pointer-events: none;
   position: absolute;
@@ -1692,32 +1608,15 @@ html {
 }
 
 .proses-step-check--final {
-  animation: proses-step-check-final 10s linear infinite;
-}
-
-/* Kartu terakhir: sembunyikan glyph tahap saat centang tampil (siklus sama 10s) */
-@keyframes proses-step-glyph-final {
-  0%,
-  30% {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  31%,
-  82% {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-
-  83%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
+  animation: none;
+  opacity: 0;
+  transform: translate(-50%, -50%);
 }
 
 .proses-step-glyph--final {
-  animation: proses-step-glyph-final 10s linear infinite;
+  animation: none;
+  opacity: 1;
+  transform: scale(1);
 }
 
 .proses-step-check__svg {
@@ -1849,110 +1748,6 @@ html {
   to {
     opacity: 1;
     transform: scale(1);
-  }
-}
-
-/**
- * Hero intro tagline — mobile/tablet (≤1023px): HANYA transform + opacity keyframe dijaga 1 via CSS.
- * Desktop: blur halus + transform (tanpa opacity 0 agar tidak flash vs konten statis pra-mount).
- */
-@keyframes hero-intro-tagline-m-rise {
-  from {
-    transform: translate3d(0, 14px, 0);
-  }
-  to {
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-@keyframes hero-intro-tagline-m-arc {
-  from {
-    transform: translate3d(10px, 18px, 0);
-  }
-  to {
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-@keyframes hero-intro-tagline-m-sweep-l {
-  from {
-    transform: translate3d(26px, 10px, 0);
-  }
-  to {
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-@keyframes hero-intro-tagline-m-sweep-r {
-  from {
-    transform: translate3d(-26px, 10px, 0);
-  }
-  to {
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-@keyframes hero-intro-tagline-m-vault {
-  from {
-    transform: translate3d(0, 16px, 0) rotateZ(-2deg) scale3d(0.98, 0.98, 1);
-  }
-  to {
-    transform: translate3d(0, 0, 0) rotateZ(0deg) scale3d(1, 1, 1);
-  }
-}
-
-/**
- * Tap / klik: putaran acak — hanya `transform` (border + teks ikut satu blok `.hero-intro-tagline-chrome`).
- * Empat varian: ±1× atau ±2× putaran penuh.
- */
-@keyframes hero-intro-tagline-touch-spin-cw {
-  from {
-    transform: translateZ(0) rotate3d(0, 0, 1, 0deg);
-  }
-  to {
-    transform: translateZ(0) rotate3d(0, 0, 1, 360deg);
-  }
-}
-
-@keyframes hero-intro-tagline-touch-spin-ccw {
-  from {
-    transform: translateZ(0) rotate3d(0, 0, 1, 0deg);
-  }
-  to {
-    transform: translateZ(0) rotate3d(0, 0, 1, -360deg);
-  }
-}
-
-@keyframes hero-intro-tagline-touch-spin-2cw {
-  from {
-    transform: translateZ(0) rotate3d(0, 0, 1, 0deg);
-  }
-  to {
-    transform: translateZ(0) rotate3d(0, 0, 1, 720deg);
-  }
-}
-
-@keyframes hero-intro-tagline-touch-spin-2ccw {
-  from {
-    transform: translateZ(0) rotate3d(0, 0, 1, 0deg);
-  }
-  to {
-    transform: translateZ(0) rotate3d(0, 0, 1, -720deg);
-  }
-}
-
-/** Aksen “premium” sekali setelah masuk (hanya desktop lebar — mobile hemat) */
-@keyframes hero-intro-tagline-sheen {
-  0% {
-    opacity: 0;
-    background-position: 120% 50%;
-  }
-  18% {
-    opacity: 0.85;
-  }
-  100% {
-    opacity: 0;
-    background-position: -40% 50%;
   }
 }
 
@@ -2236,160 +2031,6 @@ html {
       box-shadow 0.25s ease;
   }
 
-  /* Intro tagline: animasi transform — hindari transisi transform global (konflik di mobile WebKit). */
-  #beranda .hero-intro-tagline-wrap {
-    transition:
-      background-color 0.25s ease,
-      color 0.25s ease,
-      border-color 0.25s ease,
-      box-shadow 0.25s ease;
-  }
-
-  /* Chrome (border + blur + teks): putar saat tap/klik — tanpa transisi `transform` global. */
-  #beranda .hero-intro-tagline-wrap .hero-intro-tagline-chrome {
-    transform-origin: 50% 50%;
-    transition:
-      background-color 0.25s ease,
-      color 0.25s ease,
-      border-color 0.25s ease,
-      box-shadow 0.25s ease;
-  }
-
-  #beranda
-    .hero-intro-tagline-wrap
-    .hero-intro-tagline-chrome.hero-intro-tagline-spin-active.hero-intro-tagline-spin--cw {
-    animation: hero-intro-tagline-touch-spin-cw var(--tagline-spin-dur, 680ms)
-      cubic-bezier(0.2, 1, 0.36, 1) both;
-    will-change: transform;
-  }
-
-  #beranda
-    .hero-intro-tagline-wrap
-    .hero-intro-tagline-chrome.hero-intro-tagline-spin-active.hero-intro-tagline-spin--ccw {
-    animation: hero-intro-tagline-touch-spin-ccw var(--tagline-spin-dur, 680ms)
-      cubic-bezier(0.2, 1, 0.36, 1) both;
-    will-change: transform;
-  }
-
-  #beranda
-    .hero-intro-tagline-wrap
-    .hero-intro-tagline-chrome.hero-intro-tagline-spin-active.hero-intro-tagline-spin--2cw {
-    animation: hero-intro-tagline-touch-spin-2cw var(--tagline-spin-dur, 720ms)
-      cubic-bezier(0.2, 1, 0.36, 1) both;
-    will-change: transform;
-  }
-
-  #beranda
-    .hero-intro-tagline-wrap
-    .hero-intro-tagline-chrome.hero-intro-tagline-spin-active.hero-intro-tagline-spin--2ccw {
-    animation: hero-intro-tagline-touch-spin-2ccw var(--tagline-spin-dur, 720ms)
-      cubic-bezier(0.2, 1, 0.36, 1) both;
-    will-change: transform;
-  }
-
-  #beranda .hero-intro-tagline-chrome:focus-visible {
-    outline: 2px solid rgb(125 211 252 / 0.65);
-    outline-offset: 3px;
-    border-radius: 0.75rem;
-  }
-
-  /*
-   * Intro tagline: varian acak + --tagline-enter-dur / --tagline-enter-delay dari JS.
-   * Semua keyframe: transform saja (teks tidak di-blur); desktop + sheen ::after.
-   */
-  @media (max-width: 1023px) {
-    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"].hero-intro-tagline-wrap--rise {
-      opacity: 1 !important;
-      animation: hero-intro-tagline-m-rise var(--tagline-enter-dur, 680ms)
-        cubic-bezier(0.16, 1, 0.32, 1) var(--tagline-enter-delay, 0s) both !important;
-    }
-
-    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"].hero-intro-tagline-wrap--arc {
-      opacity: 1 !important;
-      animation: hero-intro-tagline-m-arc var(--tagline-enter-dur, 680ms)
-        cubic-bezier(0.16, 1, 0.32, 1) var(--tagline-enter-delay, 0s) both !important;
-    }
-
-    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"].hero-intro-tagline-wrap--sweep-l {
-      opacity: 1 !important;
-      animation: hero-intro-tagline-m-sweep-l var(--tagline-enter-dur, 680ms)
-        cubic-bezier(0.16, 1, 0.32, 1) var(--tagline-enter-delay, 0s) both !important;
-    }
-
-    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"].hero-intro-tagline-wrap--sweep-r {
-      opacity: 1 !important;
-      animation: hero-intro-tagline-m-sweep-r var(--tagline-enter-dur, 680ms)
-        cubic-bezier(0.16, 1, 0.32, 1) var(--tagline-enter-delay, 0s) both !important;
-    }
-
-    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"].hero-intro-tagline-wrap--vault {
-      opacity: 1 !important;
-      animation: hero-intro-tagline-m-vault var(--tagline-enter-dur, 720ms)
-        cubic-bezier(0.19, 1, 0.35, 1) var(--tagline-enter-delay, 0s) both !important;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    /*
-     * Desktop memakai keyframe transform yang sama dengan mobile (teks tetap tajam);
-     * beda “premium” = durasi acak + sheen ::after.
-     */
-    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"].hero-intro-tagline-wrap--rise {
-      opacity: 1 !important;
-      animation: hero-intro-tagline-m-rise var(--tagline-enter-dur, 740ms)
-        cubic-bezier(0.16, 1, 0.32, 1) var(--tagline-enter-delay, 0s) both !important;
-    }
-
-    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"].hero-intro-tagline-wrap--arc {
-      opacity: 1 !important;
-      animation: hero-intro-tagline-m-arc var(--tagline-enter-dur, 740ms)
-        cubic-bezier(0.16, 1, 0.32, 1) var(--tagline-enter-delay, 0s) both !important;
-    }
-
-    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"].hero-intro-tagline-wrap--sweep-l {
-      opacity: 1 !important;
-      animation: hero-intro-tagline-m-sweep-l var(--tagline-enter-dur, 740ms)
-        cubic-bezier(0.16, 1, 0.32, 1) var(--tagline-enter-delay, 0s) both !important;
-    }
-
-    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"].hero-intro-tagline-wrap--sweep-r {
-      opacity: 1 !important;
-      animation: hero-intro-tagline-m-sweep-r var(--tagline-enter-dur, 740ms)
-        cubic-bezier(0.16, 1, 0.32, 1) var(--tagline-enter-delay, 0s) both !important;
-    }
-
-    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"].hero-intro-tagline-wrap--vault {
-      opacity: 1 !important;
-      animation: hero-intro-tagline-m-vault var(--tagline-enter-dur, 780ms)
-        cubic-bezier(0.19, 1, 0.35, 1) var(--tagline-enter-delay, 0s) both !important;
-    }
-
-    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"] .hero-intro-tagline-chrome::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      border-radius: inherit;
-      pointer-events: none;
-      opacity: 0;
-      mix-blend-mode: overlay;
-      background: linear-gradient(
-        118deg,
-        transparent 38%,
-        rgba(186, 230, 253, 0.22) 48%,
-        rgba(56, 189, 248, 0.1) 52%,
-        transparent 62%
-      );
-      background-size: 220% 100%;
-      background-position: 120% 50%;
-      animation: hero-intro-tagline-sheen 2.65s cubic-bezier(0.22, 1, 0.38, 1) 0.45s 1 forwards;
-    }
-
-    #beranda .hero-intro-tagline-wrap[data-tagline-ready="1"] .hero-intro-tagline-chrome > * {
-      position: relative;
-      z-index: 2;
-    }
-  }
 }
 
 /*
@@ -2453,22 +2094,6 @@ html {
   .hero-content-enter {
     animation: none !important;
     opacity: 1 !important;
-  }
-
-  #beranda .hero-intro-tagline-wrap {
-    animation: none !important;
-    opacity: 1 !important;
-    will-change: auto !important;
-  }
-
-  #beranda .hero-intro-tagline-wrap .hero-intro-tagline-chrome::after {
-    content: none !important;
-    animation: none !important;
-  }
-
-  #beranda .hero-intro-tagline-chrome {
-    animation: none !important;
-    will-change: auto !important;
   }
 
   #beranda .hero-achievement-marquee-track--running {
@@ -3311,10 +2936,10 @@ html {
 /* ============================================================================
  * Mobile scroll perf — kurangi animasi/filter berat pada layar mobile
  * (≤ 767.98px). Partner/gallery marquee & backdrop blur diturunkan; alur kerja
- * memakai animasi dash + panah dengan glow garis dimatikan saja.
+ * statis (garis + panah tanpa animasi); glow garis dimatikan di bawah.
  *
  * Strategi:
- *   - Alur kerja (`proses-flow-*`) tetap dianimasikan di mobile (UX); glow pada
+ *   - Alur kerja (`proses-flow-*`) tanpa animasi dash/panah; glow pada
  *     garis dihilangkan di bawah lewat override ringan agar scroll tetap mulus.
  *   - Logo partner/industri (`partner-marquee-track` / `customer-marquee-track`)
  *     tetap beranimasi di mobile; mask pakai `touch-action: pan-y` agar scroll vertikal
@@ -3327,7 +2952,7 @@ html {
  *   - `data-performance-no-anim="1"` / `data-performance-lightweight="1"`
  * ============================================================================ */
 @media (max-width: 767.98px) {
-  /* Garis alur kerja: animasi dash tetap jalan; tanpa drop-shadow agar tidak menahan paint berat. */
+  /* Garis alur kerja: statis; tanpa drop-shadow agar tidak menahan paint berat. */
   .proses-flow-line--hero-h,
   .proses-flow-line--light-h,
   .proses-flow-line--light-v {
@@ -3351,7 +2976,7 @@ html {
   }
 
   /* Hero (#beranda): ringankan blur/shadow/glow di mobile — desktop ≥768px tidak diubah. */
-  #beranda.hero .hero-intro-tagline-surface {
+  #beranda.hero .hero-proses-flow-surface {
     backdrop-filter: blur(7px) !important;
     -webkit-backdrop-filter: blur(7px) !important;
     box-shadow:
@@ -3371,11 +2996,16 @@ html {
   }
 
   #beranda.hero .hero-overlay-glow {
-    opacity: 0.72;
+    opacity: 0.54;
   }
 
   #beranda.hero .hero-overlay-bottom {
-    opacity: 0.9;
+    opacity: 0.76;
+  }
+
+  #beranda.hero .hero-overlay-diagonal,
+  #beranda.hero .hero-overlay-vertical {
+    opacity: 0.86;
   }
 }
 
