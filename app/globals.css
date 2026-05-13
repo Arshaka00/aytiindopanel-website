@@ -896,6 +896,13 @@ html {
   }
 }
 
+/* Desktop lebar (≥1024px): naikkan strip alur proses (teks langkah); transform tidak menggeser posisi CTA di alur dokumen */
+@media (min-width: 1024px) {
+  #beranda.hero .hero-process-block {
+    transform: translateY(-1.625rem);
+  }
+}
+
 @media (min-width: 1024px) and (max-height: 760px) and (max-resolution: 1.75dppx) {
   #beranda.hero {
     min-height: clamp(39rem, 90svh, 46rem);
@@ -946,7 +953,7 @@ html {
 
    • padding-top:    max(7.625rem, calc(env(safe-area-inset-top, 0px) + 6rem))
    • padding-bottom: default Tailwind `#beranda` di section-top; ua-android ≤797px menimpa pakai blok di bawah
-     (minimal 8rem, +5.25rem di atas env(safe-area-inset-bottom) untuk gesture bar)
+     (minimal ~2rem, +0.5rem di atas env(safe-area-inset-bottom); tipis — naikkan jika terlalu rapat ke gesture bar)
 
    Naikkan/turunkan blok intro + alur kerja secara seragam, sesuaikan HANYA:
 
@@ -954,7 +961,7 @@ html {
 
    CTA WhatsApp — khusus Android; penyelaras iPhone ada di blok `ua-iphone` (jangan ubah nilai di sini hanya untuk iPhone).
 
-   • html.ua-android #beranda.hero .hero-cta-group { transform: translateY(...) }
+   • html.ua-android #beranda.hero .hero-cta-group { transform: translateY(...) } — geser vertikal baris tombol (naik/turun).
 
    (Nilai disetel untuk tata letak tanpa kartu capaian hero — sesuaikan jika konten hero ditambah lagi.)
 
@@ -970,8 +977,8 @@ html {
     height: auto !important;
     min-height: auto !important;
     padding-top: max(7.625rem, calc(env(safe-area-inset-top, 0px) + 6rem)) !important;
-    /* Rebuild hero layout: compact bottom spacing tanpa dead zone (+ruang bawah lebih besar) */
-    padding-bottom: max(9.75rem, calc(env(safe-area-inset-bottom, 0px) + 4rem)) !important;
+    /* Rebuild hero layout: padding bawah Android lebih ringkas, tetap hormati gesture / safe-area */
+    padding-bottom: max(2rem, calc(env(safe-area-inset-bottom, 0px) + 0.5rem)) !important;
   }
 
   /* Naikkan blok hero di Android (+ geser dari section-top); jangan timpa iPhone (.ua-iphone di bawah). */
@@ -980,18 +987,21 @@ html {
   }
 
   html.ua-android #beranda.hero .hero-cta-group {
-    transform: translateY(0);
+    transform: translateY(-4.25rem);
+    /* Timpa pb besar dari section-top — safe-area cukup sekali + padding section */
+    padding-bottom: max(0.125rem, env(safe-area-inset-bottom, 0px)) !important;
   }
 }
 
 /* Hero iPhone (UA berisi "iPhone", lebar ≤797px):
    — Kolom hero (judul + intro + alur kerja): tetap mengikuti posisi default section-top
    — Baris CTA (`hero-hubungi-cta`, `hero-lihat-produk-cta`) — skala tombol ringkas iPhone
+   — Padding bawah: hanya iPhone di sini; Android (`ua-android`) & desktop hero diatur di blok lain
    Kelas `ua-iphone`: app/layout.tsx. */
 @media (max-width: 797px) {
-  /* Rebuild hero layout: iPhone compact + toolbar-safe */
+  /* Rebuild hero layout: iPhone — padding bawah tipis; safe-area + sedikit ruang di atas gesture/home */
   html.ua-iphone #beranda.hero {
-    padding-bottom: max(9rem, calc(env(safe-area-inset-bottom, 0px) + 3.25rem)) !important;
+    padding-bottom: max(3.75rem, calc(env(safe-area-inset-bottom, 0px) + 1.0625rem)) !important;
   }
 
   html.ua-iphone #beranda.hero .hero-cta-group {
@@ -1001,8 +1011,9 @@ html {
     width: calc(100% - 1.5rem);
     max-width: calc(100% - 1.5rem);
     margin-inline: auto;
-    margin-top: 0.9rem;
-    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+    margin-top: 1.35rem;
+    /* Hindari double “lautan” dengan padding section — safe-area dominan */
+    padding-bottom: max(0.625rem, calc(env(safe-area-inset-bottom, 0px) + 0.3125rem)) !important;
   }
 
   /* Lebih ringcil; sedikit lebih sempit dari lebar kolom penuh (~12px tiap sisi) */
