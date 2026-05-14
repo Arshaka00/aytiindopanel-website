@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { INDONESIA_SERVICE_AREA_CITY_KEYS, indonesiaServiceAreaDisplayLabelsByKey } from "@/lib/indonesia-service-area-cities";
 import { buildHtmlGeoMetaForCityKey, getCityPlacename } from "@/lib/local-seo-geo";
 import type { SiteContent } from "@/lib/site-content-model";
 import { absoluteUrlFromSite, resolvePublicSiteOrigin } from "@/lib/site-url-resolve";
@@ -60,19 +61,8 @@ const GLOBAL_KEYWORDS = [
   "Pendingin",
 ] as const;
 
-const CITIES: Record<string, string> = {
-  jakarta: "Jakarta & Jabodetabek",
-  bekasi: "Bekasi & Cikarang",
-  surabaya: "Surabaya",
-  bandung: "Bandung",
-  medan: "Medan",
-  semarang: "Semarang",
-  tangerang: "Tangerang",
-  makassar: "Makassar",
-  bali: "Bali",
-};
-
-const CITY_KEYS = Object.keys(CITIES);
+const CITIES: Record<string, string> = indonesiaServiceAreaDisplayLabelsByKey();
+const CITY_KEYS = INDONESIA_SERVICE_AREA_CITY_KEYS;
 
 function uniqBySlug(pages: SeoLandingPageDef[]): SeoLandingPageDef[] {
   const m = new Map<string, SeoLandingPageDef>();
@@ -270,7 +260,7 @@ function buildAllDefinitions(): SeoLandingPageDef[] {
     metaTitle: (city) => `Cold storage ${city} | instalasi ruang dingin & refrigerasi | {brand}`,
     metaDescription: (city) =>
       `Solusi cold storage untuk ${city}: sandwich panel PU/EPS, cold room, chiller/freezer room, sistem refrigerasi, pintu cold storage, dan commissioning. Konsultasi teknis PT AYTI INDO PANEL.`,
-    keywords: ["cold storage", "ruang pendingin", "pendingin industri"],
+    keywords: ["cold storage", "ruang pendingin", "pendingin industri", "sandwich panel", "cold room"],
     paragraphs: (city) => [
       `Untuk operasional di ${city}, cold storage harus stabil secara termal, hemat energi, dan mudah diaudit kebersihan serta suhunya. Kami merancang kombinasi panel insulasi, pintu cold room, dan mesin pendingin (evaporator, compressor, kontrol) sesuai kapasitas produksi dan pola traffic gudang.`,
       `Tim kami mendampingi survey kebutuhan, desain layout, fabrikasi panel, hingga uji performa (pull-down) agar target suhu tercapai sebelum handover. Cocok untuk distribusi dingin, farmasi, F&B, seafood, dan logistik berantai dingin.`,
@@ -311,6 +301,7 @@ function buildAllDefinitions(): SeoLandingPageDef[] {
       `Supplier sandwich panel untuk ${city}: core PU (CameLock / knock down) dan EPS ekonomis. Cocok cold room, chiller room, freezer room, dan partition industri. Minta spesifikasi tebal panel dan λ sesuai target suhu.`,
     keywords: [
       "sandwich panel",
+      "cold storage",
       "Panel PU",
       "Panel PIU",
       "Castorit",

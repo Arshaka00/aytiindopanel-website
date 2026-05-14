@@ -1,4 +1,5 @@
 import { plainTextFromRichValue } from "@/lib/cms-rich-text";
+import { SERVICE_AREA_CITY_KEYS } from "@/lib/local-seo-geo";
 import { GALLERY_PROJECTS } from "@/components/aytipanel/gallery-project-data";
 import { PRODUCTS } from "@/components/aytipanel/products-catalog";
 import { DEFAULT_HOME_LAYOUT } from "@/lib/home-layout-defaults";
@@ -171,6 +172,24 @@ function buildContactSearchBlob(site: SiteContent): string {
   ]);
 }
 
+/** Kata kunci lokasi untuk pencarian header (selaras dengan halaman SEO `/cold-storage-*`, `/sandwich-panel-*`). */
+function buildIndonesiaLocalServiceSearchHaystack(): string {
+  const parts: string[] = [];
+  for (const key of SERVICE_AREA_CITY_KEYS) {
+    const place = key.replace(/-/g, " ");
+    parts.push(
+      `cold storage ${place}`,
+      `sandwich panel ${place}`,
+      `cold room ${place}`,
+      `blast freezer ${place}`,
+      `pendingin industri ${place}`,
+      `jasa cold storage ${place}`,
+      `panel sandwich ${place}`,
+    );
+  }
+  return normalizeHaystack(parts);
+}
+
 function buildProdukHubHaystack(site: SiteContent): string {
   const p = site.produk;
   const parts: string[] = [
@@ -335,6 +354,10 @@ function enrichFromSiteContent(byHref: Map<string, HeaderSiteSearchTarget>, site
         "cold storage cold room portable plug ruang dingin freezer chiller sandwich panel mobile plug play",
       ]),
     });
+  }
+  const coldStoragePage = byHref.get("/cold-storage");
+  if (coldStoragePage) {
+    mergeHaystack(coldStoragePage, buildIndonesiaLocalServiceSearchHaystack());
   }
 
   for (const item of PRODUCTS) {

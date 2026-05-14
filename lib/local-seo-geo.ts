@@ -1,24 +1,21 @@
 /**
  * Koordinat & kode wilayah perkiraan untuk geo metadata / schema area layanan.
  * Alamat bisnis tetap dari CMS (`kontak`); ini memperkuat relevansi lokal per kota.
+ *
+ * Sumber kunci kota: `lib/indonesia-service-area-cities.ts` (sinkron dengan `CITIES` di `seo-landing`).
  */
-export const CITY_LOCAL_GEO: Record<
-  string,
-  { geoRegion: string; placename: string; icbm: string }
-> = {
-  jakarta: { geoRegion: "ID-JK", placename: "Jakarta", icbm: "-6.2088, 106.8456" },
-  bekasi: { geoRegion: "ID-JB", placename: "Bekasi", icbm: "-6.2383, 106.9756" },
-  surabaya: { geoRegion: "ID-JI", placename: "Surabaya", icbm: "-7.2575, 112.7521" },
-  medan: { geoRegion: "ID-SU", placename: "Medan", icbm: "3.5952, 98.6722" },
-  bandung: { geoRegion: "ID-JB", placename: "Bandung", icbm: "-6.9175, 107.6191" },
-  semarang: { geoRegion: "ID-JT", placename: "Semarang", icbm: "-6.9667, 110.4167" },
-  tangerang: { geoRegion: "ID-BT", placename: "Tangerang", icbm: "-6.1781, 106.6319" },
-  makassar: { geoRegion: "ID-SN", placename: "Makassar", icbm: "-5.1477, 119.4327" },
-  bali: { geoRegion: "ID-BA", placename: "Bali", icbm: "-8.4095, 115.1889" },
-};
+import { INDONESIA_SERVICE_AREA_CITIES, INDONESIA_SERVICE_AREA_CITY_KEYS } from "@/lib/indonesia-service-area-cities";
+
+export const CITY_LOCAL_GEO: Record<string, { geoRegion: string; placename: string; icbm: string }> =
+  Object.fromEntries(
+    INDONESIA_SERVICE_AREA_CITY_KEYS.map((k) => {
+      const c = INDONESIA_SERVICE_AREA_CITIES[k]!;
+      return [k, { geoRegion: c.geoRegion, placename: c.placename, icbm: c.icbm }];
+    }),
+  );
 
 /** Kunci kota yang dipakai halaman area layanan & geo (sinkron dengan `CITIES` di seo-landing). */
-export const SERVICE_AREA_CITY_KEYS = Object.keys(CITY_LOCAL_GEO);
+export const SERVICE_AREA_CITY_KEYS = INDONESIA_SERVICE_AREA_CITY_KEYS;
 
 export function getCityPlacename(cityKey: string): string {
   return CITY_LOCAL_GEO[cityKey]?.placename ?? cityKey;

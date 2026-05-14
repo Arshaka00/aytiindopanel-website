@@ -92,10 +92,13 @@ export function SeoLandingView({
   const mapSrc = content.kontak.mapEmbedUrl.trim();
   const otherLokasi =
     landing.kind === "city_area" && landing.localSeoCityKey
-      ? SERVICE_AREA_CITY_KEYS.filter((k) => k !== landing.localSeoCityKey).map((k) => ({
-          slug: `lokasi-${k}`,
-          label: getCityPlacename(k),
-        }))
+      ? SERVICE_AREA_CITY_KEYS.filter((k) => k !== landing.localSeoCityKey)
+          .map((k) => ({
+            slug: `lokasi-${k}`,
+            label: getCityPlacename(k),
+          }))
+          .sort((a, b) => a.label.localeCompare(b.label, "id"))
+          .slice(0, 24)
       : [];
 
   return (
