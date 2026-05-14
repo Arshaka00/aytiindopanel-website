@@ -9,11 +9,11 @@ import type { SiteContent } from "@/lib/site-content";
 
 /** Intro hero: Sora + render halus; tracking & line-height agar kalimat panjang tetap nyaman dibaca. */
 const heroIntroBodyClass =
-  "[font-family:var(--font-sora),Montserrat,sans-serif] text-pretty text-[clamp(1rem,calc(0.9rem+0.55vw),1.15rem)] font-normal leading-[1.5] tracking-[0.012em] text-white/[0.94] antialiased [-moz-osx-font-smoothing:grayscale] [text-rendering:optimizeLegibility] [text-shadow:0_1px_2px_rgba(0,0,0,0.45),0_0_14px_rgba(2,8,20,0.18)] max-md:leading-[1.48] md:text-[clamp(1.125rem,calc(0.98rem+0.5vw),1.375rem)] md:leading-[1.46] md:tracking-[0.01em]";
+  "[font-family:var(--font-sora),Montserrat,sans-serif] text-pretty text-[clamp(1rem,calc(0.9rem+0.55vw),1.15rem)] font-normal leading-[1.5] tracking-[0.012em] text-white/[0.96] antialiased [-moz-osx-font-smoothing:grayscale] [text-rendering:optimizeLegibility] [text-shadow:0_1px_2px_rgba(0,0,0,0.55),0_0_18px_rgba(2,8,20,0.28)] max-md:leading-[1.48] md:text-[clamp(1.125rem,calc(0.98rem+0.5vw),1.375rem)] md:leading-[1.46] md:tracking-[0.01em]";
 
-/** Bingkai kaca luar paragraf intro hero — gradien & bayangan lebih netral (kurang biru). */
+/** Bingkai kaca intro: beberapa lapisan putih + gelap sangat tipis agar nuansa putih terasa jelas. */
 const heroIntroGlassShellClass =
-  "hero-intro-glass-shell relative z-[1] mx-auto w-full min-w-0 max-w-[min(100%,46rem)] overflow-hidden rounded-2xl border border-white/[0.16] bg-gradient-to-br from-[rgba(8,10,16,0.36)] via-[rgba(4,6,12,0.48)] to-[rgba(1,3,9,0.84)] px-3.5 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_1px_3px_rgba(0,0,0,0.45),0_6px_16px_rgba(0,0,0,0.26),0_16px_36px_rgba(1,6,18,0.45),0_28px_56px_-6px_rgba(2,8,18,0.5)] ring-1 ring-inset ring-white/[0.07] backdrop-blur-[11px] max-md:border-white/[0.12] max-md:from-[rgba(6,8,14,0.32)] max-md:via-[rgba(3,5,11,0.44)] max-md:to-[rgba(1,3,8,0.8)] max-md:px-3 max-md:py-2 max-md:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_2px_5px_rgba(0,0,0,0.42),0_8px_22px_rgba(0,0,0,0.22),0_18px_40px_rgba(1,4,14,0.44)] md:px-5 md:py-3";
+  "hero-intro-glass-shell relative z-[1] mx-auto w-full min-w-0 max-w-[min(100%,46rem)] overflow-hidden rounded-2xl border border-white/[0.22] bg-[linear-gradient(to_bottom_right,rgba(255,255,255,0.2),rgba(255,255,255,0.08)_52%,transparent_70%),linear-gradient(to_bottom_right,rgba(255,255,255,0.11),rgba(255,255,255,0.06)_100%),linear-gradient(to_bottom_right,rgba(230,236,248,0.06),rgba(6,10,20,0.06),rgba(1,3,10,0.14))] px-3.5 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(0,0,0,0.14),0_6px_14px_rgba(0,0,0,0.06),0_14px_30px_rgba(1,6,18,0.12),0_24px_48px_-8px_rgba(2,8,18,0.14)] ring-1 ring-inset ring-white/[0.14] backdrop-blur-[16px] backdrop-saturate-[1.15] max-md:border-white/[0.18] max-md:bg-[linear-gradient(to_bottom_right,rgba(255,255,255,0.16),rgba(255,255,255,0.065)_50%,transparent_68%),linear-gradient(to_bottom_right,rgba(255,255,255,0.09),rgba(255,255,255,0.048)_100%),linear-gradient(to_bottom_right,rgba(230,236,248,0.05),rgba(6,10,18,0.07),rgba(1,3,9,0.12))] max-md:px-3 max-md:py-2 max-md:shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_2px_4px_rgba(0,0,0,0.12),0_6px_18px_rgba(0,0,0,0.05),0_14px_34px_rgba(1,4,14,0.12)] md:px-5 md:py-3";
 
 export function SectionTop({
   hero,
@@ -214,7 +214,7 @@ export function SectionTop({
                               path="hero.prosesBadge"
                               text={hero.prosesBadge}
                               as="span"
-                              className="shrink-0 text-center text-[clamp(10px,2.6vw,11px)] font-medium uppercase leading-snug tracking-[0.2em] text-white/[0.92] md:text-[12px] md:tracking-[0.24em]"
+                              className="shrink-0 text-center text-[clamp(10px,2.6vw,11px)] font-semibold uppercase leading-tight tracking-[0.2em] text-[#F7FAFF] antialiased [text-rendering:geometricPrecision] [text-shadow:0_0.5px_0_rgb(2,6,16),0_1px_2px_rgba(0,0,0,0.55),0_0_1px_rgba(0,0,0,0.4)] md:text-[12px] md:tracking-[0.24em]"
                             />
                             <span className="relative h-[2px] w-[min(100%,11rem)] max-w-[85vw] shrink-0" aria-hidden>
                               <span className="absolute -inset-x-0.5 -inset-y-0.5 rounded-full bg-gradient-to-r from-transparent via-sky-400/35 to-transparent opacity-90 blur-[3px]" />
