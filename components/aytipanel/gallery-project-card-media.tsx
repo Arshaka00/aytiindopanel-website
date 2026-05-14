@@ -12,8 +12,12 @@ import { CmsText } from "@/components/site-cms/cms-text";
 import { CmsVideo } from "@/components/site-cms/cms-video";
 import { useSiteCmsOptional } from "@/components/site-cms/site-cms-provider";
 
-type Props = {
+type GalleryCardProps = {
   project: GalleryProjectItem;
+  /**
+   * Aktifkan CmsImage / CmsVideo / CmsText saat mode edit CMS (mis. `galleryProjectOverrides.{id}`).
+   */
+  cmsOverrideBasePath?: string;
 };
 
 function videoPresentation(url: string): "iframe" | "video" {
@@ -311,7 +315,7 @@ export function PortfolioHomeHeroMedia({
               uploadScope="portfolio"
               uploadSegment={uploadSeg}
               sizes="(max-width: 768px) 92vw, (max-width: 1280px) 46vw, 33vw"
-              imageClassName="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+              imageClassName="object-cover"
               className="block h-full w-full"
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/[0.42] via-black/[0.08] to-transparent dark:from-[#020617]/80 dark:via-[#020617]/12" />
@@ -371,7 +375,7 @@ export function PortfolioHomeHeroMedia({
               src={cover}
               alt={coverAlt}
               fill
-              className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+              className="object-cover"
               sizes="(max-width: 768px) 72vw, (max-width: 1280px) 46vw, 33vw"
               unoptimized={cover.startsWith("data:")}
             />
@@ -391,30 +395,177 @@ export function PortfolioHomeHeroMedia({
   );
 }
 
-/** Hero atas kartu: video (poster dari upload/generate) atau gambar utama + badge status mengambang. */
-export function GalleryCardHeroMedia({ project }: Props) {
-  const videoSrc = project.videoSrc?.trim();
-  const poster = project.videoPosterSrc ?? project.imageSrc;
+/** Hero kartu Gallery Project: rasio sama dengan tampilan publik. */
+const GALLERY_SHOWCASE_HERO_SHELL =
+  "relative aspect-[4/3] w-full overflow-hidden bg-[#030712] sm:aspect-video";
+
+/** Hero atas kartu: video (poster opsional dari CMS) atau gambar utama + badge status mengambang. */
+export function GalleryCardHeroMedia({ project, cmsOverrideBasePath }: GalleryCardProps) {
+  const cms = useSiteCmsOptional();
+  const base = cmsOverrideBasePath?.trim() ?? "";
+  const cmsEdit = Boolean(cms?.eligible && cms?.editMode && base.length > 0);
+  const staged = cms?.stagedMediaByPath ?? {};
+
+  const mergedVideo = cmsEdit ? (staged[`${base}.videoSrc`] ?? project.videoSrc) : project.videoSrc;
+  const mergedPoster = cmsEdit
+    ? (staged[`${base}.videoPosterSrc`] ?? project.videoPosterSrc)
+    : project.videoPosterSrc;
+  const mergedImageSrc = cmsEdit ? (staged[`${base}.imageSrc`] ?? project.imageSrc) : project.imageSrc;
+  /** Sama pola sampul beranda: alt wajar bila string kosong. */
+  const imageAltForDisplay = ((project.imageAlt ?? "").trim() || project.name).trim() || "Proyek";
+
+  const videoSrc = mergedVideo?.trim();
+  const videoPosterOnly = mergedPoster?.trim() || undefined;
   const autoplay = project.videoAutoplay === true;
+  const imageSrc = mergedImageSrc;
+  const imageAlt = imageAltForDisplay;
+
+  const embedEditPanel =
+    cmsEdit && base ? (
+      <div className="border-t border-border bg-muted-bg/90 px-3 py-2 dark:border-white/[0.08]">
+        <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+          URL video (YouTube / Vimeo / path file /images/…)
+        </p>
+        <CmsText
+          path={`${base}.videoSrc`}
+          text={project.videoSrc ?? ""}
+          as="span"
+          className="block max-h-24 overflow-y-auto break-all font-mono text-[11px] leading-snug text-foreground"
+        />
+      </div>
+    ) : null;
+
+  if (cmsEdit && base) {
+    const vs = videoSrc ?? "";
+    if (vs && videoPresentation(vs) === "iframe") {
+      return (
+        <div className="relative overflow-hidden rounded-t-2xl">
+          <GalleryVideo
+            videoSrc={vs}
+            posterSrc={videoPosterOnly}
+            title={project.name}
+            autoPlayMuted={autoplay}
+            shellClassName={GALLERY_SHOWCASE_HERO_SHELL}
+          />
+          {embedEditPanel}
+          <span
+            className={`pointer-events-none absolute right-3 top-3 z-20 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] shadow-[0_8px_24px_-12px_rgba(0,0,0,0.85)] backdrop-blur-[2px] ${GALLERY_PROJECT_STATUS_BADGE_CLASS[project.status]}`}
+          >
+            {project.status}
+          </span>
+        </div>
+      );
+    }
+    if (!vs && imageSrc?.trim()) {
+      return (
+        <div className="relative overflow-hidden rounded-t-2xl">
+          <div className="relative aspect-[4/3] w-full sm:aspect-video">
+            <CmsImage
+              fill
+              src={imageSrc}
+              srcPath={`${base}.imageSrc`}
+              alt={imageAlt}
+              uploadScope="project"
+              uploadProjectId={project.id}
+              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+              imageClassName="object-cover"
+              className="block h-full w-full"
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/[0.42] via-black/[0.08] to-transparent dark:from-[#020617]/80 dark:via-[#020617]/12" />
+            <div className="absolute bottom-0 left-0 right-0 z-[5] border-t border-white/10 bg-black/55 px-2 py-1.5 backdrop-blur-sm">
+              <p className="mb-0.5 text-[9px] font-semibold uppercase tracking-wide text-white/70">
+                Alt gambar hero
+              </p>
+              <CmsText
+                path={`${base}.imageAlt`}
+                text={project.imageAlt ?? ""}
+                as="span"
+                className="block text-[11px] leading-snug text-white"
+              />
+            </div>
+          </div>
+          <span
+            className={`pointer-events-none absolute right-3 top-3 z-20 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] shadow-[0_8px_24px_-12px_rgba(0,0,0,0.85)] backdrop-blur-[2px] ${GALLERY_PROJECT_STATUS_BADGE_CLASS[project.status]}`}
+          >
+            {project.status}
+          </span>
+        </div>
+      );
+    }
+    if (vs) {
+      return (
+        <div className="relative overflow-hidden rounded-t-2xl">
+          <div className={GALLERY_SHOWCASE_HERO_SHELL}>
+            <CmsVideo
+              srcPath={`${base}.videoSrc`}
+              src={vs}
+              posterPath={`${base}.videoPosterSrc`}
+              poster={videoPosterOnly}
+              uploadScope="project"
+              uploadProjectId={project.id}
+              className="absolute inset-0 h-full w-full object-cover"
+              controls
+              playsInline
+              preload="metadata"
+              title={`Video ${project.name}`}
+              {...(autoplay ? { autoPlay: true, muted: true, loop: true } : {})}
+            />
+          </div>
+          {embedEditPanel}
+          <span
+            className={`pointer-events-none absolute right-3 top-3 z-20 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] shadow-[0_8px_24px_-12px_rgba(0,0,0,0.85)] backdrop-blur-[2px] ${GALLERY_PROJECT_STATUS_BADGE_CLASS[project.status]}`}
+          >
+            {project.status}
+          </span>
+        </div>
+      );
+    }
+    return (
+      <div className="relative overflow-hidden rounded-t-2xl">
+        <div className={GALLERY_SHOWCASE_HERO_SHELL}>
+          <CmsVideo
+            srcPath={`${base}.videoSrc`}
+            src=""
+            posterPath={`${base}.videoPosterSrc`}
+            poster={videoPosterOnly}
+            uploadScope="project"
+            uploadProjectId={project.id}
+            className="absolute inset-0 h-full w-full object-cover"
+            controls
+            playsInline
+            preload="metadata"
+            title={`Video ${project.name}`}
+          />
+        </div>
+        {embedEditPanel}
+        <span
+          className={`pointer-events-none absolute right-3 top-3 z-20 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] shadow-[0_8px_24px_-12px_rgba(0,0,0,0.85)] backdrop-blur-[2px] ${GALLERY_PROJECT_STATUS_BADGE_CLASS[project.status]}`}
+        >
+          {project.status}
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div className="relative overflow-hidden rounded-t-2xl">
       {videoSrc ? (
         <GalleryVideo
           videoSrc={videoSrc}
-          posterSrc={poster}
+          posterSrc={videoPosterOnly}
           title={project.name}
           autoPlayMuted={autoplay}
+          shellClassName={GALLERY_SHOWCASE_HERO_SHELL}
         />
       ) : (
         <div className="relative aspect-[4/3] w-full sm:aspect-video">
           <Image
-            src={project.imageSrc}
-            alt={project.imageAlt}
+            src={imageSrc}
+            alt={imageAlt}
             fill
-            className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+            className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-            unoptimized={project.imageSrc.startsWith("data:")}
+            unoptimized={imageSrc.startsWith("data:")}
           />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/[0.42] via-black/[0.08] to-transparent dark:from-[#020617]/80 dark:via-[#020617]/12" />
         </div>
@@ -430,6 +581,6 @@ export function GalleryCardHeroMedia({ project }: Props) {
 }
 
 /** @deprecated Gunakan {@link GalleryCardHeroMedia} + {@link GalleryPhotosCarousel} di showcase card. */
-export function GalleryProjectCardTopMedia({ project }: Props) {
+export function GalleryProjectCardTopMedia({ project }: GalleryCardProps) {
   return <GalleryCardHeroMedia project={project} />;
 }

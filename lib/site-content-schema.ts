@@ -26,6 +26,16 @@ const cmsRichTextField = z.union([
     }),
 ]);
 
+const heroIntroSchema = z.object({
+  before1: cmsRichTextField,
+  bold1: cmsRichTextField,
+  middle: cmsRichTextField,
+  bold2: cmsRichTextField,
+  after2: cmsRichTextField,
+  bold3: cmsRichTextField,
+  after3: cmsRichTextField,
+});
+
 const siteContentSchemaBase = z
   .object({
     version: z.literal(1),
@@ -57,6 +67,7 @@ const siteContentSchemaBase = z
         headingLine1: cmsRichTextField,
         headingMiddle: cmsRichTextField.optional(),
         headingLine2: cmsRichTextField,
+        intro: heroIntroSchema,
         slides: z.array(z.object({ src: z.string().min(1) })).min(1),
         ctaWhatsApp: z.object({
           label: z.string().min(1),
@@ -70,7 +81,7 @@ const siteContentSchemaBase = z
         }),
       })
       .passthrough(),
-    tentang: z.object({ heading: z.string().min(1), lead: z.string().min(1), body: z.string().min(1) }),
+    tentang: z.object({ heading: z.string().min(1), lead: z.string().min(1), body: cmsRichTextField }),
     layanan: z.object({ heading: z.string().min(1), cards: z.array(z.object({ id: z.string().min(1) })) }),
     produk: z.object({ heading: z.string().min(1), categories: z.array(z.any()) }),
     serviceMaintenance: z.object({ cards: z.array(z.any()) }),

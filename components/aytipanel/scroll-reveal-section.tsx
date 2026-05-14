@@ -9,7 +9,7 @@ import { pickScrollRevealPreset } from "@/lib/scroll-reveal-preset";
  *
  * Karakter visual (lihat juga `app/globals.css` → `.scroll-reveal-section`):
  *   - opacity 0 → 1 + translate / scale halus (preset bervariasi per `sectionKey`, stabil per build)
- *   - desktop: jarak & durasi lebih cinematic; mobile: `translate3d` ringan + opacity (GPU-friendly)
+ *   - desktop: jarak & durasi lebih cinematic; mobile: section pakai translate3d ringan + opacity (GPU-friendly)
  *   - cubic-bezier(0.22, 1, 0.36, 1) — easing premium / cinematic
  *   - tanpa rotate / blur / parallax — aman di iPhone Safari & Android Chrome
  *

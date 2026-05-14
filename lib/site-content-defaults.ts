@@ -139,7 +139,6 @@ export function createDefaultSiteContent(): SiteContent {
           "Produksi sandwich panel, instalasi cold room & sistem refrigerasi industri. Mitra teknik PT AYTI INDO PANEL.",
         keywords:
           "sandwich panel, cold storage, refrigerasi industri, panel pendingin, cold room, PT AYTI INDO PANEL",
-        footerSeoText: "",
         companyDescription:
           "PT AYTI INDO PANEL adalah mitra produksi sandwich panel, instalasi cold storage, dan sistem refrigerasi untuk industri bersuhu terkontrol.",
         serviceAreas: "Jabodetabek, Jawa Barat, nasional",
@@ -258,13 +257,21 @@ Terima kasih.`,
         bold3: "stabil dan efisien",
         after3: "dalam jangka panjang.",
       },
-      prosesBadge: "Alur kerja yang mudah",
+      introBadge: "",
+      prosesBadge: "PRODUCTS OF",
       prosesStepImages: {
         konsultasi: "/images/spesialisasi/spesialisasi-pu.jpg",
         survey: "/images/spesialisasi/spesialisasi-eps.jpg",
         produksi: "/images/spesialisasi/spesialisasi-coldstorage.jpg",
         instalasi: "/images/spesialisasi/spesialisasi-refrigerasi.jpg",
         selesai: "/images/spesialisasi/spesialisasi-doordock.jpg",
+      },
+      prosesStepImageZoom: {
+        konsultasi: 1,
+        survey: 1,
+        produksi: 1,
+        instalasi: 1,
+        selesai: 1,
       },
       ctaWhatsApp: {
         label: "Hubungi kami",
@@ -275,7 +282,7 @@ Terima kasih.`,
       },
       ctaSecondary: {
         label: "Lihat produk utama",
-        href: "/produk",
+        href: "/#produk",
         ariaLabel: "Lihat section produk utama",
       },
       slides: heroSlides(),
@@ -350,8 +357,8 @@ Terima kasih.`,
     },
     serviceMaintenance: cloneMaintenance(),
     portfolio: {
-      sectionLabel: "Portfolio / proyek",
-      heading: "Dokumentasi proyek representatif",
+      sectionLabel: "Portfolio proyek",
+      heading: "Referensi instalasi & cold storage",
       lead:
         "Beberapa contoh proyek yang sudah kami kerjakan, dengan implementasi sistem pendingin refrigersi, sandwich panel insulated, hingga area loading  yang dirancang mengikuti kebutuhan operasioanl yang efisien untuk jangka panjang.",
       projectLocationLabel: "Lokasi",
@@ -364,7 +371,6 @@ Terima kasih.`,
           location: "Jabodetabek",
           workType: "Panel insulated + instalasi sistem refrigerasi",
           videoSrc: "/images/gallery/WhatsApp%20Video%202026-05-07%20at%2011.02.55.mp4",
-          videoPosterSrc: "/images/layanan/instalasi-sistem-pendingin/1.jpg",
           videoAutoplay: false,
           galleryPhotos: [
             {
@@ -379,6 +385,10 @@ Terima kasih.`,
               src: "/images/layanan/instalasi-panel-cold-room/1.jpg",
               alt: "Referensi panel cold room terkait proyek",
             },
+            {
+              src: "/images/layanan/konsultasi-desain-sistem/1.jpg",
+              alt: "Placeholder foto galeri 4 — ganti lewat CMS",
+            },
           ],
         },
         {
@@ -387,7 +397,6 @@ Terima kasih.`,
           location: "Jawa Barat",
           workType: "Envelope ruang dingin + commissioning unit",
           videoSrc: "/images/gallery/WhatsApp%20Video%202026-05-07%20at%2011.02.55.mp4",
-          videoPosterSrc: "/images/layanan/testing-commissioning/1.jpg",
           videoAutoplay: false,
           galleryPhotos: [
             {
@@ -402,6 +411,10 @@ Terima kasih.`,
               src: "/images/layanan/instalasi-panel-cold-room/1.jpg",
               alt: "Panel insulated area ruang dingin",
             },
+            {
+              src: "/images/layanan/maintenance-after-sales/2.jpg",
+              alt: "Placeholder foto galeri 4 — ganti lewat CMS",
+            },
           ],
         },
         {
@@ -410,7 +423,6 @@ Terima kasih.`,
           location: "Nasional",
           workType: "Panel PU + zonasi suhu untuk SLA distribusi",
           videoSrc: "/images/gallery/WhatsApp%20Video%202026-05-07%20at%2011.02.55.mp4",
-          videoPosterSrc: "/images/layanan/produksi-panel-pu-eps/1.jpg",
           videoAutoplay: false,
           galleryPhotos: [
             {
@@ -425,6 +437,10 @@ Terima kasih.`,
               src: "/images/layanan/maintenance-after-sales/1.jpg",
               alt: "Perawatan sistem untuk uptime distribusi",
             },
+            {
+              src: "/images/layanan/konsultasi-desain-sistem/2.jpg",
+              alt: "Placeholder foto galeri 4 — ganti lewat CMS",
+            },
           ],
         },
         {
@@ -433,7 +449,6 @@ Terima kasih.`,
           location: "Jakarta & sekitarnya",
           workType: "Cold room higienis + pintu industri",
           videoSrc: "/images/gallery/WhatsApp%20Video%202026-05-07%20at%2011.02.55.mp4",
-          videoPosterSrc: "/images/layanan/konsultasi-desain-sistem/1.jpg",
           videoAutoplay: false,
           galleryPhotos: [
             {
@@ -447,6 +462,10 @@ Terima kasih.`,
             {
               src: "/images/layanan/instalasi-panel-cold-room/1.jpg",
               alt: "Cold room higienis area produksi",
+            },
+            {
+              src: "/images/layanan/testing-commissioning/1.jpg",
+              alt: "Placeholder foto galeri 4 — ganti lewat CMS",
             },
           ],
         },
@@ -659,6 +678,10 @@ Terima kasih.`,
         { id: "nav-produk", label: "Produk", href: "#produk" },
         { id: "nav-kontak", label: "Kontak", href: "#kontak" },
       ],
+    },
+    coldStoragePage: {
+      heroImageSrc: "/images/cold-storage.jpg",
+      heroImageAlt: "Ilustrasi cold storage — instalasi panel dan ruang dingin industri",
     },
     galleryPage: {
       loadingText: "Memuat gallery…",

@@ -21,7 +21,12 @@ export function emptyPortfolioProject(): SiteContent["portfolio"]["projects"][nu
     videoSrc: "/images/gallery/WhatsApp%20Video%202026-05-07%20at%2011.02.55.mp4",
     videoPosterSrc: "/images/layanan/instalasi-sistem-pendingin/1.jpg",
     videoAutoplay: false,
-    galleryPhotos: [],
+    galleryPhotos: [
+      { src: "/images/layanan/instalasi-sistem-pendingin/1.jpg", alt: "Foto galeri 1 (placeholder)" },
+      { src: "/images/layanan/instalasi-panel-cold-room/1.jpg", alt: "Foto galeri 2 (placeholder)" },
+      { src: "/images/layanan/testing-commissioning/1.jpg", alt: "Foto galeri 3 (placeholder)" },
+      { src: "/images/layanan/produksi-panel-pu-eps/1.jpg", alt: "Foto galeri 4 (placeholder)" },
+    ],
   };
 }
 

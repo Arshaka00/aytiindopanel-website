@@ -22,12 +22,26 @@ const SortList = dynamic(
 
 /** Kartu logo (Our Customer & Our Partner) — satu baris marquee (mobile lebih rapat) */
 const marqueeLogoCardClass = mergeAytiCardClass(
-  "flex h-[4.75rem] w-[10rem] shrink-0 flex-col items-center justify-center rounded-lg border border-border/85 bg-card/95 px-2 py-2 text-center shadow-[var(--shadow-card)] ring-1 ring-black/[0.04] backdrop-blur-[2px] transition-[transform,box-shadow,border-color] duration-300 [transition-timing-function:var(--ease-premium-soft)] md:h-[7rem] md:w-[14rem] md:rounded-xl md:gap-2 md:px-6 md:py-3 md:ring-black/[0.05] md:motion-safe:hover:-translate-y-0.5 md:motion-safe:hover:border-sky-500/25 md:motion-safe:hover:shadow-[var(--shadow-card-hover)] dark:border-white/[0.1] dark:bg-[linear-gradient(165deg,rgba(15,23,42,0.94)_0%,rgba(10,16,28,0.97)_100%)] dark:ring-white/[0.06]",
+  "flex h-[4.75rem] w-[10rem] shrink-0 flex-col items-stretch justify-center gap-0 rounded-lg border border-border/85 bg-card/95 px-1.5 py-1.5 text-center shadow-[var(--shadow-card)] ring-1 ring-black/[0.04] backdrop-blur-[2px] transition-[transform,box-shadow,border-color] duration-300 [transition-timing-function:var(--ease-premium-soft)] md:h-[7rem] md:w-[14rem] md:rounded-xl md:gap-0 md:px-2 md:py-2 md:ring-black/[0.05] md:motion-safe:hover:-translate-y-0.5 md:motion-safe:hover:border-sky-500/25 md:motion-safe:hover:shadow-[var(--shadow-card-hover)] dark:border-white/[0.1] dark:bg-[linear-gradient(165deg,rgba(15,23,42,0.94)_0%,rgba(10,16,28,0.97)_100%)] dark:ring-white/[0.06]",
 );
 
-const industriesMarqueeWrapClass = "partner-marquee-mask motion-reduce:hidden max-w-full overflow-x-clip";
+/** Lebar viewport = 5 kartu + 4 celah (selaras `gap-1.5 sm:gap-2.5 md:gap-4` pada track). */
+const marqueeFiveCardsViewportClass =
+  "mx-auto min-w-0 w-full max-w-[min(100%,calc(5*10rem+4*0.375rem))] sm:max-w-[min(100%,calc(5*10rem+4*0.625rem))] md:max-w-[min(100%,calc(5*14rem+4*1rem))]";
 
-const partnersMarqueeWrapClass = "partner-marquee-mask motion-reduce:hidden max-w-full overflow-x-clip";
+const industriesMarqueeWrapClass =
+  "partner-marquee-mask motion-reduce:hidden overflow-x-clip " + marqueeFiveCardsViewportClass;
+
+const partnersMarqueeWrapClass =
+  "partner-marquee-mask motion-reduce:hidden overflow-x-clip " + marqueeFiveCardsViewportClass;
+
+const industriesStaticStripClass =
+  "hidden motion-reduce:flex motion-reduce:flex-nowrap motion-reduce:justify-start motion-reduce:gap-1.5 motion-reduce:overflow-x-auto motion-reduce:px-1 motion-reduce:pb-1 motion-reduce:scrollbar-none sm:motion-reduce:gap-2.5 md:motion-reduce:gap-4 " +
+  marqueeFiveCardsViewportClass;
+
+const partnersStaticStripClass =
+  "hidden motion-reduce:flex motion-reduce:flex-nowrap motion-reduce:justify-start motion-reduce:gap-1.5 motion-reduce:overflow-x-auto motion-reduce:px-1 motion-reduce:pb-1 motion-reduce:scrollbar-none sm:motion-reduce:gap-2.5 md:motion-reduce:gap-4 " +
+  marqueeFiveCardsViewportClass;
 
 /** Urutan tampil acak stabil (bukan urutan JSON). */
 function hashSeed(s: string): number {
@@ -59,11 +73,8 @@ function seededShuffle<T>(items: readonly T[], seedStr: string): T[] {
   return arr;
 }
 
-/** Area gambar di kartu — logo mengisi kotak dengan proporsi aset (object-contain), tidak distorsi. */
-const industryLogoViewportClass =
-  "relative mx-auto h-10 w-[92%] max-w-[11rem] shrink-0 md:h-[4.25rem] md:max-w-[13rem]";
-const partnerLogoViewportClass =
-  "relative mx-auto h-10 w-[92%] max-w-[12rem] shrink-0 md:h-14 md:max-w-[13.5rem]";
+/** Area gambar di kartu marquee — `flex-1` mengisi tinggi kartu; logo object-contain tanpa distorsi. */
+const marqueeLogoImageShellClass = "relative flex-1 min-h-0 w-full min-w-0";
 
 const logoImageContainClass = "object-contain object-center";
 
@@ -110,7 +121,7 @@ export function CustomersPartnersSectionClient({ data }: { data: SiteContent["cu
           const src = item.logoSrc!.trim();
           return (
             <div key={`${item.id}-${index}`} className={marqueeLogoCardClass}>
-              <div className={`${industryLogoViewportClass} min-h-0`}>
+              <div className={marqueeLogoImageShellClass}>
                 <CmsImage
                   fill
                   srcPath={`customersPartners.industries.${oi}.logoSrc`}
@@ -122,6 +133,8 @@ export function CustomersPartnersSectionClient({ data }: { data: SiteContent["cu
                   imageClassName={logoImageContainClass}
                   sizes="(max-width: 480px) 100px, (max-width: 768px) 130px, 180px"
                   enableZoom={false}
+                  imageTransform={item.logoAdjust}
+                  transformPatchPath={`customersPartners.industries.${oi}.logoAdjust`}
                 />
               </div>
               <span className="sr-only">{item.label}</span>
@@ -133,14 +146,14 @@ export function CustomersPartnersSectionClient({ data }: { data: SiteContent["cu
   );
 
   const renderStaticIndustries = () => (
-    <div className="hidden motion-reduce:flex motion-reduce:flex-wrap motion-reduce:justify-center motion-reduce:gap-1.5 md:motion-reduce:gap-4">
+    <div className={industriesStaticStripClass}>
       {industriesDisplayOrder.map((item) => {
         const oi = industryIndexById.get(item.id) ?? 0;
         const src = item.logoSrc?.trim();
         if (!src) return null;
         return (
           <div key={item.id} className={marqueeLogoCardClass}>
-            <div className={`${industryLogoViewportClass} min-h-0`}>
+            <div className={marqueeLogoImageShellClass}>
               <CmsImage
                 fill
                 srcPath={`customersPartners.industries.${oi}.logoSrc`}
@@ -152,6 +165,8 @@ export function CustomersPartnersSectionClient({ data }: { data: SiteContent["cu
                 imageClassName={logoImageContainClass}
                 sizes="(max-width: 480px) 100px, (max-width: 768px) 130px, 180px"
                 enableZoom={false}
+                imageTransform={item.logoAdjust}
+                transformPatchPath={`customersPartners.industries.${oi}.logoAdjust`}
               />
             </div>
             <span className="sr-only">{item.label}</span>
@@ -163,13 +178,13 @@ export function CustomersPartnersSectionClient({ data }: { data: SiteContent["cu
 
   const renderMarqueePartners = () => (
     <div className={partnersMarqueeWrapClass}>
-      <div className="partner-marquee-track flex min-w-0 w-max max-w-none gap-1.5 sm:gap-2 md:gap-4">
+      <div className="partner-marquee-track flex min-w-0 w-max max-w-none gap-1.5 sm:gap-2.5 md:gap-4">
         {[...partnersMarqueeItems, ...partnersMarqueeItems].map((p, index) => {
           const pi = partnerIndexById.get(p.id) ?? 0;
           const src = p.logoSrc!.trim();
           return (
             <div key={`${p.id}-${index}`} className={marqueeLogoCardClass}>
-              <div className={`${partnerLogoViewportClass} min-h-0`}>
+              <div className={marqueeLogoImageShellClass}>
                 <CmsImage
                   fill
                   srcPath={`customersPartners.partners.${pi}.logoSrc`}
@@ -181,6 +196,8 @@ export function CustomersPartnersSectionClient({ data }: { data: SiteContent["cu
                   imageClassName={logoImageContainClass}
                   sizes="(max-width: 480px) 120px, (max-width: 768px) 150px, 220px"
                   enableZoom={false}
+                  imageTransform={p.logoAdjust}
+                  transformPatchPath={`customersPartners.partners.${pi}.logoAdjust`}
                 />
               </div>
               <span className="sr-only">{p.name}</span>
@@ -192,13 +209,13 @@ export function CustomersPartnersSectionClient({ data }: { data: SiteContent["cu
   );
 
   const renderStaticPartners = () => (
-    <div className="hidden motion-reduce:flex motion-reduce:flex-wrap motion-reduce:justify-center motion-reduce:gap-1.5 md:motion-reduce:gap-4">
+    <div className={partnersStaticStripClass}>
       {partners.map((p, pi) => {
         const src = p.logoSrc?.trim();
         if (!src) return null;
         return (
           <div key={p.id} className={marqueeLogoCardClass}>
-            <div className={`${partnerLogoViewportClass} min-h-0`}>
+            <div className={marqueeLogoImageShellClass}>
               <CmsImage
                 fill
                 srcPath={`customersPartners.partners.${pi}.logoSrc`}
@@ -210,6 +227,8 @@ export function CustomersPartnersSectionClient({ data }: { data: SiteContent["cu
                 imageClassName={logoImageContainClass}
                 sizes="(max-width: 480px) 120px, (max-width: 768px) 150px, 220px"
                 enableZoom={false}
+                imageTransform={p.logoAdjust}
+                transformPatchPath={`customersPartners.partners.${pi}.logoAdjust`}
               />
             </div>
             <span className="sr-only">{p.name}</span>
@@ -268,39 +287,36 @@ export function CustomersPartnersSectionClient({ data }: { data: SiteContent["cu
               renderItem={(item, i) => {
                 const row = item as SiteContent["customersPartners"]["industries"][number];
                 return (
-                <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center">
-                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-white/15">
-                    <CmsImage
-                      fill
-                      srcPath={`customersPartners.industries.${i}.logoSrc`}
-                      src={row.logoSrc || ""}
-                      alt={row.logoAlt || row.label}
-                      uploadScope="industry"
-                      uploadSegment={`row-${i}`}
-                      className="block h-full w-full min-h-0"
-                      imageClassName={logoImageContainClass}
-                      sizes="56px"
-                      enableZoom={false}
+                  <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center">
+                    <div className="relative h-[4.75rem] w-[10rem] shrink-0 overflow-hidden rounded-lg border border-white/15 bg-card/80 md:h-[7rem] md:w-[14rem]">
+                      <CmsImage
+                        fill
+                        srcPath={`customersPartners.industries.${i}.logoSrc`}
+                        src={row.logoSrc || ""}
+                        alt={row.logoAlt || row.label}
+                        uploadScope="industry"
+                        uploadSegment={`row-${i}`}
+                        className="block h-full w-full min-h-0"
+                        imageClassName={logoImageContainClass}
+                        sizes="(max-width:768px) 160px, 224px"
+                        enableZoom={false}
+                        imageTransform={row.logoAdjust}
+                        transformPatchPath={`customersPartners.industries.${i}.logoAdjust`}
+                      />
+                    </div>
+                    <CmsText
+                      path={`customersPartners.industries.${i}.label`}
+                      text={row.label}
+                      as="span"
+                      className="min-w-0 flex-1 text-sm font-medium text-foreground"
                     />
                   </div>
-                  <CmsText
-                    path={`customersPartners.industries.${i}.label`}
-                    text={row.label}
-                    as="span"
-                    className="min-w-0 flex-1 text-sm font-medium text-foreground"
-                  />
-                </div>
                 );
               }}
             />
-            <h3 className="border-t border-white/[0.08] pt-3 text-center text-sm font-semibold text-foreground dark:border-white/[0.1]">
-              <CmsText
-                path="customersPartners.partnerHeading"
-                text={data.partnerHeading}
-                as="span"
-                className="inline"
-              />
-            </h3>
+            <p className="border-t border-white/[0.08] pt-3 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400 dark:border-white/[0.1]">
+              Partner
+            </p>
             <SortList
               items={partners}
               patchPath="customersPartners.partners"
@@ -310,42 +326,48 @@ export function CustomersPartnersSectionClient({ data }: { data: SiteContent["cu
               renderItem={(p, pi) => {
                 const row = p as SiteContent["customersPartners"]["partners"][number];
                 return (
-                <div className="flex min-w-0 flex-col items-start gap-2 sm:flex-row sm:items-center">
-                  <div className="relative h-16 w-40 shrink-0 overflow-hidden rounded-lg border border-white/15 bg-card px-2 py-1.5">
-                    <CmsImage
-                      fill
-                      srcPath={`customersPartners.partners.${pi}.logoSrc`}
-                      src={row.logoSrc || ""}
-                      alt={row.logoAlt}
-                      uploadScope="partners"
-                      uploadSegment={`edit-${pi}`}
-                      className="block h-full w-full min-h-0"
-                      imageClassName={logoImageContainClass}
-                      sizes="160px"
-                      enableZoom={false}
-                    />
+                  <div className="flex min-w-0 flex-col items-start gap-2 sm:flex-row sm:items-center">
+                    <div className="relative h-[4.75rem] w-[10rem] shrink-0 overflow-hidden rounded-lg border border-white/15 bg-card md:h-[7rem] md:w-[14rem]">
+                      <CmsImage
+                        fill
+                        srcPath={`customersPartners.partners.${pi}.logoSrc`}
+                        src={row.logoSrc || ""}
+                        alt={row.logoAlt}
+                        uploadScope="partners"
+                        uploadSegment={`edit-${pi}`}
+                        className="block h-full w-full min-h-0"
+                        imageClassName={logoImageContainClass}
+                        imageTransform={row.logoAdjust}
+                        transformPatchPath={`customersPartners.partners.${pi}.logoAdjust`}
+                        sizes="(max-width:768px) 160px, 224px"
+                        enableZoom={false}
+                      />
+                    </div>
+                    <span className="text-[11px] text-muted-foreground">
+                      <CmsText
+                        path={`customersPartners.partners.${pi}.name`}
+                        text={row.name}
+                        as="span"
+                        className="block font-medium text-foreground"
+                      />
+                    </span>
                   </div>
-                  <span className="text-[11px] text-muted-foreground">
-                    <CmsText
-                      path={`customersPartners.partners.${pi}.name`}
-                      text={row.name}
-                      as="span"
-                      className="block font-medium text-foreground"
-                    />
-                  </span>
-                </div>
                 );
               }}
             />
           </div>
-        ) : (
-          <>
-            {renderStaticIndustries()}
-            {renderMarqueeIndustries()}
-          </>
-        )}
+        ) : null}
 
-        {!edit ? (
+        <div
+          className={`space-y-3 md:space-y-5 ${edit && cms ? "mt-4 rounded-2xl border border-dashed border-sky-500/30 bg-sky-500/[0.04] p-3 md:mt-5 md:p-4" : ""}`}
+        >
+          {edit && cms ? (
+            <p className="text-center text-[10px] font-semibold uppercase tracking-[0.16em] text-sky-700/90 dark:text-sky-200/80">
+              Pratinjau strip (sama seperti di halaman)
+            </p>
+          ) : null}
+          {renderStaticIndustries()}
+          {renderMarqueeIndustries()}
           <div className="relative pt-3 md:pt-5">
             <div
               className="absolute left-1/2 top-0 h-px w-[min(92vw,26rem)] -translate-x-1/2 bg-gradient-to-r from-transparent via-sky-500/28 to-transparent dark:via-sky-400/32"
@@ -372,7 +394,7 @@ export function CustomersPartnersSectionClient({ data }: { data: SiteContent["cu
             {renderStaticPartners()}
             {renderMarqueePartners()}
           </div>
-        ) : null}
+        </div>
       </div>
     </section>
   );

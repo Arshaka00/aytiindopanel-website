@@ -4,7 +4,11 @@ import {
 } from "@/components/aytipanel/constants";
 import { ScrollRevealSection } from "@/components/aytipanel/scroll-reveal-section";
 import { SiteFooter } from "@/components/aytipanel/site-footer";
-import { SiteCopyrightImagePreview } from "@/components/aytipanel/site-copyright-image-preview";
+import {
+  ColdStoragePageCardImage,
+  ColdStoragePageHeroImage,
+} from "@/components/aytipanel/cold-storage-page-media";
+import { ColdStoragePageImageAltEditor } from "@/components/aytipanel/cold-storage-image-alt-editor";
 import {
   IconManufacturing,
   IconProcessConsult,
@@ -14,13 +18,12 @@ import {
 } from "@/components/aytipanel/icons";
 import { WhatsAppCTAButton } from "@/components/aytipanel/whatsapp-cta-button";
 import { mergeAytiCardClass, mergeAytiCtaClass, mergeAytiTitleClass } from "@/lib/ayti-icon-cold";
+import type { SiteContent } from "@/lib/site-content-model";
 
 const coldStorageWa = {
   message: WHATSAPP_COLD_STORAGE_PREFILL_MESSAGE,
   dataSource: COLD_STORAGE_LEAD_SOURCE,
 } as const;
-
-const COLD_STORAGE_IMG_ALT = "cold storage project tangerang";
 
 const cardPremium = mergeAytiCardClass(
   "rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)] backdrop-blur-[2px] transition-all duration-300 ease-out motion-safe:hover:-translate-y-1 hover:shadow-[var(--shadow-card-hover)]",
@@ -79,7 +82,11 @@ const FAQ_ITEMS = [
   },
 ] as const;
 
-export function ColdStorageLanding({ footerSeoText = "" }: { footerSeoText?: string }) {
+export function ColdStorageLanding({
+  coldStoragePage,
+}: {
+  coldStoragePage: SiteContent["coldStoragePage"];
+}) {
   return (
     <div className="flex min-h-full flex-col bg-background text-foreground">
       <main>
@@ -87,15 +94,11 @@ export function ColdStorageLanding({ footerSeoText = "" }: { footerSeoText?: str
           className="relative flex min-h-[500px] scroll-mt-24 items-center overflow-hidden border-b border-border bg-background px-6 py-24"
           aria-labelledby="cold-hero-heading"
         >
-          <SiteCopyrightImagePreview
-            fill
-            src="/images/cold-storage.jpg"
-            alt={COLD_STORAGE_IMG_ALT}
-            priority
-            sizes="100vw"
-            buttonClassName="absolute inset-0 z-[1] block h-full min-h-[500px] w-full md:min-h-full"
-            imageClassName="object-cover"
+          <ColdStoragePageHeroImage
+            src={coldStoragePage.heroImageSrc}
+            alt={coldStoragePage.heroImageAlt}
           />
+          <ColdStoragePageImageAltEditor text={coldStoragePage.heroImageAlt} />
           <div
             className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[var(--hero-from)] to-[var(--hero-to)] opacity-[0.82]"
             aria-hidden
@@ -352,13 +355,9 @@ export function ColdStorageLanding({ footerSeoText = "" }: { footerSeoText?: str
                   )}
                 >
                   <div className="relative aspect-[4/3] bg-muted-bg-strong">
-                    <SiteCopyrightImagePreview
-                      fill
-                      src="/images/cold-storage.jpg"
-                      alt={COLD_STORAGE_IMG_ALT}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      buttonClassName="absolute inset-0 block size-full"
-                      imageClassName="object-cover"
+                    <ColdStoragePageCardImage
+                      src={coldStoragePage.heroImageSrc}
+                      alt={coldStoragePage.heroImageAlt}
                     />
                   </div>
                   <div className="space-y-4 p-6">
@@ -526,7 +525,7 @@ export function ColdStorageLanding({ footerSeoText = "" }: { footerSeoText?: str
         </section>
         </ScrollRevealSection>
       </main>
-      <SiteFooter footerSeoText={footerSeoText} whatsappFunnel={coldStorageWa} />
+      <SiteFooter whatsappFunnel={coldStorageWa} />
     </div>
   );
 }

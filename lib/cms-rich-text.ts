@@ -445,7 +445,13 @@ export function richStyleToReactCss(style: CmsRichTextStyle): CSSProperties {
   if (style.fontSize) out.fontSize = style.fontSize;
   if (style.fontWeight) out.fontWeight = style.fontWeight as CSSProperties["fontWeight"];
   if (style.fontStyle) out.fontStyle = style.fontStyle;
-  if (style.textAlign) out.textAlign = style.textAlign;
+  if (style.textAlign) {
+    out.textAlign = style.textAlign;
+    /** `text-align` hanya memengaruhi kontainer blok; span default inline sering mengabaikan nilai ini. */
+    out.display = "block";
+    out.width = "100%";
+    out.boxSizing = "border-box";
+  }
   if (style.lineHeight) out.lineHeight = style.lineHeight;
   if (style.letterSpacing) out.letterSpacing = style.letterSpacing;
   if (style.textTransform) out.textTransform = style.textTransform;

@@ -1,5 +1,11 @@
 import type { SiteContent, SitePageSeoKey, SitePageSeoMap, SiteRedirectRule } from "@/lib/site-content-model";
+import { normalizeFullCmsImageTransform, type CmsImageTransform } from "@/lib/cms-image-transform";
 import { CONTACT_ADDRESS_LINES } from "@/components/aytipanel/constants";
+import {
+  normalizeRichTextValue,
+  plainTextFromRichValue,
+  type CmsRichTextValue,
+} from "@/lib/cms-rich-text";
 import {
   formatWhatsAppDisplayLocal,
   resolvePrimaryEmail,
@@ -17,6 +23,13 @@ import {
   GAMBAR_PRODUK_UTAMA_KIRI,
 } from "@/components/aytipanel/gambar-produk-paths";
 import { createDefaultSiteContent } from "@/lib/site-content-defaults";
+
+/** Simpan penyesuaian logo CMS (zoom/focal/fit) terklamp aman. */
+function sanitizeLogoAdjustStored(raw: unknown): Partial<CmsImageTransform> | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  if (Object.keys(raw as object).length === 0) return undefined;
+  return normalizeFullCmsImageTransform(raw as Partial<CmsImageTransform>);
+}
 
 function nid(prefix: string, i: number): string {
   return `${prefix}-${i}`;
@@ -74,20 +87,51 @@ export function normalizeSiteContent(c: SiteContent): SiteContent {
       (typeof inCtaSec?.ariaLabel === "string" ? inCtaSec.ariaLabel.trim() : "") || defCtaSec.ariaLabel,
   };
 
+  const defIntro = defaults.hero.intro;
+  const inIntro = out.hero?.intro;
+  /** Segmen intro hero: string atau blok bergaya CMS — normalisasi mempertahankan blok aman. */
+  const introPart = (v: unknown, fb: CmsRichTextValue) =>
+    normalizeRichTextValue(v === undefined || v === null ? fb : v, plainTextFromRichValue(fb, ""));
   out.hero.intro = {
-    before1: out.hero?.intro?.before1 ?? defaults.hero.intro.before1,
-    bold1: out.hero?.intro?.bold1 ?? defaults.hero.intro.bold1,
-    middle: out.hero?.intro?.middle ?? defaults.hero.intro.middle,
-    bold2: out.hero?.intro?.bold2 ?? defaults.hero.intro.bold2,
-    after2: out.hero?.intro?.after2 ?? defaults.hero.intro.after2,
-    bold3: out.hero?.intro?.bold3 ?? defaults.hero.intro.bold3,
-    after3: out.hero?.intro?.after3 ?? defaults.hero.intro.after3,
+    before1: introPart(inIntro?.before1, defIntro.before1),
+    bold1: introPart(inIntro?.bold1, defIntro.bold1),
+    middle: introPart(inIntro?.middle, defIntro.middle),
+    bold2: introPart(inIntro?.bold2, defIntro.bold2),
+    after2: introPart(inIntro?.after2, defIntro.after2),
+    bold3: introPart(inIntro?.bold3, defIntro.bold3),
+    after3: introPart(inIntro?.after3, defIntro.after3),
   };
-  const introValues = Object.values(out.hero.intro).map((x) => x.trim());
+  const introValues = Object.values(out.hero.intro).map((x) => plainTextFromRichValue(x, "").trim());
   if (introValues.every((x) => x.length === 0)) {
     out.hero.intro = { ...defaults.hero.intro };
   }
+  out.tentang.body = normalizeRichTextValue(
+    out.tentang?.body,
+    plainTextFromRichValue(defaults.tentang.body, ""),
+  );
   out.hero.headingMiddle = out.hero?.headingMiddle ?? defaults.hero.headingMiddle;
+  const defHero = defaults.hero;
+  const heroStr = (v: unknown, fb: string) => {
+    const t = typeof v === "string" ? v.trim() : "";
+    return t || fb;
+  };
+  out.hero.introBadge = typeof out.hero.introBadge === "string" ? out.hero.introBadge.trim() : "";
+  out.hero.prosesBadge = heroStr(out.hero.prosesBadge, defHero.prosesBadge);
+
+  const clampProsesStepZoom = (raw: unknown, fallback: number): number => {
+    const base = typeof raw === "number" && Number.isFinite(raw) ? raw : fallback;
+    return Math.min(2.5, Math.max(0.35, base));
+  };
+  const defProsesZoom = defaults.hero.prosesStepImageZoom;
+  const inProsesZoom = out.hero.prosesStepImageZoom ?? defProsesZoom;
+  out.hero.prosesStepImageZoom = {
+    konsultasi: clampProsesStepZoom(inProsesZoom.konsultasi, defProsesZoom.konsultasi),
+    survey: clampProsesStepZoom(inProsesZoom.survey, defProsesZoom.survey),
+    produksi: clampProsesStepZoom(inProsesZoom.produksi, defProsesZoom.produksi),
+    instalasi: clampProsesStepZoom(inProsesZoom.instalasi, defProsesZoom.instalasi),
+    selesai: clampProsesStepZoom(inProsesZoom.selesai, defProsesZoom.selesai),
+  };
+
   const defSs = defaults.siteSettings;
   const ssIn = out.siteSettings ?? defSs;
 
@@ -99,7 +143,6 @@ export function normalizeSiteContent(c: SiteContent): SiteContent {
     metaTitle: trimStr(seoIn.metaTitle, seoDefaults.metaTitle) || seoDefaults.metaTitle,
     metaDescription: trimStr(seoIn.metaDescription, seoDefaults.metaDescription) || seoDefaults.metaDescription,
     keywords: trimStr(seoIn.keywords, seoDefaults.keywords) || seoDefaults.keywords,
-    footerSeoText: trimStr(seoIn.footerSeoText, ""),
     companyDescription: trimStr(seoIn.companyDescription, seoDefaults.companyDescription) || seoDefaults.companyDescription,
     serviceAreas: trimStr(seoIn.serviceAreas, seoDefaults.serviceAreas) || seoDefaults.serviceAreas,
     additionalSeoContent: trimStr(seoIn.additionalSeoContent, ""),
@@ -414,15 +457,25 @@ export function normalizeSiteContent(c: SiteContent): SiteContent {
     href: l.href ?? "#",
   }));
 
-  out.customersPartners.industries = out.customersPartners.industries.map((row, i) => ({
-    ...row,
-    id: row.id ?? nid("ind", i),
-  }));
+  out.customersPartners.industries = out.customersPartners.industries.map((row, i) => {
+    const { logoAdjust: rawAdj, ...rest } = row as typeof row & { logoAdjust?: unknown };
+    const logoAdjust = sanitizeLogoAdjustStored(rawAdj);
+    return {
+      ...rest,
+      id: row.id ?? nid("ind", i),
+      ...(logoAdjust ? { logoAdjust } : {}),
+    };
+  });
 
-  out.customersPartners.partners = out.customersPartners.partners.map((row, i) => ({
-    ...row,
-    id: row.id ?? nid("partner", i),
-  }));
+  out.customersPartners.partners = out.customersPartners.partners.map((row, i) => {
+    const { logoAdjust: rawAdj, ...rest } = row as typeof row & { logoAdjust?: unknown };
+    const logoAdjust = sanitizeLogoAdjustStored(rawAdj);
+    return {
+      ...rest,
+      id: row.id ?? nid("partner", i),
+      ...(logoAdjust ? { logoAdjust } : {}),
+    };
+  });
 
   const defaultLayananById = new Map(defaults.layanan.cards.map((x) => [x.id, x]));
   out.layanan.cards = out.layanan.cards.map((row, i) => {
@@ -482,6 +535,13 @@ export function normalizeSiteContent(c: SiteContent): SiteContent {
     tiktok: pickUrl(socialLinks.tiktok, out.footer?.social?.tiktok ?? ""),
     youtube: pickUrl(socialLinks.youtube, out.footer?.social?.youtube ?? ""),
     x: out.footer?.social?.x ?? "",
+  };
+
+  const defCold = defaults.coldStoragePage;
+  const inCold = out.coldStoragePage ?? defCold;
+  out.coldStoragePage = {
+    heroImageSrc: trimStr(inCold.heroImageSrc, defCold.heroImageSrc) || defCold.heroImageSrc,
+    heroImageAlt: trimStr(inCold.heroImageAlt, defCold.heroImageAlt) || defCold.heroImageAlt,
   };
 
   return out;

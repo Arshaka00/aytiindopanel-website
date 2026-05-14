@@ -46,7 +46,7 @@ export default async function SeoLandingDynamicPage({ params }: Props) {
       <ForceScrollTopOnLoad />
       <SeoLandingJsonLd canonicalHref={canonicalHref} content={content} landing={landing} />
       <SeoLandingView canonicalHref={canonicalHref} content={content} landing={landing} />
-      <SiteFooter footer={content.footer} footerSeoText={content.siteSettings.seoContent.footerSeoText} />
+      <SiteFooter footer={content.footer} />
     </WhatsAppPhoneProvider>
   );
 }

@@ -36,7 +36,29 @@ function extFromMime(mime: string): string {
   if (mime === "image/gif") return ".gif";
   if (mime === "video/mp4") return ".mp4";
   if (mime === "video/webm") return ".webm";
+  if (mime === "video/quicktime") return ".mov";
+  if (mime === "video/x-m4v" || mime === "video/m4v") return ".m4v";
+  if (mime === "video/3gpp" || mime === "video/3gpp2") return ".3gp";
   return "";
+}
+
+/** Beberapa browser/OS mengirim `File.type` kosong — turunkan dari ekstensi nama berkas. */
+function inferMimeFromFileName(name: string): string {
+  const ext = path.extname(name).toLowerCase();
+  const map: Record<string, string> = {
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".png": "image/png",
+    ".webp": "image/webp",
+    ".gif": "image/gif",
+    ".mp4": "video/mp4",
+    ".webm": "video/webm",
+    ".mov": "video/quicktime",
+    ".m4v": "video/x-m4v",
+    ".3gp": "video/3gpp",
+    ".3g2": "video/3gpp2",
+  };
+  return map[ext] ?? "";
 }
 
 function isMediaLibraryScope(s: string): s is MediaLibraryScope {
@@ -51,8 +73,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Terlalu banyak unggahan. Coba lagi sebentar." }, { status: 429 });
   }
 
-  const form = await req.formData().catch(() => null);
-  if (!form) return NextResponse.json({ error: "Form tidak valid." }, { status: 400 });
+  const form = await req.formData().catch((err: unknown) => {
+    const detail = err instanceof Error ? err.message : String(err);
+    console.error("[site-media/upload] formData gagal:", detail);
+    return null;
+  });
+  if (!form) {
+    return NextResponse.json(
+      {
+        error:
+          "Gagal membaca formulir unggahan. Biasanya karena berkas terlalu besar untuk batas body server — coba video lebih kecil (maks. 80MB) atau pastikan `next.config` memakai `experimental.proxyClientMaxBodySize` ≥ ukuran unggahan.",
+      },
+      { status: 400 },
+    );
+  }
 
   const scope = typeof form.get("scope") === "string" ? (form.get("scope") as string) : "";
   const projectId =
@@ -63,11 +97,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Berkas wajib diisi." }, { status: 400 });
   }
 
-  const mime = file.type || "";
+  const mime = ((file.type || "").trim() || inferMimeFromFileName(file.name)).trim();
   const isImage = mime.startsWith("image/");
   const isVideo = mime.startsWith("video/");
-  if (!isImage && !isVideo) {
-    return NextResponse.json({ error: "Hanya gambar atau video yang didukung." }, { status: 400 });
+  if (!mime || (!isImage && !isVideo)) {
+    return NextResponse.json(
+      {
+        error:
+          "Tipe berkas tidak dikenali. Untuk video gunakan .mp4 / .webm (atau .mov dengan nama berkas yang jelas); untuk gambar .jpg / .png / .webp.",
+      },
+      { status: 400 },
+    );
   }
 
   const limit = isImage ? MAX_IMAGE_BYTES : MAX_VIDEO_BYTES;
@@ -97,6 +137,7 @@ export async function POST(req: NextRequest) {
     scope === "portfolio" ||
     scope === "partners" ||
     scope === "industry" ||
+    scope === "coldStorage" ||
     scope === "project" ||
     scope === "gallery" ||
     isMediaLibraryScope(scope);
@@ -130,7 +171,8 @@ export async function POST(req: NextRequest) {
     scope === "produk" ||
     scope === "portfolio" ||
     scope === "partners" ||
-    scope === "industry"
+    scope === "industry" ||
+    scope === "coldStorage"
   ) {
     const sub = segment || "general";
     destDir = joinPublic("images", "cms", scope, sub);

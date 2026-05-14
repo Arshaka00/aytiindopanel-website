@@ -18,6 +18,22 @@
       {
         "src": "/images/gallery/872AD6B8-73C4-4A4E-9668-8C9854E3A985.PNG",
         "alt": "ddffff"
+      },
+      {
+        "src": "/images/layanan/instalasi-sistem-pendingin/1.jpg",
+        "alt": "Placeholder foto galeri 2 — ganti lewat admin"
+      },
+      {
+        "src": "/images/layanan/instalasi-panel-cold-room/1.jpg",
+        "alt": "Placeholder foto galeri 3 — ganti lewat admin"
+      },
+      {
+        "src": "/images/layanan/testing-commissioning/1.jpg",
+        "alt": "Placeholder foto galeri 4 — ganti lewat admin"
+      },
+      {
+        "src": "/images/gallery/projects/local-f9090976-6011-4442-af15-03b89fd7a3c5/1778771061693-086acde36129.webp",
+        "alt": "ddffff"
       }
     ]
   },
@@ -32,6 +48,24 @@
     "imageSrc": "/images/gallery/peta_indonesia.png",
     "imageAlt": "dydgdhjd — dokumentasi proyek",
     "year": "2025",
-    "progress": 20
+    "progress": 20,
+    "galleryPhotos": [
+      {
+        "src": "/images/layanan/instalasi-sistem-pendingin/2.jpg",
+        "alt": "Placeholder foto galeri 1 — ganti lewat admin"
+      },
+      {
+        "src": "/images/layanan/instalasi-panel-cold-room/2.jpg",
+        "alt": "Placeholder foto galeri 2 — ganti lewat admin"
+      },
+      {
+        "src": "/images/layanan/produksi-panel-pu-eps/1.jpg",
+        "alt": "Placeholder foto galeri 3 — ganti lewat admin"
+      },
+      {
+        "src": "/images/layanan/konsultasi-desain-sistem/1.jpg",
+        "alt": "Placeholder foto galeri 4 — ganti lewat admin"
+      }
+    ]
   }
 ]

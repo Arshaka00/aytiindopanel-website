@@ -137,6 +137,7 @@ export function CmsSortableList<T extends { id: string }>({
       const dup = JSON.parse(JSON.stringify(item)) as T;
       dup.id = newCmsId("dup");
       const idx = items.findIndex((i) => i.id === item.id);
+      if (idx < 0) return;
       const next = [...items];
       next.splice(idx + 1, 0, dup);
       await persist(next);

@@ -10,8 +10,11 @@ type Props = Omit<VideoHTMLAttributes<HTMLVideoElement>, "src" | "poster"> & {
   /** Path di SiteContent untuk URL video (mis. `hero.backgroundVideo.src`). */
   srcPath: string;
   src: string;
-  uploadScope: "hero" | "gallery" | "portfolio";
+  uploadScope: "hero" | "gallery" | "portfolio" | "project";
+  /** Folder CMS portfolio / segment lain — tidak dipakai saat `uploadScope` = `project`. */
   uploadSegment?: string;
+  /** Wajib jika `uploadScope` = `project` — id folder di `public/images/gallery/projects/{id}/`. */
+  uploadProjectId?: string;
   /** Path untuk poster (gambar); ikut staging media terpisah dari video. */
   posterPath?: string;
   poster?: string;
@@ -23,6 +26,7 @@ export function CmsVideo({
   src,
   uploadScope,
   uploadSegment,
+  uploadProjectId,
   posterPath,
   poster,
   className,
@@ -111,7 +115,11 @@ export function CmsVideo({
       setPreviewSrc(blobUrl);
       const fd = new FormData();
       fd.set("scope", uploadScope);
-      if (uploadSegment) fd.set("segment", uploadSegment);
+      if (uploadScope === "project") {
+        if (uploadProjectId?.trim()) fd.set("projectId", uploadProjectId.trim());
+      } else if (uploadSegment) {
+        fd.set("segment", uploadSegment);
+      }
       fd.set("file", file);
       try {
         const up = await fetch("/api/site-media/upload", {
@@ -119,22 +127,37 @@ export function CmsVideo({
           credentials: "include",
           body: fd,
         });
-        const j = (await up.json().catch(() => ({}))) as { url?: string };
-        if (!up.ok || !j.url) throw new Error("Upload gagal");
-        setPreviewSrc(j.url);
+        const raw = await up.text();
+        let payload: { url?: string; error?: string } = {};
+        if (raw) {
+          try {
+            payload = JSON.parse(raw) as { url?: string; error?: string };
+          } catch {
+            /* respons non-JSON (mis. proxy/HTML error) */
+          }
+        }
+        if (!up.ok) {
+          throw new Error(payload.error || `Unggahan ditolak (${up.status}).`);
+        }
+        const url = typeof payload.url === "string" ? payload.url.trim() : "";
+        if (!url) {
+          throw new Error(payload.error || "Respons server tidak berisi URL berkas.");
+        }
+        setPreviewSrc(url);
         if (localBlobUrlRef.current) {
           URL.revokeObjectURL(localBlobUrlRef.current);
           localBlobUrlRef.current = null;
         }
-        cms.stageMediaChange(srcPath, j.url);
+        cms.stageMediaChange(srcPath, url);
         cms.pushToast?.("Perubahan media siap disimpan", "ok");
       } catch (err) {
         console.error(err);
         setPreviewSrc(src);
-        window.alert("Gagal mengunggah video.");
+        const msg = err instanceof Error ? err.message : "Gagal mengunggah video.";
+        window.alert(msg);
       }
     },
-    [cms, src, srcPath, uploadScope, uploadSegment],
+    [cms, src, srcPath, uploadScope, uploadSegment, uploadProjectId],
   );
 
   const ring = edit

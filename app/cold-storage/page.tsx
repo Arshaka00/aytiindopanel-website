@@ -20,7 +20,7 @@ export default async function ColdStoragePage() {
   const waDigits = resolvePrimaryWhatsAppDigits(content.siteSettings);
   return (
     <WhatsAppPhoneProvider phoneDigits={waDigits}>
-      <ColdStorageLanding footerSeoText={content.siteSettings.seoContent.footerSeoText} />
+      <ColdStorageLanding coldStoragePage={content.coldStoragePage} />
     </WhatsAppPhoneProvider>
   );
 }

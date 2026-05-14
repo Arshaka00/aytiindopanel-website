@@ -1,22 +1,34 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { WhatsAppCTAButton } from "@/components/aytipanel/whatsapp-cta-button";
 import { IconWhatsApp } from "@/components/aytipanel/icons";
 import { mergeAytiCtaClass } from "@/lib/ayti-icon-cold";
+import { navigateLandingHashFromNav } from "@/components/common/home-nav-scroll";
 import { CmsText } from "@/components/site-cms/cms-text";
 import { useSiteCmsOptional } from "@/components/site-cms/site-cms-provider";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 
-/** Legacy CMS / konten lama: anchor section beranda → halaman hub agar buka dari atas. */
+/** Legacy CMS / konten lama: anchor section beranda tetap ke path beranda + hash. */
 function normalizeHeroSecondaryHref(href: string): string {
   const t = href.trim();
-  if (t === "#produk" || t === "/#produk") return "/produk";
+  if (t === "#produk" || t === "/#produk") return "/#produk";
   return t;
 }
 
 function isExternalOrProtoHref(href: string): boolean {
   return /^(https?:|mailto:|tel:)/i.test(href.trim());
+}
+
+/** `/#section` di beranda — scroll harus pakai offset header, bukan navigasi Link polos (pathname `/` tidak berubah). */
+function isBerandaSectionHashHref(dest: string): boolean {
+  try {
+    const u = new URL(dest, "https://aytipanel.invalid");
+    return u.pathname === "/" && u.hash.length > 1;
+  } catch {
+    return false;
+  }
 }
 
 function HeroSecondaryNavLink({
@@ -30,6 +42,7 @@ function HeroSecondaryNavLink({
   ariaLabel: string;
   children: ReactNode;
 }) {
+  const pathname = usePathname();
   const dest = normalizeHeroSecondaryHref(href.trim());
   const cls = mergeAytiCtaClass(className);
 
@@ -56,6 +69,21 @@ function HeroSecondaryNavLink({
   }
 
   if (dest.startsWith("/")) {
+    if (pathname === "/" && isBerandaSectionHashHref(dest)) {
+      return (
+        <a
+          href={dest}
+          className={cls}
+          aria-label={ariaLabel}
+          onClick={(e) => {
+            e.preventDefault();
+            navigateLandingHashFromNav(pathname, dest);
+          }}
+        >
+          {children}
+        </a>
+      );
+    }
     return (
       <Link href={dest} scroll className={cls} aria-label={ariaLabel}>
         {children}
@@ -108,7 +136,7 @@ export function CmsHeroPrimaryActions({
     if (!cms) return;
     const ok = await cms.ensureWriteSession();
     if (!ok) return;
-    const next = window.prompt("Link tombol (href), mis. /produk, #layanan, atau https://…", hrefDraft);
+    const next = window.prompt("Link tombol (href), mis. /#produk, #layanan, atau https://…", hrefDraft);
     if (next === null) return;
     setHrefDraft(next);
     try {

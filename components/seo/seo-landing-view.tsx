@@ -62,7 +62,7 @@ function BreadcrumbNav({ landing }: { landing: SeoLandingPageDef }) {
       ) : null}
       <li aria-hidden="true">/</li>
       <li>
-        <Link href="/produk" className="text-accent underline-offset-4 hover:underline">
+        <Link href="/#produk" className="text-accent underline-offset-4 hover:underline">
           Produk
         </Link>
       </li>
@@ -272,10 +272,10 @@ export function SeoLandingView({
             </li>
             <li>
               <Link
-                href="/produk"
+                href="/#produk"
                 className="rounded-full border border-border bg-muted-bg/50 px-3 py-1.5 text-foreground hover:border-accent/40"
               >
-                Katalog produk
+                Produk
               </Link>
             </li>
             {otherLokasi.map(({ slug, label }) => (

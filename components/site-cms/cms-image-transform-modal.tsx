@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import {
   CMS_IMAGE_TRANSFORM_PREVIEW,
@@ -45,7 +46,7 @@ function hydrateDraft(initial?: Partial<CmsImageTransform> | null): CmsImageTran
 }
 
 /**
- * Editor: focal + zoom + object-fit terpisah desktop vs mobile; geser = titik fokus.
+ * Editor: focal + zoom (perbesar/perkecil) + object-fit terpisah desktop vs mobile; geser = titik fokus.
  * Dua pratinjau (desktop / mobile) real-time; kontrol mengikuti tab aktif.
  */
 export function CmsImageTransformModal({
@@ -209,9 +210,9 @@ export function CmsImageTransformModal({
   const tabActive = "border-sky-500/40 bg-sky-500/15 text-sky-900 dark:text-sky-50";
   const tabIdle = "border-border bg-muted-bg/60 text-muted-foreground hover:bg-muted-bg";
 
-  return (
+  const modalUi = (
     <div
-      className="fixed inset-0 z-[80000] flex items-end justify-center bg-black/55 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] sm:items-center sm:p-4"
+      className="fixed inset-0 z-[80500] flex items-end justify-center bg-black/55 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] sm:items-center sm:p-4"
       role="dialog"
       aria-modal
       aria-labelledby="cms-image-transform-title"
@@ -310,10 +311,10 @@ export function CmsImageTransformModal({
             </p>
 
             <label className="block text-[11px] font-medium text-foreground">
-              Zoom ({activeTab === "mobile" ? "mobile" : "desktop"})
+              Zoom / skala ({activeTab === "mobile" ? "mobile" : "desktop"}) — 0,4× perkecil hingga 3× perbesar
               <input
                 type="range"
-                min={1}
+                min={0.4}
                 max={3}
                 step={0.02}
                 value={controlsResolved.zoom}
@@ -394,4 +395,7 @@ export function CmsImageTransformModal({
       </div>
     </div>
   );
+
+  if (typeof document === "undefined") return null;
+  return createPortal(modalUi, document.body);
 }

@@ -80,6 +80,10 @@ export const GALLERY_PROJECTS: readonly GalleryProjectItem[] = [
         src: "/images/layanan/instalasi-panel-cold-room/1.jpg",
         alt: "Referensi panel cold room terkait proyek",
       },
+      {
+        src: "/images/layanan/konsultasi-desain-sistem/1.jpg",
+        alt: "Placeholder foto galeri 4 — ganti lewat admin",
+      },
     ],
   },
   {
@@ -95,6 +99,24 @@ export const GALLERY_PROJECTS: readonly GalleryProjectItem[] = [
     imageSrc: "/images/layanan/testing-commissioning/1.jpg",
     imageAlt: "Dokumentasi project ABF seafood",
     progress: 86,
+    galleryPhotos: [
+      {
+        src: "/images/layanan/testing-commissioning/2.jpg",
+        alt: "Pengukuran suhu saat commissioning",
+      },
+      {
+        src: "/images/layanan/instalasi-sistem-pendingin/1.jpg",
+        alt: "Instalasi sistem pendingin terkait ruang beku",
+      },
+      {
+        src: "/images/layanan/instalasi-panel-cold-room/1.jpg",
+        alt: "Panel insulated area ruang dingin",
+      },
+      {
+        src: "/images/layanan/produksi-panel-pu-eps/2.jpg",
+        alt: "Placeholder foto galeri 4 — ganti lewat admin",
+      },
+    ],
   },
   {
     id: "cold-room-pharma",
@@ -109,6 +131,24 @@ export const GALLERY_PROJECTS: readonly GalleryProjectItem[] = [
     imageSrc: "/images/layanan/instalasi-panel-cold-room/1.jpg",
     imageAlt: "Dokumentasi cold room farmasi",
     progress: 64,
+    galleryPhotos: [
+      {
+        src: "/images/layanan/instalasi-panel-cold-room/2.jpg",
+        alt: "Instalasi envelope cold storage",
+      },
+      {
+        src: "/images/layanan/instalasi-sistem-pendingin/2.jpg",
+        alt: "Instalasi sistem pendingin — sudut progres",
+      },
+      {
+        src: "/images/layanan/maintenance-after-sales/1.jpg",
+        alt: "Perawatan sistem untuk uptime distribusi",
+      },
+      {
+        src: "/images/layanan/konsultasi-desain-sistem/2.jpg",
+        alt: "Placeholder foto galeri 4 — ganti lewat admin",
+      },
+    ],
   },
   {
     id: "refrigeration-retail-chain",
@@ -123,6 +163,24 @@ export const GALLERY_PROJECTS: readonly GalleryProjectItem[] = [
     imageSrc: "/images/layanan/maintenance-after-sales/1.jpg",
     imageAlt: "Dokumentasi maintenance refrigeration retail",
     progress: 72,
+    galleryPhotos: [
+      {
+        src: "/images/layanan/maintenance-after-sales/2.jpg",
+        alt: "Dukungan purna jual dan perawatan preventif",
+      },
+      {
+        src: "/images/layanan/instalasi-sistem-pendingin/1.jpg",
+        alt: "Instalasi sistem pendingin",
+      },
+      {
+        src: "/images/layanan/instalasi-panel-cold-room/2.jpg",
+        alt: "Instalasi sandwich panel — referensi commissioning",
+      },
+      {
+        src: "/images/layanan/testing-commissioning/1.jpg",
+        alt: "Placeholder foto galeri 4 — ganti lewat admin",
+      },
+    ],
   },
   {
     id: "panel-insulated-logistics",
@@ -137,6 +195,24 @@ export const GALLERY_PROJECTS: readonly GalleryProjectItem[] = [
     imageSrc: "/images/layanan/produksi-panel-pu-eps/1.jpg",
     imageAlt: "Dokumentasi panel insulated hub logistik",
     progress: 100,
+    galleryPhotos: [
+      {
+        src: "/images/layanan/produksi-panel-pu-eps/2.jpg",
+        alt: "Detail fabrikasi panel insulated",
+      },
+      {
+        src: "/images/layanan/instalasi-panel-cold-room/1.jpg",
+        alt: "Referensi panel cold room terkait proyek",
+      },
+      {
+        src: "/images/layanan/instalasi-sistem-pendingin/2.jpg",
+        alt: "Instalasi sistem pendingin — sudut progres",
+      },
+      {
+        src: "/images/layanan/konsultasi-desain-sistem/1.jpg",
+        alt: "Placeholder foto galeri 4 — ganti lewat admin",
+      },
+    ],
   },
   {
     id: "cold-storage-fnb-central-kitchen",
@@ -151,5 +227,23 @@ export const GALLERY_PROJECTS: readonly GalleryProjectItem[] = [
     imageSrc: "/images/layanan/konsultasi-desain-sistem/1.jpg",
     imageAlt: "Dokumentasi cold storage central kitchen",
     progress: 100,
+    galleryPhotos: [
+      {
+        src: "/images/layanan/konsultasi-desain-sistem/2.jpg",
+        alt: "Koordinasi desain sistem pendingin",
+      },
+      {
+        src: "/images/layanan/instalasi-sistem-pendingin/1.jpg",
+        alt: "Instalasi sistem pendingin",
+      },
+      {
+        src: "/images/layanan/instalasi-panel-cold-room/1.jpg",
+        alt: "Cold room higienis area produksi",
+      },
+      {
+        src: "/images/layanan/testing-commissioning/2.jpg",
+        alt: "Placeholder foto galeri 4 — ganti lewat admin",
+      },
+    ],
   },
 ] as const;

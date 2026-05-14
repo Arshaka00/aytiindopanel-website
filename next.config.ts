@@ -12,6 +12,14 @@ const nextConfig: NextConfig = {
       "@dnd-kit/utilities",
       "embla-carousel-react",
     ],
+    /**
+     * Default clone body Next ~10MB — melebihi itu memotong multipart sehingga
+     * `formData()` gagal ("Form tidak valid"). Selaras `MAX_VIDEO_BYTES` (80MB) di upload route.
+     */
+    proxyClientMaxBodySize: "96mb",
+    serverActions: {
+      bodySizeLimit: "96mb",
+    },
   },
   /** Apex → www agar satu host canonical (termasuk path & file statis). */
   async redirects() {
@@ -22,6 +30,8 @@ const nextConfig: NextConfig = {
         destination: `https://${SITE_PUBLIC_HOSTNAME}/:path*`,
         permanent: true,
       },
+      /** Halaman indeks katalog dihapus — arahkan ke section Produk di beranda. */
+      { source: "/produk", destination: "/#produk", permanent: true },
     ];
   },
   allowedDevOrigins: [

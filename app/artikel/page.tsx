@@ -141,7 +141,7 @@ export default async function ArtikelIndexPage() {
             })}
           </ul>
         </main>
-        <SiteFooter footer={content.footer} footerSeoText={content.siteSettings.seoContent.footerSeoText} />
+        <SiteFooter footer={content.footer} />
       </div>
     </WhatsAppPhoneProvider>
   );

@@ -253,7 +253,6 @@ export default async function ProductDetailPage({ params }: Props) {
       </main>
       <SiteFooter
         footer={siteContent.footer}
-        footerSeoText={siteContent.siteSettings.seoContent.footerSeoText}
         whatsappFunnel={{ message: productMessage, dataSource: `produk:${slug}` }}
       />
     </div>

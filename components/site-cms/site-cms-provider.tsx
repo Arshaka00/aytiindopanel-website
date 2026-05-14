@@ -17,6 +17,8 @@ import { CmsToastStack, type ToastItem } from "@/components/site-cms/cms-toast-s
 import { isSiteCmsSurfaceOriginAllowed } from "@/lib/cms-chrome-gate";
 import type { SiteContent } from "@/lib/site-content";
 
+type StagedProsesStepImageZoom = Partial<SiteContent["hero"]["prosesStepImageZoom"]>;
+
 const SiteMediaLibraryModal = dynamic(
   () =>
     import("@/components/site-cms/site-media-library-modal").then((m) => m.SiteMediaLibraryModal),
@@ -40,6 +42,13 @@ export type SiteCmsContextValue = {
   discardStagedMedia: () => void;
   stagedMediaCount: number;
   stagedMediaByPath: Record<string, string>;
+  /** Zoom strip proses hero yang belum disimpan (disatukan ke tombol Simpan media). */
+  stagedProsesStepImageZoom: StagedProsesStepImageZoom;
+  stageProsesStepImageZoom: (slug: keyof SiteContent["hero"]["prosesStepImageZoom"], value: number) => void;
+  /** Jumlah slot zoom yang berubah (untuk badge). */
+  stagedProsesZoomSlotCount: number;
+  /** Media proses + slot zoom yang menunggu simpan. */
+  stagedHeroProcessPendingCount: number;
   /** Buka media library; dengan `assignPath`, pilih/unggah langsung mengisi field. */
   openMediaLibrary: (opts?: { assignPath?: string }) => void;
   closeMediaLibrary: () => void;
@@ -127,6 +136,7 @@ export function SiteCmsProvider({ children }: { children: ReactNode }) {
   const [mediaLibOpen, setMediaLibOpen] = useState(false);
   const [mediaLibAssignPath, setMediaLibAssignPath] = useState<string | null>(null);
   const [stagedMediaMap, setStagedMediaMap] = useState<Record<string, string>>({});
+  const [stagedProsesStepImageZoom, setStagedProsesStepImageZoom] = useState<StagedProsesStepImageZoom>({});
   const [pwdOpen, setPwdOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [pwdBusy, setPwdBusy] = useState(false);
@@ -302,14 +312,22 @@ export function SiteCmsProvider({ children }: { children: ReactNode }) {
     setStagedMediaMap((prev) => ({ ...prev, [path]: url }));
   }, []);
 
+  const stageProsesStepImageZoom = useCallback((slug: keyof SiteContent["hero"]["prosesStepImageZoom"], value: number) => {
+    const v = typeof value === "number" && Number.isFinite(value) ? Math.min(2.5, Math.max(0.35, value)) : 1;
+    setStagedProsesStepImageZoom((prev) => ({ ...prev, [slug]: v }));
+  }, []);
+
   const discardStagedMedia = useCallback(() => {
     const stagedPaths = Object.keys(stagedMediaMap);
     for (const path of stagedPaths) {
       window.dispatchEvent(new CustomEvent("cms-image-preview-reset", { detail: { path } }));
     }
     setStagedMediaMap({});
-    if (stagedPaths.length > 0) pushToast("Perubahan media dibatalkan", "ok");
-  }, [pushToast, stagedMediaMap]);
+    setStagedProsesStepImageZoom({});
+    if (stagedPaths.length > 0 || Object.keys(stagedProsesStepImageZoom).length > 0) {
+      pushToast("Perubahan media / zoom dibatalkan", "ok");
+    }
+  }, [pushToast, stagedMediaMap, stagedProsesStepImageZoom]);
 
   const ensureWriteSession = useCallback(async (): Promise<boolean> => {
     try {
@@ -526,8 +544,9 @@ export function SiteCmsProvider({ children }: { children: ReactNode }) {
 
   const saveStagedMedia = useCallback(async () => {
     const entries = Object.entries(stagedMediaMap);
-    if (entries.length === 0) {
-      pushToast("Tidak ada perubahan media untuk disimpan", "ok");
+    const zoomSlots = Object.keys(stagedProsesStepImageZoom);
+    if (entries.length === 0 && zoomSlots.length === 0) {
+      pushToast("Tidak ada perubahan media atau zoom untuk disimpan", "ok");
       return;
     }
     const ok = await ensureWriteSession();
@@ -538,6 +557,13 @@ export function SiteCmsProvider({ children }: { children: ReactNode }) {
     for (const [path, url] of entries) {
       const nested = nestPatch(path, url);
       patch = deepMergeRecords(patch, nested);
+    }
+    if (zoomSlots.length > 0) {
+      patch = deepMergeRecords(patch, {
+        hero: {
+          prosesStepImageZoom: { ...stagedProsesStepImageZoom },
+        },
+      });
     }
     try {
       const r = await fetch("/api/site-content", {
@@ -555,8 +581,9 @@ export function SiteCmsProvider({ children }: { children: ReactNode }) {
       }
       pushUndoSnapshot(before);
       setStagedMediaMap({});
+      setStagedProsesStepImageZoom({});
       setSaveState("saved");
-      pushToast("Perubahan media tersimpan", "ok");
+      pushToast("Perubahan tersimpan", "ok");
       scheduleRefresh();
     } catch (e) {
       setSaveState("error");
@@ -570,6 +597,7 @@ export function SiteCmsProvider({ children }: { children: ReactNode }) {
     pushUndoSnapshot,
     scheduleRefresh,
     stagedMediaMap,
+    stagedProsesStepImageZoom,
   ]);
 
   const value = useMemo(
@@ -587,6 +615,11 @@ export function SiteCmsProvider({ children }: { children: ReactNode }) {
         discardStagedMedia,
         stagedMediaCount: Object.keys(stagedMediaMap).length,
         stagedMediaByPath: stagedMediaMap,
+        stagedProsesStepImageZoom,
+        stageProsesStepImageZoom,
+        stagedProsesZoomSlotCount: Object.keys(stagedProsesStepImageZoom).length,
+        stagedHeroProcessPendingCount:
+          Object.keys(stagedMediaMap).length + Object.keys(stagedProsesStepImageZoom).length,
         openMediaLibrary,
         closeMediaLibrary,
         undo,
@@ -609,6 +642,8 @@ export function SiteCmsProvider({ children }: { children: ReactNode }) {
       saveStagedMedia,
       discardStagedMedia,
       stagedMediaMap,
+      stagedProsesStepImageZoom,
+      stageProsesStepImageZoom,
       openMediaLibrary,
       closeMediaLibrary,
       undo,

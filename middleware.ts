@@ -67,6 +67,15 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
 
+  /** Indeks `/produk` dihapus — redirect ke beranda + hash (fragment dipertahankan; hindari redirect next.config tanpa hash). */
+  if (req.method === "GET" && normalizedPath === "/produk") {
+    const dest = req.nextUrl.clone();
+    dest.pathname = "/";
+    dest.search = "";
+    dest.hash = "#produk";
+    return NextResponse.redirect(dest, 308);
+  }
+
   try {
     const siteContent = await getNormalizedLiveSiteContentForMiddleware();
     for (const rule of siteContent.siteSettings.redirects) {

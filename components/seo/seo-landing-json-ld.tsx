@@ -122,7 +122,7 @@ export function SeoLandingJsonLd({
       "@type": "ListItem",
       position: pos++,
       name: "Area layanan",
-      item: absoluteUrlFromSite(origin, "/produk"),
+      item: absoluteUrlFromSite(origin, "/#produk"),
     });
     breadcrumbItems.push({
       "@type": "ListItem",
@@ -143,7 +143,7 @@ export function SeoLandingJsonLd({
       "@type": "ListItem",
       position: pos++,
       name: "Produk",
-      item: absoluteUrlFromSite(origin, "/produk"),
+      item: absoluteUrlFromSite(origin, "/#produk"),
     });
     breadcrumbItems.push({
       "@type": "ListItem",

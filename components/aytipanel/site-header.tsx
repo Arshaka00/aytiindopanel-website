@@ -14,7 +14,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { navigateLandingHashFromNav } from "@/components/common/home-nav-scroll";
+import { navigateLandingHashFromNav, scrollLandingHomeTop } from "@/components/common/home-nav-scroll";
 import { HeaderSiteSearchDialog } from "@/components/aytipanel/header-site-search-dialog";
 import { IconSearch } from "@/components/aytipanel/icons";
 import { buildHeaderSiteSearchTargets } from "@/lib/header-site-search-targets";
@@ -316,7 +316,7 @@ export function SiteHeader({
     if (h === null) return;
     setNavHash(h);
     setActiveHash(h);
-    spyLockUntilRef.current = Date.now() + 800;
+    spyLockUntilRef.current = Date.now() + 1050;
   }, []);
 
   const toggleMenu = useCallback(() => {
@@ -380,11 +380,8 @@ export function SiteHeader({
           setNavHash("");
           setActiveHash("");
         }
-        spyLockUntilRef.current = Date.now() + 600;
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        });
+        spyLockUntilRef.current = Date.now() + 1100;
+        scrollLandingHomeTop("smooth");
         return;
       }
 

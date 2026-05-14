@@ -15,8 +15,7 @@ export function SectionProducts({ produk }: { produk: SiteContent["produk"] }) {
   return (
     <>
       <section
-        id="produk"
-        className={`scroll-mt-[var(--section-nav-pass)] ${lightSurfaceBandWhite} ${lightSectionInsetX} py-5 sm:py-6 md:py-8`}
+        className={`${lightSurfaceBandWhite} ${lightSectionInsetX} py-5 sm:py-6 md:py-8`}
         aria-labelledby="produk-heading"
       >
         <div className={lightSectionMax}>

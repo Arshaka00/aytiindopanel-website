@@ -64,29 +64,29 @@ export function SiteCmsChrome() {
             {cms.dirtyEditingCount} field belum disimpan
           </div>
         ) : null}
-        {cms.editMode && cms.stagedMediaCount > 0 ? (
+        {cms.editMode && cms.stagedHeroProcessPendingCount > 0 ? (
           <div
             className="pointer-events-none rounded-full border border-sky-300/30 bg-sky-500/15 px-2.5 py-1 text-[10px] font-semibold text-sky-100 shadow-md backdrop-blur-md"
             role="status"
           >
-            {cms.stagedMediaCount} media belum disimpan
+            {cms.stagedHeroProcessPendingCount} perubahan hero belum disimpan
           </div>
         ) : null}
-        {cms.editMode && cms.stagedMediaCount > 0 ? (
+        {cms.editMode && cms.stagedHeroProcessPendingCount > 0 ? (
           <div className="pointer-events-auto flex items-center gap-1">
             <button
               type="button"
               onClick={() => cms.discardStagedMedia()}
               className="touch-manipulation rounded-full border border-white/20 bg-slate-800/75 px-2.5 py-1 text-[10px] font-semibold text-slate-100 shadow-md backdrop-blur-md transition-[background-color,border-color,transform] duration-200 ease-out hover:bg-slate-700/80 motion-safe:hover:-translate-y-px active:scale-[0.98]"
             >
-              Batal media
+              Batal hero
             </button>
             <button
               type="button"
               onClick={() => void cms.saveStagedMedia()}
               className="touch-manipulation rounded-full border border-emerald-300/45 bg-emerald-500/25 px-2.5 py-1 text-[10px] font-semibold text-emerald-50 shadow-md backdrop-blur-md transition-[background-color,border-color,transform] duration-200 ease-out hover:bg-emerald-500/35 motion-safe:hover:-translate-y-px active:scale-[0.98]"
             >
-              Simpan media
+              Simpan hero
             </button>
           </div>
         ) : null}
@@ -136,7 +136,7 @@ export function SiteCmsChrome() {
                 type="button"
                 onClick={() => {
                   window.dispatchEvent(new Event("cms-text-save-all"));
-                  if (cms.stagedMediaCount > 0) void cms.saveStagedMedia();
+                  if (cms.stagedHeroProcessPendingCount > 0) void cms.saveStagedMedia();
                   if (cms.pendingRefresh) cms.refreshPage();
                 }}
                 className="touch-manipulation rounded-xl border border-emerald-300/45 bg-emerald-500/30 px-3 py-2 text-left text-xs font-semibold text-emerald-50 shadow-[0_8px_20px_-10px_rgba(16,185,129,0.75)] transition-[background-color,border-color,transform] duration-200 ease-out hover:bg-emerald-500/40 motion-safe:hover:-translate-y-px active:scale-[0.985]"

@@ -207,13 +207,14 @@ function enrichFromSiteContent(byHref: Map<string, HeaderSiteSearchTarget>, site
         plainTextFromRichValue(h.headingLine1),
         plainTextFromRichValue(h.headingMiddle),
         plainTextFromRichValue(h.headingLine2),
-        intro.before1,
-        intro.bold1,
-        intro.middle,
-        intro.bold2,
-        intro.after2,
-        intro.bold3,
-        intro.after3,
+        plainTextFromRichValue(intro.before1),
+        plainTextFromRichValue(intro.bold1),
+        plainTextFromRichValue(intro.middle),
+        plainTextFromRichValue(intro.bold2),
+        plainTextFromRichValue(intro.after2),
+        plainTextFromRichValue(intro.bold3),
+        plainTextFromRichValue(intro.after3),
+        ...(h.introBadge.trim() ? [h.introBadge] : []),
         h.prosesBadge,
         h.ctaWhatsApp.label,
         h.ctaWhatsApp.message,
@@ -307,18 +308,6 @@ function enrichFromSiteContent(byHref: Map<string, HeaderSiteSearchTarget>, site
     );
   }
 
-  const produkPageHay = buildProdukHubHaystack(site);
-  if (!byHref.has("/produk")) {
-    byHref.set("/produk", {
-      id: "page-produk-index",
-      title: site.produk.heading.trim() || "Produk",
-      href: "/produk",
-      haystack: normalizeHaystack([produkPageHay, "/produk halaman lengkap"]),
-    });
-  } else {
-    mergeHaystack(byHref.get("/produk")!, produkPageHay);
-  }
-
   const t = site.tentang;
   if (!byHref.has("/tentang")) {
     byHref.set("/tentang", {
@@ -329,7 +318,7 @@ function enrichFromSiteContent(byHref: Map<string, HeaderSiteSearchTarget>, site
         t.sectionLabel,
         t.heading,
         t.lead,
-        t.body,
+        plainTextFromRichValue(t.body),
         t.valuesHeading,
         ...t.values,
         "halaman tentang profil perusahaan",

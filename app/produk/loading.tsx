@@ -1,5 +1,5 @@
-/** Skeleton route katalog — menghindari flash kosong saat navigasi. */
-export default function ProdukCatalogLoading() {
+/** Skeleton rute /produk/* (detail produk) — menghindari flash kosong saat navigasi. */
+export default function ProdukSegmentLoading() {
   return (
     <div className="mx-auto max-w-[min(100%,80rem)] px-4 py-6 sm:px-6 sm:py-7 md:py-9 lg:px-10">
       <div className="mx-auto max-w-3xl animate-pulse space-y-2.5 text-center motion-reduce:animate-none">

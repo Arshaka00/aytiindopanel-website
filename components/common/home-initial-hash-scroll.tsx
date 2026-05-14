@@ -18,8 +18,24 @@ export function HomeInitialHashScroll() {
     const h = window.location.hash;
     if (!h || h === "#") return;
 
-    scrollToLandingNavHref(`${window.location.pathname}${h}`);
-    clearHomeScrollY();
+    const full = `${window.location.pathname}${h}`;
+    const runSmooth = () => {
+      scrollToLandingNavHref(full);
+      clearHomeScrollY();
+    };
+    /** Koreksi sekali setelah aset/layout stabil — `instant` agar tidak bentrok dengan smooth pertama. */
+    const runSnap = () => {
+      scrollToLandingNavHref(full, { scrollBehavior: "auto" });
+      clearHomeScrollY();
+    };
+
+    runSmooth();
+    const tLate = window.setTimeout(runSnap, 520);
+    window.addEventListener("load", runSnap, { once: true });
+    return () => {
+      window.clearTimeout(tLate);
+      window.removeEventListener("load", runSnap);
+    };
   }, [pathname]);
 
   return null;

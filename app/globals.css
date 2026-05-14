@@ -58,7 +58,7 @@
   --ease-premium-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-premium-soft: cubic-bezier(0.33, 1, 0.68, 1);
   /* Fade section di mobile — sedikit lebih panjang + easing out agar terasa halus */
-  --mobile-scroll-reveal-duration: 380ms;
+  --mobile-scroll-reveal-duration: 430ms;
   --mobile-micro-transition-duration: 320ms;
   /* Section #layanan mobile — satu sumber durasi dengan TS `MOBILE_REVEAL_MS` */
   --layanan-mobile-reveal-duration: 580ms;
@@ -640,77 +640,75 @@ html {
 }
 
 /*
- * Hero premium — satu palet (#050B18 + sky): overlay diagonal / vertikal / glow / bottom
- * diselaraskan agar foto slider dan gradien terasa satu kesatuan (bukan “tempelan”).
+ * Hero — overlay netral gelap (kurang biru/cyan); foto & video latar lebih dominan.
  */
 #beranda.hero.hero-section-fixed-dark {
   --hero-canvas: #050b18;
   --hero-overlay-diag: linear-gradient(
     118deg,
-    rgba(5, 11, 24, 0.92) 0%,
-    rgba(7, 20, 50, 0.62) 32%,
-    rgba(12, 34, 76, 0.44) 66%,
-    rgba(5, 11, 24, 0.3) 100%
+    rgba(5, 11, 24, 0.4) 0%,
+    rgba(5, 12, 22, 0.22) 38%,
+    rgba(6, 14, 26, 0.12) 72%,
+    rgba(5, 11, 24, 0.07) 100%
   );
   --hero-overlay-vert: linear-gradient(
     180deg,
-    rgba(2, 7, 18, 0.5) 0%,
-    rgba(4, 13, 32, 0.26) 44%,
-    rgba(2, 6, 17, 0.56) 100%
+    rgba(2, 7, 18, 0.2) 0%,
+    rgba(3, 8, 18, 0.08) 46%,
+    rgba(2, 6, 17, 0.22) 100%
   );
   --hero-overlay-glow: radial-gradient(
-      ellipse 62% 48% at 16% 14%,
-      rgba(89, 216, 255, 0.11),
-      transparent 62%
+      ellipse 64% 50% at 14% 12%,
+      rgba(245, 247, 255, 0.022),
+      transparent 60%
     ),
-    radial-gradient(ellipse 54% 40% at 84% 68%, rgba(56, 132, 255, 0.068), transparent 60%),
-    radial-gradient(circle at 52% 90%, rgba(127, 231, 255, 0.045), transparent 56%),
-    radial-gradient(ellipse 80% 55% at 50% 38%, rgba(30, 90, 180, 0.04), transparent 70%);
+    radial-gradient(ellipse 52% 40% at 86% 70%, rgba(200, 210, 225, 0.014), transparent 62%),
+    radial-gradient(circle at 52% 90%, rgba(230, 236, 245, 0.01), transparent 56%);
   --hero-overlay-bottom: linear-gradient(
     to top,
-    rgba(2, 6, 17, 0.68) 0%,
-    rgba(5, 11, 24, 0.2) 42%,
+    rgba(2, 6, 17, 0.3) 0%,
+    rgba(5, 11, 24, 0.07) 46%,
     transparent 100%
   );
-  --hero-overlay-bottom-soft: linear-gradient(to top, rgba(3, 9, 23, 0.46) 0%, transparent 100%);
+  --hero-overlay-bottom-soft: linear-gradient(to top, rgba(3, 9, 23, 0.15) 0%, transparent 100%);
   --hero-overlay-rail: linear-gradient(
       100deg,
-      rgba(3, 10, 24, 0.86) 0%,
-      rgba(5, 18, 46, 0.46) 38%,
-      rgba(5, 11, 24, 0.18) 64%,
-      rgba(2, 6, 16, 0.28) 100%
+      rgba(3, 10, 24, 0.32) 0%,
+      rgba(4, 11, 22, 0.14) 42%,
+      rgba(5, 11, 24, 0.05) 68%,
+      rgba(2, 6, 16, 0.1) 100%
     ),
-    linear-gradient(180deg, transparent 52%, rgba(2, 6, 16, 0.2) 100%);
+    linear-gradient(180deg, transparent 52%, rgba(2, 6, 16, 0.06) 100%);
 }
 
 @media (max-width: 767.98px) {
   #beranda.hero.hero-section-fixed-dark {
     --hero-overlay-diag: linear-gradient(
       118deg,
-      rgba(5, 11, 24, 0.88) 0%,
-      rgba(7, 19, 48, 0.56) 36%,
-      rgba(11, 30, 68, 0.4) 100%
+      rgba(5, 11, 24, 0.38) 0%,
+      rgba(5, 12, 22, 0.22) 40%,
+      rgba(6, 14, 26, 0.12) 100%
     );
     --hero-overlay-vert: linear-gradient(
       180deg,
-      rgba(2, 7, 18, 0.52) 0%,
-      rgba(3, 11, 28, 0.28) 42%,
-      rgba(2, 6, 17, 0.58) 100%
+      rgba(2, 7, 18, 0.22) 0%,
+      rgba(3, 8, 18, 0.1) 44%,
+      rgba(2, 6, 17, 0.26) 100%
     );
     --hero-overlay-glow: radial-gradient(
-        ellipse 64% 50% at 17% 15%,
-        rgba(89, 216, 255, 0.092),
-        transparent 63%
+        ellipse 64% 50% at 16% 14%,
+        rgba(245, 247, 255, 0.018),
+        transparent 62%
       ),
-      radial-gradient(ellipse 54% 40% at 82% 67%, rgba(56, 132, 255, 0.058), transparent 60%),
-      radial-gradient(circle at 52% 88%, rgba(127, 231, 255, 0.036), transparent 56%);
+      radial-gradient(ellipse 54% 40% at 82% 68%, rgba(200, 210, 225, 0.012), transparent 60%),
+      radial-gradient(circle at 52% 88%, rgba(230, 236, 245, 0.008), transparent 56%);
     --hero-overlay-bottom: linear-gradient(
       to top,
-      rgba(2, 6, 17, 0.64) 0%,
-      rgba(5, 11, 24, 0.16) 42%,
+      rgba(2, 6, 17, 0.28) 0%,
+      rgba(5, 11, 24, 0.05) 44%,
       transparent 100%
     );
-    --hero-overlay-bottom-soft: linear-gradient(to top, rgba(3, 9, 23, 0.4) 0%, transparent 100%);
+    --hero-overlay-bottom-soft: linear-gradient(to top, rgba(3, 9, 23, 0.13) 0%, transparent 100%);
   }
 
   /* Batalkan zoom CMS (scale inline) di hero ponsel — kembalikan tampilan sebelum “full crop” mobile. */
@@ -730,20 +728,20 @@ html {
 @media (min-width: 768px) {
   #beranda.hero .hero-overlay-diagonal,
   #beranda.hero .hero-overlay-vertical {
-    opacity: 0.92;
+    opacity: 0.42;
   }
 
   #beranda.hero .hero-overlay-glow {
-    opacity: 1;
+    opacity: 0.32;
   }
 
   #beranda.hero .hero-overlay-desktop-rail {
-    opacity: 1;
+    opacity: 0.38;
   }
 
   #beranda.hero .hero-overlay-bottom,
   #beranda.hero .hero-overlay-bottom-soft {
-    opacity: 0.94;
+    opacity: 0.46;
   }
 }
 
@@ -764,7 +762,7 @@ html {
 }
 
 #beranda.hero .hero-overlay-top-hairline {
-  background: linear-gradient(to right, transparent, rgba(245, 247, 255, 0.078), transparent);
+  background: linear-gradient(to right, transparent, rgba(245, 247, 255, 0.028), transparent);
 }
 
 /* Desktop standard-density refinement: fluid scaling without OS/browser detection. */
@@ -814,11 +812,6 @@ html {
     transform: scale(1.015) !important;
   }
 
-  #beranda.hero video {
-    object-fit: cover;
-    object-position: 50% 48%;
-  }
-
   #beranda.hero .hero-layout-shell {
     max-width: min(100%, 72rem);
     align-items: center;
@@ -860,7 +853,7 @@ html {
     transform: translateY(4.4rem);
   }
 
-  #beranda.hero .hero-intro-divider {
+  #beranda.hero .hero-intro-stack {
     margin-top: 4.5rem;
     transform: translateY(1rem);
   }
@@ -873,7 +866,7 @@ html {
     max-width: clamp(30rem, 42vw, 36rem);
     overflow-wrap: break-word;
     font-size: clamp(1.28rem, 1.38vw, 1.5rem);
-    line-height: 1.42;
+    line-height: 1.36;
   }
 
   #beranda.hero .hero-process-block {
@@ -916,7 +909,7 @@ html {
     font-size: clamp(3.9rem, 6.5vw, 5.35rem);
   }
 
-  #beranda.hero .hero-intro-divider {
+  #beranda.hero .hero-intro-stack {
     margin-top: 3rem;
     transform: translateY(0.7rem);
   }
@@ -928,7 +921,7 @@ html {
   #beranda.hero .hero-intro-body {
     max-width: clamp(28rem, 42vw, 34rem);
     font-size: clamp(1.15rem, 1.22vw, 1.32rem);
-    line-height: 1.41;
+    line-height: 1.34;
   }
 
   #beranda.hero .hero-process-block {
@@ -1124,7 +1117,7 @@ html {
   transform-origin: left center;
 }
 
-/* Bloom dingin — biru/cyan lebih nyata di belakang glyph (ice depth) */
+/* Bloom di belakang glyph — lebih netral, saturasi lebih rendah */
 #beranda.hero #hero-heading .hero-heading-crystal-wrap::before {
   content: "";
   position: absolute;
@@ -1137,24 +1130,24 @@ html {
   background:
     radial-gradient(
       ellipse 72% 68% at 48% 42%,
-      rgba(103, 232, 249, 0.18) 0%,
+      rgba(200, 230, 245, 0.09) 0%,
       transparent 52%
     ),
     radial-gradient(
       ellipse 68% 64% at 50% 46%,
-      rgba(14, 165, 233, 0.32) 0%,
-      rgba(56, 189, 248, 0.22) 42%,
+      rgba(120, 170, 210, 0.14) 0%,
+      rgba(90, 150, 200, 0.1) 42%,
       transparent 70%
     ),
     radial-gradient(
       ellipse 58% 56% at 50% 100%,
-      rgba(14, 116, 175, 0.24) 0%,
+      rgba(40, 70, 100, 0.12) 0%,
       transparent 76%
     );
-  opacity: 1;
+  opacity: 0.88;
 }
 
-/* Kilau es — lebih banyak sky + opacity sedikit naik */
+/* Kilau es — lebih putih/slate, biru dikurangi */
 #beranda.hero #hero-heading .hero-heading-crystal-wrap::after {
   content: "";
   position: absolute;
@@ -1164,22 +1157,22 @@ html {
   border-radius: inherit;
   background-image: radial-gradient(
     ellipse 58% 46% at 44% 36%,
-    rgba(240, 253, 255, 0.42) 0%,
-    rgba(125, 211, 252, 0.32) 32%,
-    rgba(56, 189, 248, 0.24) 50%,
+    rgba(248, 250, 252, 0.32) 0%,
+    rgba(180, 200, 220, 0.16) 34%,
+    rgba(120, 160, 195, 0.1) 52%,
     transparent 74%
   );
   background-size: 112% 96%;
   background-position: 46% 38%;
   mix-blend-mode: soft-light;
-  opacity: 0.4;
+  opacity: 0.26;
   animation: hero-crystal-gloss-soft 14s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
   #beranda.hero #hero-heading .hero-heading-crystal-wrap::after {
     animation: none;
-    opacity: 0.4;
+    opacity: 0.24;
   }
 }
 
@@ -1192,12 +1185,12 @@ html {
 @keyframes hero-crystal-gloss-soft {
   0%,
   100% {
-    opacity: 0.3;
+    opacity: 0.2;
     background-position: 44% 40%;
   }
 
   50% {
-    opacity: 0.52;
+    opacity: 0.34;
     background-position: 48% 36%;
   }
 }
@@ -1208,52 +1201,52 @@ html {
   text-shadow: none;
   filter: url(#heroCrystalIceRefraction)
     drop-shadow(-0.5px -0.55px 0 rgba(255, 255, 255, 0.92))
-    drop-shadow(0 0.55px 0 rgba(186, 230, 253, 0.62))
+    drop-shadow(0 0.55px 0 rgba(200, 215, 230, 0.5))
     drop-shadow(0.55px 1.05px 0 rgba(4, 20, 52, 0.88))
     drop-shadow(0 2px 4px rgba(2, 12, 36, 0.52))
-    drop-shadow(0 0 14px rgba(56, 189, 248, 0.26))
-    drop-shadow(0 0 28px rgba(56, 189, 248, 0.14))
-    drop-shadow(0 0 22px rgba(103, 232, 249, 0.14));
-  -webkit-text-stroke: 0.55px rgba(186, 230, 253, 0.92);
+    drop-shadow(0 0 14px rgba(100, 160, 200, 0.14))
+    drop-shadow(0 0 28px rgba(90, 150, 190, 0.08))
+    drop-shadow(0 0 22px rgba(160, 200, 220, 0.08));
+  -webkit-text-stroke: 0.55px rgba(210, 225, 240, 0.85);
   paint-order: stroke fill;
   background-image:
     repeating-linear-gradient(
       -14deg,
       transparent 0px,
       transparent 7px,
-      rgba(165, 243, 252, 0.055) 7px,
-      rgba(165, 243, 252, 0.055) 8px,
+      rgba(200, 215, 228, 0.04) 7px,
+      rgba(200, 215, 228, 0.04) 8px,
       transparent 8px,
       transparent 15px,
-      rgba(125, 211, 252, 0.038) 15px,
-      rgba(125, 211, 252, 0.038) 16px
+      rgba(170, 195, 215, 0.03) 15px,
+      rgba(170, 195, 215, 0.03) 16px
     ),
     radial-gradient(
       ellipse 96% 84% at 46% 54%,
-      rgba(2, 36, 88, 0.78) 0%,
-      rgba(8, 105, 158, 0.52) 38%,
-      rgba(4, 58, 108, 0.66) 54%,
+      rgba(8, 28, 52, 0.62) 0%,
+      rgba(20, 70, 110, 0.38) 38%,
+      rgba(10, 45, 78, 0.52) 54%,
       transparent 78%
     ),
     linear-gradient(
       156deg,
-      rgba(224, 242, 254, 1) 0%,
-      rgba(125, 211, 252, 0.9) 10%,
-      rgba(34, 158, 214, 0.82) 24%,
-      rgba(14, 165, 233, 0.76) 40%,
-      rgba(3, 72, 118, 0.78) 54%,
-      rgba(56, 189, 248, 0.68) 68%,
-      rgba(191, 246, 254, 0.98) 100%
+      rgba(241, 248, 255, 0.98) 0%,
+      rgba(170, 200, 230, 0.78) 12%,
+      rgba(50, 120, 170, 0.62) 28%,
+      rgba(24, 100, 150, 0.58) 44%,
+      rgba(8, 55, 92, 0.68) 58%,
+      rgba(90, 165, 210, 0.55) 72%,
+      rgba(230, 244, 252, 0.96) 100%
     ),
     radial-gradient(
       ellipse 52% 38% at 40% 34%,
-      rgba(255, 255, 255, 0.46) 0%,
-      rgba(56, 189, 248, 0.34) 46%,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(100, 160, 200, 0.22) 46%,
       transparent 78%
     ),
     radial-gradient(
       ellipse 38% 28% at 62% 58%,
-      rgba(125, 211, 252, 0.36) 0%,
+      rgba(150, 185, 210, 0.22) 0%,
       transparent 74%
     );
   /* Layer statis + bg-size kompak — minimise repaint (tanpa animasi posisi) */
@@ -1279,12 +1272,12 @@ html {
 @media (max-width: 767.98px), (prefers-reduced-data: reduce), (prefers-reduced-motion: reduce) {
   #beranda.hero #hero-heading .hero-heading-crystal {
     filter: drop-shadow(-0.5px -0.55px 0 rgba(255, 255, 255, 0.92))
-      drop-shadow(0 0.55px 0 rgba(186, 230, 253, 0.62))
+      drop-shadow(0 0.55px 0 rgba(200, 215, 230, 0.5))
       drop-shadow(0.55px 1.05px 0 rgba(4, 20, 52, 0.88))
       drop-shadow(0 2px 4px rgba(2, 12, 36, 0.52))
-      drop-shadow(0 0 16px rgba(56, 189, 248, 0.26))
-      drop-shadow(0 0 26px rgba(56, 189, 248, 0.16))
-      drop-shadow(0 0 28px rgba(103, 232, 249, 0.14));
+      drop-shadow(0 0 16px rgba(100, 160, 200, 0.14))
+      drop-shadow(0 0 26px rgba(90, 150, 190, 0.1))
+      drop-shadow(0 0 28px rgba(160, 200, 220, 0.08));
   }
 }
 
@@ -1641,12 +1634,63 @@ html {
   filter: drop-shadow(0 0 10px rgb(52 211 153 / 0.55)) drop-shadow(0 0 4px rgb(167 243 208 / 0.45));
 }
 
+/* Hero beranda: centang akhir tanpa glow warna — hanya bayangan timbul netral */
+#beranda.hero .proses-step-check--hero .proses-step-check__svg {
+  color: rgb(226 232 240);
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.12)) drop-shadow(0 1.5px 2px rgba(2, 8, 24, 0.5));
+}
+
 .proses-step-check--light .proses-step-check__svg {
   color: var(--accent);
   filter: drop-shadow(0 0 3px color-mix(in srgb, var(--accent) 38%, transparent));
 }
 
+/*
+ * Hero beranda — langkah proses: kartu ikon & label judul “timbul” (raised bevel + bayangan).
+ * Hanya `#beranda` agar varian light di halaman lain tidak berubah.
+ */
+#beranda.hero .proses-hero-step-shell--raised {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -14px 22px -10px rgba(0, 0, 0, 0.42),
+    0 1px 0 rgba(255, 255, 255, 0.1),
+    0 2px 0 rgba(0, 0, 0, 0.22),
+    0 5px 12px rgba(0, 0, 0, 0.45),
+    0 10px 22px -8px rgba(0, 0, 0, 0.38),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  transform: translate3d(0, -1.25px, 0);
+}
+
+#beranda.hero .proses-hero-step-title--raised {
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.22),
+    0 2px 0 rgba(255, 255, 255, 0.06),
+    0 2px 2px rgba(2, 8, 24, 0.55),
+    0 4px 9px rgba(2, 8, 24, 0.34);
+}
+
+html[data-performance-no-anim="1"] #beranda.hero .proses-hero-step-shell--raised,
+html[data-performance-lightweight="1"] #beranda.hero .proses-hero-step-shell--raised {
+  transform: none !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 3px 10px rgba(0, 0, 0, 0.55) !important;
+}
+
+html[data-performance-no-anim="1"] #beranda.hero .proses-hero-step-title--raised,
+html[data-performance-lightweight="1"] #beranda.hero .proses-hero-step-title--raised {
+  text-shadow: 0 1px 2px rgba(2, 8, 24, 0.88) !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  #beranda.hero .proses-hero-step-shell--raised {
+    transform: none;
+  }
+
+  #beranda.hero .proses-hero-step-title--raised {
+    text-shadow: 0 1px 2px rgba(2, 8, 24, 0.88);
+  }
+
   .proses-step-check {
     animation: none !important;
     opacity: 0 !important;
@@ -2292,182 +2336,6 @@ html {
   }
 }
 
-/* Gallery project card — empat arah (duplikat konten = -50% pada sumbu animasi) */
-@keyframes gallery-photo-marquee-y-up {
-  0% {
-    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
-  }
-  28% {
-    transform: translate3d(0, -50%, 0) scale(1) rotateZ(0deg);
-  }
-  31% {
-    transform: translate3d(0, -50%, 0) scale(0.978) rotateZ(0.42deg);
-  }
-  35% {
-    transform: translate3d(0, -50%, 0) scale(1) rotateZ(-0.38deg);
-  }
-  39% {
-    transform: translate3d(0, -50%, 0) scale(0.986) rotateZ(0.22deg);
-  }
-  44% {
-    transform: translate3d(0, -50%, 0) scale(1) rotateZ(0deg);
-  }
-  70% {
-    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
-  }
-  73% {
-    transform: translate3d(0, 0, 0) scale(0.977) rotateZ(-0.4deg);
-  }
-  77% {
-    transform: translate3d(0, 0, 0) scale(1) rotateZ(0.34deg);
-  }
-  82% {
-    transform: translate3d(0, 0, 0) scale(1) rotateZ(-0.08deg);
-  }
-  92% {
-    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
-  }
-  100% {
-    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
-  }
-}
-
-@keyframes gallery-photo-marquee-y-down {
-  0% {
-    transform: translate3d(0, -50%, 0) scale(1) rotateZ(0deg);
-  }
-  28% {
-    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
-  }
-  31% {
-    transform: translate3d(0, 0, 0) scale(0.978) rotateZ(-0.42deg);
-  }
-  35% {
-    transform: translate3d(0, 0, 0) scale(1) rotateZ(0.38deg);
-  }
-  39% {
-    transform: translate3d(0, 0, 0) scale(0.986) rotateZ(-0.22deg);
-  }
-  44% {
-    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
-  }
-  70% {
-    transform: translate3d(0, -50%, 0) scale(1) rotateZ(0deg);
-  }
-  73% {
-    transform: translate3d(0, -50%, 0) scale(0.977) rotateZ(0.4deg);
-  }
-  77% {
-    transform: translate3d(0, -50%, 0) scale(1) rotateZ(-0.34deg);
-  }
-  82% {
-    transform: translate3d(0, -50%, 0) scale(1) rotateZ(0.08deg);
-  }
-  92% {
-    transform: translate3d(0, -50%, 0) scale(1) rotateZ(0deg);
-  }
-  100% {
-    transform: translate3d(0, -50%, 0) scale(1) rotateZ(0deg);
-  }
-}
-
-@keyframes gallery-photo-marquee-x-left {
-  0% {
-    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
-  }
-  28% {
-    transform: translate3d(-50%, 0, 0) scale(1) rotateZ(0deg);
-  }
-  31% {
-    transform: translate3d(-50%, 0, 0) scale(0.978) rotateZ(-0.42deg);
-  }
-  35% {
-    transform: translate3d(-50%, 0, 0) scale(1) rotateZ(0.38deg);
-  }
-  39% {
-    transform: translate3d(-50%, 0, 0) scale(0.986) rotateZ(-0.22deg);
-  }
-  44% {
-    transform: translate3d(-50%, 0, 0) scale(1) rotateZ(0deg);
-  }
-  70% {
-    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
-  }
-  73% {
-    transform: translate3d(0, 0, 0) scale(0.977) rotateZ(0.4deg);
-  }
-  77% {
-    transform: translate3d(0, 0, 0) scale(1) rotateZ(-0.34deg);
-  }
-  82% {
-    transform: translate3d(0, 0, 0) scale(1) rotateZ(0.08deg);
-  }
-  92% {
-    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
-  }
-  100% {
-    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
-  }
-}
-
-@keyframes gallery-photo-marquee-x-right {
-  0% {
-    transform: translate3d(-50%, 0, 0) scale(1) rotateZ(0deg);
-  }
-  28% {
-    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
-  }
-  31% {
-    transform: translate3d(0, 0, 0) scale(0.978) rotateZ(0.42deg);
-  }
-  35% {
-    transform: translate3d(0, 0, 0) scale(1) rotateZ(-0.38deg);
-  }
-  39% {
-    transform: translate3d(0, 0, 0) scale(0.986) rotateZ(0.22deg);
-  }
-  44% {
-    transform: translate3d(0, 0, 0) scale(1) rotateZ(0deg);
-  }
-  70% {
-    transform: translate3d(-50%, 0, 0) scale(1) rotateZ(0deg);
-  }
-  73% {
-    transform: translate3d(-50%, 0, 0) scale(0.977) rotateZ(-0.4deg);
-  }
-  77% {
-    transform: translate3d(-50%, 0, 0) scale(1) rotateZ(0.34deg);
-  }
-  82% {
-    transform: translate3d(-50%, 0, 0) scale(1) rotateZ(-0.08deg);
-  }
-  92% {
-    transform: translate3d(-50%, 0, 0) scale(1) rotateZ(0deg);
-  }
-  100% {
-    transform: translate3d(-50%, 0, 0) scale(1) rotateZ(0deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .gallery-photo-marquee-track {
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    will-change: transform;
-  }
-}
-
-.gallery-photo-marquee-track:hover {
-  animation-play-state: paused;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .gallery-photo-marquee-track {
-    animation: none !important;
-    transform: none;
-  }
-}
-
 /* Transisi route App Router — opacity saja, tanpa geser layout */
 @media (prefers-reduced-motion: no-preference) {
   @keyframes premium-page-reveal {
@@ -2613,8 +2481,9 @@ html {
 /* ============================================================================
  * Premium scroll reveal — section & card stagger (lihat ScrollRevealSection)
  * Desktop/tablet: opacity + translate / scale (preset per `sectionKey` pada section beranda).
- * Mobile (≤767.98px): section tanpa preset = opacity saja; dengan `data-scroll-reveal-preset` =
- * opacity + translate3d ringan (GPU). Reduced-motion + performance toggle → tanpa transisi.
+ * Mobile (≤767.98px): kartu/gambar = opacity saja; section tanpa preset = opacity + translate3d ringan;
+ *   section dengan `data-scroll-reveal-preset` = opacity + translate3d/scale sesuai preset (GPU).
+ * Reduced-motion + performance toggle → tanpa transisi.
  * ============================================================================ */
 .scroll-reveal-section,
 .scroll-reveal-card,
@@ -2650,7 +2519,6 @@ html {
 }
 
 @media (max-width: 767.98px) {
-  .scroll-reveal-section,
   .scroll-reveal-card,
   .scroll-reveal-image {
     opacity: 0;
@@ -2661,11 +2529,31 @@ html {
     -webkit-backface-visibility: visible;
   }
 
-  .scroll-reveal-section.is-revealed,
+  /*
+   * Section tanpa `sectionKey`: tetap halus di mobile — opacity + translate3d kecil
+   * (kompositor; tidak memakai blur/filter). Preset section diatur di blok berikut.
+   */
+  .scroll-reveal-section:not([data-scroll-reveal-preset]) {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    will-change: opacity, transform;
+    transition:
+      opacity var(--mobile-scroll-reveal-duration) var(--ease-premium-out),
+      transform calc(var(--mobile-scroll-reveal-duration) + 50ms) var(--ease-premium-out);
+  }
+
   .scroll-reveal-card.is-revealed,
   .scroll-reveal-image.is-revealed {
     opacity: 1;
     transform: none;
+    will-change: auto;
+  }
+
+  .scroll-reveal-section.is-revealed {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
     will-change: auto;
   }
 
@@ -2844,6 +2732,42 @@ html {
   animation: landing-hash-section-flash-kf 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
+/* Mobile / touch: pulse memakai box-shadow + inset ring — lebih stabil di WebKit iOS daripada outline lebar */
+@keyframes landing-hash-section-flash-mobile-kf {
+  0% {
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, rgb(56 189 248) 52%, transparent),
+      0 0 0 0 color-mix(in srgb, rgb(56 189 248) 28%, transparent);
+  }
+
+  55% {
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, rgb(56 189 248) 22%, transparent),
+      0 0 0 14px transparent;
+  }
+
+  100% {
+    box-shadow:
+      inset 0 0 0 0 transparent,
+      0 0 0 0 transparent;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .landing-hash-section-flash {
+    outline: none !important;
+    animation: landing-hash-section-flash-mobile-kf 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    transform: translateZ(0);
+  }
+}
+
+html[data-performance-no-anim="1"] .landing-hash-section-flash,
+html[data-performance-lightweight="1"] .landing-hash-section-flash {
+  animation: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .landing-hash-section-flash {
     animation: none !important;
@@ -2946,7 +2870,7 @@ html {
 
 /* ============================================================================
  * Mobile scroll perf — kurangi animasi/filter berat pada layar mobile
- * (≤ 767.98px). Partner/gallery marquee & backdrop blur diturunkan; alur kerja
+ * (≤ 767.98px). Partner marquee & backdrop blur diturunkan; alur kerja
  * statis (garis + panah tanpa animasi); glow garis dimatikan di bawah.
  *
  * Strategi:
@@ -2955,7 +2879,6 @@ html {
  *   - Logo partner/industri (`partner-marquee-track` / `customer-marquee-track`)
  *     tetap beranimasi di mobile; mask pakai `touch-action: pan-y` agar scroll vertikal
  *     halaman tidak tertahan.
- *   - `gallery-photo-marquee-*` → pause (animasi card thumbnail).
  *   - `layanan-glass-card` & hero stats tile → blur 14/12px → 6px.
  *
  * Tetap berlaku global di:
@@ -2970,7 +2893,6 @@ html {
     filter: none !important;
   }
 
-  [class*="gallery-photo-marquee"],
   [class*="hero-achievement-marquee-track"] {
     animation-play-state: paused !important;
     will-change: auto !important;
@@ -2986,37 +2908,26 @@ html {
     -webkit-backdrop-filter: blur(6px) !important;
   }
 
-  /* Hero (#beranda): ringankan blur/shadow/glow di mobile — desktop ≥768px tidak diubah. */
-  #beranda.hero .hero-proses-flow-surface {
-    backdrop-filter: blur(7px) !important;
-    -webkit-backdrop-filter: blur(7px) !important;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.14),
-      0 2px 5px rgba(0, 0, 0, 0.48),
-      0 10px 24px rgba(1, 5, 16, 0.48),
-      0 22px 44px rgba(2, 10, 28, 0.5) !important;
-  }
-
   #beranda.hero .hero-lihat-produk-cta {
     backdrop-filter: blur(6px) !important;
     -webkit-backdrop-filter: blur(6px) !important;
   }
 
   #beranda.hero .hero-content-enter {
-    filter: drop-shadow(0 2px 6px rgba(2, 7, 18, 0.58));
+    filter: drop-shadow(0 2px 5px rgba(2, 7, 18, 0.38));
   }
 
   #beranda.hero .hero-overlay-glow {
-    opacity: 0.54;
+    opacity: 0.36;
   }
 
   #beranda.hero .hero-overlay-bottom {
-    opacity: 0.76;
+    opacity: 0.52;
   }
 
   #beranda.hero .hero-overlay-diagonal,
   #beranda.hero .hero-overlay-vertical {
-    opacity: 0.86;
+    opacity: 0.58;
   }
 }
 
@@ -3029,7 +2940,6 @@ html[data-performance-no-anim="1"] .proses-flow-line--light-h,
 html[data-performance-no-anim="1"] .proses-flow-line--light-v,
 html[data-performance-no-anim="1"] .partner-marquee-track,
 html[data-performance-no-anim="1"] .customer-marquee-track,
-html[data-performance-no-anim="1"] [class*="gallery-photo-marquee"],
 html[data-performance-no-anim="1"] [class*="hero-achievement-marquee-track"],
 html[data-performance-no-anim="1"] .hero-marquee-track,
 html[data-performance-no-anim="1"] .proses-step-check--final,
@@ -3039,7 +2949,6 @@ html[data-performance-lightweight="1"] .proses-flow-line--light-h,
 html[data-performance-lightweight="1"] .proses-flow-line--light-v,
 html[data-performance-lightweight="1"] .partner-marquee-track,
 html[data-performance-lightweight="1"] .customer-marquee-track,
-html[data-performance-lightweight="1"] [class*="gallery-photo-marquee"],
 html[data-performance-lightweight="1"] [class*="hero-achievement-marquee-track"],
 html[data-performance-lightweight="1"] .hero-marquee-track,
 html[data-performance-lightweight="1"] .proses-step-check--final,

@@ -91,7 +91,11 @@ export function HomeMainSections({
       </ScrollRevealSection>
     ),
     produk: (
-      <ScrollRevealSection sectionKey="produk">
+      <ScrollRevealSection
+        sectionKey="produk"
+        id="produk"
+        className="scroll-mt-[var(--section-nav-pass)]"
+      >
         <SectionProducts produk={content.produk} />
       </ScrollRevealSection>
     ),

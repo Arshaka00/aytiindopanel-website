@@ -41,9 +41,10 @@ export function clamp01pct(n: number): number {
   return Math.min(100, Math.max(0, n));
 }
 
+/** Zoom tampilan: &lt;1 memperkecil, &gt;1 memperbesar (tanpa mengubah berkas). */
 export function clampZoom(n: number): number {
   if (!Number.isFinite(n)) return 1;
-  return Math.min(3, Math.max(1, n));
+  return Math.min(3, Math.max(0.4, n));
 }
 
 type RawTransformInput = (Partial<CmsImageTransform> & { src?: string }) | null | undefined;
@@ -98,7 +99,7 @@ export function normalizeFullCmsImageTransform(p?: RawTransformInput): CmsImageT
   return { ...core, mobile };
 }
 
-/** Style untuk `<img>` / Next `<Image>` — wrapper harus `overflow-hidden` bila zoom > 1. */
+/** Style untuk `<img>` / Next `<Image>` — wrapper harus `overflow-hidden` bila zoom ≠ 1. */
 export function cmsImageTransformToReactStyle(t: CmsImageTransform): CSSProperties {
   const fx = t.focalX;
   const fy = t.focalY;
@@ -106,7 +107,7 @@ export function cmsImageTransformToReactStyle(t: CmsImageTransform): CSSProperti
   return {
     objectFit: t.objectFit,
     objectPosition: `${fx}% ${fy}%`,
-    transform: z > 1.001 ? `scale(${z})` : undefined,
+    transform: Math.abs(z - 1) > 0.001 ? `scale(${z})` : undefined,
     transformOrigin: `${fx}% ${fy}%`,
   };
 }

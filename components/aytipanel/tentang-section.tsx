@@ -1,7 +1,6 @@
 import { CmsImage } from "@/components/site-cms/cms-image";
 import { CmsStringList } from "@/components/site-cms/cms-string-list";
 import { CmsText } from "@/components/site-cms/cms-text";
-import { CmsTextarea } from "@/components/site-cms/cms-textarea";
 import {
   lightFeaturedBulletIconRing,
   lightLead,
@@ -93,7 +92,7 @@ export function TentangSection({ tentang }: Props) {
               <CmsText path="tentang.lead" text={tentang.lead} />
             </p>
             <div className={`${lightLead} whitespace-pre-line`}>
-              <CmsTextarea path="tentang.body" text={tentang.body} />
+              <CmsText path="tentang.body" text={tentang.body} as="div" />
             </div>
 
             <p

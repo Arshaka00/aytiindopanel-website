@@ -53,7 +53,6 @@ type GalleryProjectPageProps = {
   adminDeviceAllowed: boolean;
   adminAuthenticated: boolean;
   copy: SiteContent["galleryPage"];
-  footerSeoText?: string;
 };
 
 export function GalleryProjectPage({
@@ -61,7 +60,6 @@ export function GalleryProjectPage({
   adminDeviceAllowed,
   adminAuthenticated,
   copy,
-  footerSeoText = "",
 }: GalleryProjectPageProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -393,7 +391,7 @@ export function GalleryProjectPage({
           </div>
         </section>
         </ScrollRevealSection>
-        <SiteFooter footerSeoText={footerSeoText} />
+        <SiteFooter />
       </main>
 
       {adminDeviceAllowed ? (

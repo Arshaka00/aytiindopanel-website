@@ -210,17 +210,24 @@ export function CmsRichStyledText<T extends ElementType = "span">({
   const mergedStyle = useMemo(() => mergeResponsiveRichStyle(effectiveBlock, bp), [effectiveBlock, bp]);
   const richCss = useMemo(() => richStyleToReactCss(mergedStyle), [mergedStyle]);
 
+  /** Baris baru di teks CMS — tanpa ini `\n` kolaps jadi spasi. */
+  const richDisplayCss = useMemo(() => {
+    const out: CSSProperties = { ...richCss };
+    if (/\n/.test(effectiveBlock.text)) out.whiteSpace = "pre-line";
+    return out;
+  }, [richCss, effectiveBlock.text]);
+
   const editCss = useMemo(() => {
-    if (!richCss.backgroundImage) return richCss;
+    if (!richDisplayCss.backgroundImage) return richDisplayCss;
     return {
-      ...richCss,
+      ...richDisplayCss,
       backgroundImage: undefined,
       WebkitBackgroundClip: undefined,
       backgroundClip: undefined,
       WebkitTextFillColor: undefined,
       color: mergedStyle.color ?? "#F5F7FF",
     };
-  }, [richCss, mergedStyle.color]);
+  }, [richDisplayCss, mergedStyle.color]);
 
   const cmsEligible = Boolean(cms?.eligible && cms.editMode);
   const reactId = useId();
@@ -255,7 +262,9 @@ export function CmsRichStyledText<T extends ElementType = "span">({
     async (next: CmsRichTextBlock) => {
       if (!cms) return;
       const cleaned = sanitizeRichTextBlock(next);
-      if (!cleaned?.text.trim()) return;
+      if (!cleaned) return;
+      const cleanedText = typeof cleaned.text === "string" ? cleaned.text : "";
+      if (!cleanedText.trim()) return;
       const hasMeta = Boolean(
         cleaned.preset || cleaned.style || cleaned.tablet || cleaned.mobile || cleaned.motion,
       );
@@ -273,7 +282,7 @@ export function CmsRichStyledText<T extends ElementType = "span">({
     if (!cms) return;
     const el = elRef.current;
     const textNext = (el?.innerText ?? "").trim();
-    const prev = originRef.current.trim();
+    const prev = String(originRef.current ?? "").trim();
     const nextBlock: CmsRichTextBlock = {
       ...effectiveBlock,
       text: textNext || fallbackText,
@@ -374,73 +383,78 @@ export function CmsRichStyledText<T extends ElementType = "span">({
 
   if (!cmsEligible) {
     return (
-      <Tag className={className} id={id} style={richCss}>
-        {plain}
+      <Tag className={className} id={id}>
+        <span className="min-w-0 max-w-full" style={richDisplayCss}>
+          {plain}
+        </span>
       </Tag>
     );
   }
 
+  const editChromeClass =
+    "cursor-text select-text rounded-sm outline-none transition-[box-shadow,background-color] duration-200 ease-out [text-rendering:optimizeLegibility] hover:bg-sky-500/[0.08] hover:shadow-[0_0_0_1px_rgba(56,189,248,0.42)] focus:bg-sky-500/[0.08] focus:shadow-[0_0_0_2px_rgba(56,189,248,0.48)] focus-visible:bg-sky-500/[0.08]";
+
   return (
     <span key={syncKey} className="relative inline-block max-w-full align-top">
-      <Tag
-        id={id}
-        ref={elRef as never}
-        className={`${className ?? ""} cursor-text select-text rounded-sm outline-none transition-[box-shadow,background-color] duration-200 ease-out [text-rendering:optimizeLegibility] hover:bg-sky-500/[0.08] hover:shadow-[0_0_0_1px_rgba(56,189,248,0.42)] focus:bg-sky-500/[0.08] focus:shadow-[0_0_0_2px_rgba(56,189,248,0.48)] focus-visible:bg-sky-500/[0.08] ${isDirty ? "bg-amber-500/[0.09] shadow-[0_0_0_1px_rgba(251,191,36,0.58)]" : ""}`}
-        style={toolbarOpen ? editCss : richCss}
-        contentEditable
-        suppressContentEditableWarning
-        data-cms-edit
-        data-cms-rich-styled="true"
-        tabIndex={0}
-        role="textbox"
-        aria-label={`Editable rich text: ${path}`}
-        spellCheck={false}
-        onPointerDownCapture={(e: ReactPointerEvent<HTMLElement>) => {
-          e.stopPropagation();
-        }}
-        onClick={() => {
-          elRef.current?.focus();
-        }}
-        onFocus={() => {
-          originRef.current = elRef.current?.innerText ?? effectiveBlock.text;
-          if (typeof window !== "undefined") {
-            setToolbarFixedStyle(computeDockedToolbarStyle(elRef.current));
-          }
-          setToolbarOpen(true);
-          queueMicrotask(() => {
-            window.dispatchEvent(
-              new CustomEvent("cms-text-activate", {
-                detail: { editorId: editorIdRef.current },
-              }),
-            );
-          });
-          /**
-           * 1) Scroll teks ke tengah.
-           * 2) Hitung ulang posisi panel dari `getBoundingClientRect` supaya dock atas/bawah/kanan tidak menimpa anchor.
-           */
-          requestAnimationFrame(() => {
+      <Tag id={id} className={className}>
+        <span
+          ref={elRef as never}
+          className={`min-w-0 max-w-full ${editChromeClass} ${isDirty ? "bg-amber-500/[0.09] shadow-[0_0_0_1px_rgba(251,191,36,0.58)]" : ""}`}
+          style={toolbarOpen ? editCss : richDisplayCss}
+          contentEditable
+          suppressContentEditableWarning
+          data-cms-edit
+          data-cms-rich-styled="true"
+          tabIndex={0}
+          role="textbox"
+          aria-label={`Editable rich text: ${path}`}
+          spellCheck={false}
+          onPointerDownCapture={(e: ReactPointerEvent<HTMLElement>) => {
+            e.stopPropagation();
+          }}
+          onClick={() => {
+            elRef.current?.focus();
+          }}
+          onFocus={() => {
+            originRef.current = elRef.current?.innerText ?? effectiveBlock.text;
+            if (typeof window !== "undefined") {
+              setToolbarFixedStyle(computeDockedToolbarStyle(elRef.current));
+            }
+            setToolbarOpen(true);
+            queueMicrotask(() => {
+              window.dispatchEvent(
+                new CustomEvent("cms-text-activate", {
+                  detail: { editorId: editorIdRef.current },
+                }),
+              );
+            });
+            /**
+             * 1) Scroll teks ke tengah.
+             * 2) Hitung ulang posisi panel dari `getBoundingClientRect` supaya dock atas/bawah/kanan tidak menimpa anchor.
+             */
             requestAnimationFrame(() => {
-              const el = elRef.current;
-              if (!el) {
-                setToolbarFixedStyle(computeDockedToolbarStyle(null));
-                return;
-              }
-              const reduceMotion =
-                typeof window !== "undefined" &&
-                window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-              el.scrollIntoView({
-                block: "center",
-                inline: "nearest",
-                behavior: reduceMotion ? "auto" : "smooth",
-              });
               requestAnimationFrame(() => {
+                const el = elRef.current;
+                if (!el) {
+                  setToolbarFixedStyle(computeDockedToolbarStyle(null));
+                  return;
+                }
+                const reduceMotion =
+                  typeof window !== "undefined" &&
+                  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+                el.scrollIntoView({
+                  block: "center",
+                  inline: "nearest",
+                  behavior: reduceMotion ? "auto" : "smooth",
+                });
                 requestAnimationFrame(() => {
-                  setToolbarFixedStyle(computeDockedToolbarStyle(elRef.current));
+                  requestAnimationFrame(() => {
+                    setToolbarFixedStyle(computeDockedToolbarStyle(elRef.current));
+                  });
                 });
               });
             });
-          });
-        }}
+          }}
         onInput={() => {
           dirty.current = true;
           const t = elRef.current?.innerText ?? "";
@@ -484,7 +498,8 @@ export function CmsRichStyledText<T extends ElementType = "span">({
             });
           });
         }}
-      />
+        />
+      </Tag>
 
       {toolbarOpen && isClient && typeof document !== "undefined"
         ? createPortal(

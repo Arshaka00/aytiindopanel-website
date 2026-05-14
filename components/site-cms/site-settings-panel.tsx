@@ -1098,15 +1098,6 @@ export function SiteSettingsPanel({
               className="mt-2 w-full rounded-xl border border-white/15 bg-slate-950/50 px-3 py-2.5 text-sm text-white outline-none focus:border-sky-400/40 focus:ring-2 focus:ring-sky-500/25"
             />
           </div>
-          <div>
-            <FieldLabel hint="Ditampilkan di footer situs (teks biasa, ramah SEO).">Footer SEO text</FieldLabel>
-            <textarea
-              value={settings.seoContent.footerSeoText}
-              onChange={(e) => updateSeo({ footerSeoText: e.target.value })}
-              rows={4}
-              className="mt-2 w-full rounded-xl border border-white/15 bg-slate-950/50 px-3 py-2.5 text-sm text-white outline-none focus:border-sky-400/40 focus:ring-2 focus:ring-sky-500/25"
-            />
-          </div>
         </div>
       </section>
 

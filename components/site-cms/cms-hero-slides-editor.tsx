@@ -75,7 +75,7 @@ export function CmsHeroSlidesEditor({ slides }: { slides: readonly HeroSlideEntr
 
   return (
     <>
-      <div className="pointer-events-auto absolute bottom-24 left-1/2 z-[25] flex max-w-[min(100%,24rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-2xl border border-white/15 bg-black/50 px-3 py-2 text-[10px] font-medium uppercase tracking-[0.12em] text-white/85 shadow-lg backdrop-blur-md md:bottom-28">
+      <div className="pointer-events-auto absolute bottom-16 left-1/2 z-[25] flex max-w-[min(100%,24rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-2xl border border-white/15 bg-black/50 px-3 py-2 text-[10px] font-medium uppercase tracking-[0.12em] text-white/85 shadow-lg backdrop-blur-md sm:bottom-[4.5rem] md:bottom-20">
         <span className="w-full text-center text-[9px] text-white/70">Hero slides</span>
         <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(ev) => void onFile(ev)} />
         <div className="flex w-full flex-wrap justify-center gap-2">

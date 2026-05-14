@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { useSiteCmsOptional } from "@/components/site-cms/site-cms-provider";
+import type { SiteContent } from "@/lib/site-content";
 
 type ProsesStepIconMediaProps = {
   slug: string;
@@ -22,6 +23,8 @@ type ProsesStepIconMediaProps = {
   alt: string;
   /** Hint `sizes` untuk Next/Image (sesuaikan dengan ukuran shell ikon). */
   imageSizes?: string;
+  /** Skala tampilan gambar di dalam kartu (1 = default). */
+  zoom?: number;
 };
 
 /**
@@ -30,15 +33,19 @@ type ProsesStepIconMediaProps = {
  * langsung melihat perubahan sebelum disimpan.
  */
 export function ProsesStepIconMedia({
+  slug,
   srcPath,
   initialSrc,
   fallback,
   imageClassName = "",
   alt,
   imageSizes = "(max-width: 767px) 44px, 56px",
+  zoom = 1,
 }: ProsesStepIconMediaProps) {
   const cms = useSiteCmsOptional();
   const stagedSrc = cms?.stagedMediaByPath?.[srcPath];
+  const stagedZoomEntry =
+    cms?.stagedProsesStepImageZoom?.[slug as keyof SiteContent["hero"]["prosesStepImageZoom"]];
   const [previewSrc, setPreviewSrc] = useState<string>(stagedSrc ?? initialSrc ?? "");
 
   useEffect(() => {
@@ -67,19 +74,30 @@ export function ProsesStepIconMedia({
   }, [cms, initialSrc, srcPath]);
 
   const safeSrc = typeof previewSrc === "string" && previewSrc.trim().length > 0 ? previewSrc : null;
+  const baseZ = typeof zoom === "number" && Number.isFinite(zoom) ? zoom : 1;
+  const stagedZ =
+    typeof stagedZoomEntry === "number" && Number.isFinite(stagedZoomEntry) ? stagedZoomEntry : undefined;
+  const safeZoom = Math.min(2.5, Math.max(0.35, stagedZ !== undefined ? stagedZ : baseZ));
 
   if (!safeSrc) {
     return <>{fallback}</>;
   }
 
   return (
-    <Image
-      src={safeSrc}
-      alt={alt}
-      fill
-      sizes={imageSizes}
-      className={`${imageClassName} object-cover`.trim()}
-      aria-hidden
-    />
+    <span className="pointer-events-none absolute inset-0 z-[1] overflow-hidden">
+      <span
+        className="relative block h-full w-full origin-center"
+        style={{ transform: `scale(${safeZoom})` }}
+      >
+        <Image
+          src={safeSrc}
+          alt={alt}
+          fill
+          sizes={imageSizes}
+          className={`${imageClassName} object-cover`.trim()}
+          aria-hidden
+        />
+      </span>
+    </span>
   );
 }

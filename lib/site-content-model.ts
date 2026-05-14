@@ -20,13 +20,13 @@ export type FeaturedImagePair = {
 };
 
 export type HeroIntroParts = {
-  before1: string;
-  bold1: string;
-  middle: string;
-  bold2: string;
-  after2: string;
-  bold3: string;
-  after3: string;
+  before1: CmsRichTextValue;
+  bold1: CmsRichTextValue;
+  middle: CmsRichTextValue;
+  bold2: CmsRichTextValue;
+  after2: CmsRichTextValue;
+  bold3: CmsRichTextValue;
+  after3: CmsRichTextValue;
 };
 
 /** Ikon keunggulan (kartu) — key stabil untuk CMS */
@@ -66,7 +66,6 @@ export type SiteSeoContent = {
   metaTitle: string;
   metaDescription: string;
   keywords: string;
-  footerSeoText: string;
   companyDescription: string;
   serviceAreas: string;
   additionalSeoContent: string;
@@ -213,6 +212,8 @@ export type SiteContent = {
     headingMiddle: CmsRichTextValue;
     headingLine2: CmsRichTextValue;
     intro: HeroIntroParts;
+    /** Label di atas blok intro (gaya badge); string kosong = baris disembunyikan. */
+    introBadge: string;
     prosesBadge: string;
     /**
      * Gambar kecil per-step pada strip "proses kerja" hero — string kosong = pakai fallback SVG icon.
@@ -224,6 +225,17 @@ export type SiteContent = {
       produksi: string;
       instalasi: string;
       selesai: string;
+    };
+    /**
+     * Skala tampilan gambar per langkah di kartu strip proses hero (1 = pas penuh kartu).
+     * Di bawah 1 memperkecil tampilan; di atas 1 memperbesar (tepi ter-crop). Diedit di CMS.
+     */
+    prosesStepImageZoom: {
+      konsultasi: number;
+      survey: number;
+      produksi: number;
+      instalasi: number;
+      selesai: number;
     };
     ctaWhatsApp: { label: string; message: string; ariaLabel: string };
     ctaSecondary: { label: string; href: string; ariaLabel: string };
@@ -238,7 +250,7 @@ export type SiteContent = {
     sectionLabel: string;
     heading: string;
     lead: string;
-    body: string;
+    body: CmsRichTextValue;
     valuesHeading: string;
     values: string[];
     imageSrc: string;
@@ -307,7 +319,7 @@ export type SiteContent = {
     editorIndustriesLabel: string;
     editorAddIndustryLabel: string;
     editorAddPartnerLabel: string;
-    industries: { id: string; label: string; logoSrc: string; logoAlt: string }[];
+    industries: { id: string; label: string; logoSrc: string; logoAlt: string; logoAdjust?: Partial<CmsImageTransform> }[];
     partners: {
       id: string;
       name: string;
@@ -315,6 +327,7 @@ export type SiteContent = {
       logoAlt: string;
       width: number;
       height: number;
+      logoAdjust?: Partial<CmsImageTransform>;
     }[];
   };
   keunggulan: {
@@ -380,6 +393,11 @@ export type SiteContent = {
       x: string;
     };
     quickLinks: { id: string; label: string; href: string }[];
+  };
+  /** Gambar halaman marketing `/cold-storage` (hero + placeholder kartu ilustrasi). */
+  coldStoragePage: {
+    heroImageSrc: string;
+    heroImageAlt: string;
   };
   galleryPage: {
     loadingText: string;

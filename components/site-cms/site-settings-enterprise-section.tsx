@@ -29,7 +29,7 @@ function FieldLabel({
 const PAGE_SEO_LABELS: { key: SitePageSeoKey; label: string; path: string }[] = [
   { key: "home", label: "Beranda", path: "/" },
   { key: "about", label: "Tentang", path: "/tentang" },
-  { key: "produk", label: "Produk", path: "/produk" },
+  { key: "produk", label: "Produk", path: "/#produk" },
   { key: "coldStorage", label: "Cold storage", path: "/cold-storage" },
   { key: "gallery", label: "Gallery", path: "/gallery-project" },
 ];

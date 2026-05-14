@@ -23,8 +23,10 @@ export type CmsImageUploadScope =
   | "layanan"
   | "produk"
   | "portfolio"
+  | "project"
   | "partners"
   | "industry"
+  | "coldStorage"
   | "hero"
   | "gallery"
   | MediaLibraryScope;
@@ -37,6 +39,8 @@ type Props = Omit<ImageProps, "src" | "alt"> & {
   imageClassName?: string;
   uploadScope: CmsImageUploadScope;
   uploadSegment?: string;
+  /** Wajib jika `uploadScope` = `project` — id folder di `public/images/gallery/projects/{id}/`. */
+  uploadProjectId?: string;
   showEditControls?: boolean;
   enableZoom?: boolean;
   /** Nilai tampilan dari konten situs (focal, zoom, object-fit). */
@@ -53,6 +57,7 @@ export function CmsImage({
   imageClassName,
   uploadScope,
   uploadSegment,
+  uploadProjectId,
   showEditControls = true,
   enableZoom = true,
   imageTransform,
@@ -164,7 +169,11 @@ export function CmsImage({
       setPreviewSrc(blobUrl);
       const fd = new FormData();
       fd.set("scope", uploadScope);
-      if (uploadSegment) fd.set("segment", uploadSegment);
+      if (uploadScope === "project") {
+        if (uploadProjectId?.trim()) fd.set("projectId", uploadProjectId.trim());
+      } else if (uploadSegment) {
+        fd.set("segment", uploadSegment);
+      }
       fd.set("file", file);
       try {
         const up = await fetch("/api/site-media/upload", {
@@ -191,7 +200,7 @@ export function CmsImage({
         window.alert("Gagal mengunggah gambar.");
       }
     },
-    [cms, src, srcPath, uploadScope, uploadSegment],
+    [cms, src, srcPath, uploadScope, uploadSegment, uploadProjectId],
   );
 
   const onCommitTransform = useCallback(
@@ -253,7 +262,7 @@ export function CmsImage({
       </span>
     );
 
-  const clipZoom = resolvedTransform.zoom > 1.001;
+  const clipZoom = Math.abs(resolvedTransform.zoom - 1) > 0.001;
   const inner =
     safeSrc && (isFill || clipZoom) ? (
       <span
@@ -278,7 +287,7 @@ export function CmsImage({
       {inner}
       {edit && showEditControls ? (
         <span
-          className="absolute inset-x-2 bottom-2 z-10 flex justify-end gap-1 sm:inset-x-auto sm:right-2"
+          className="pointer-events-auto absolute inset-x-2 top-2 z-[200] flex justify-end gap-1 sm:inset-x-auto sm:right-2 sm:top-2"
           onClick={(e) => e.stopPropagation()}
           onPointerDown={(e) => e.stopPropagation()}
         >

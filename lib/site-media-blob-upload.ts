@@ -16,6 +16,9 @@ function extFromMime(mime: string): string {
   if (mime === "image/gif") return ".gif";
   if (mime === "video/mp4") return ".mp4";
   if (mime === "video/webm") return ".webm";
+  if (mime === "video/quicktime") return ".mov";
+  if (mime === "video/x-m4v" || mime === "video/m4v") return ".m4v";
+  if (mime === "video/3gpp" || mime === "video/3gpp2") return ".3gp";
   return "";
 }
 
@@ -37,7 +40,8 @@ function buildRelativeDir(scope: string, segment: string, projectId: string): st
     scope === "produk" ||
     scope === "portfolio" ||
     scope === "partners" ||
-    scope === "industry"
+    scope === "industry" ||
+    scope === "coldStorage"
   ) {
     const sub = segment || "general";
     return `images/cms/${scope}/${sub}`;

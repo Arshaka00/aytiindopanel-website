@@ -34,7 +34,6 @@
       "metaTitle": "PT AYTI INDO PANEL - sandwich panel & refrigerasi sistem",
       "metaDescription": "Produksi sandwich panel, instalasi cold room & sistem refrigerasi industri. Mitra teknik PT AYTI INDO PANEL.",
       "keywords": "sandwich panel, cold storage, refrigerasi industri, panel pendingin, cold room, PT AYTI INDO PANEL",
-      "footerSeoText": "",
       "companyDescription": "PT AYTI INDO PANEL adalah mitra produksi sandwich panel, instalasi cold storage, dan sistem refrigerasi untuk industri bersuhu terkontrol.",
       "serviceAreas": "Jabodetabek, Jawa Barat, nasional",
       "additionalSeoContent": ""
@@ -185,21 +184,49 @@
     "headingMiddle": "PENDINGIN",
     "headingLine2": "Terintegrasi",
     "intro": {
-      "before1": "Untuk memenuhi kebutuhan",
-      "bold1": "bisnis",
+      "before1": {
+        "text": "Untuk memenuhi kebutuhan",
+        "preset": "premium-heading",
+        "style": {
+          "fontWeight": "400",
+          "fontStyle": "normal",
+          "textTransform": "none",
+          "opacity": 1,
+          "glow": {
+            "color": "#59D8FF",
+            "blurPx": 48,
+            "opacity": 0.45
+          }
+        }
+      },
+      "bold1": {
+        "text": "bisnis",
+        "preset": "premium-heading",
+        "style": {
+          "fontWeight": "400",
+          "fontStyle": "normal"
+        }
+      },
       "middle": "anda dalam membangun",
       "bold2": "ruang pendingin",
       "after2": "yang",
       "bold3": "stabil dan efisien",
       "after3": "untuk jangka panjang."
     },
-    "prosesBadge": "Alur kerja yang mudah",
+    "prosesBadge": "PRODUCTS OF",
     "prosesStepImages": {
-      "konsultasi": "/images/spesialisasi/spesialisasi-pu.jpg",
-      "survey": "/images/spesialisasi/spesialisasi-eps.jpg",
-      "produksi": "/images/spesialisasi/spesialisasi-coldstorage.jpg",
-      "instalasi": "/images/spesialisasi/spesialisasi-refrigerasi.jpg",
-      "selesai": "/images/spesialisasi/spesialisasi-doordock.jpg"
+      "konsultasi": "/images/gambar_hero/1778777509775-0966305fecf0.webp",
+      "survey": "/images/gambar_hero/1778777516063-35522619f824.webp",
+      "produksi": "/images/gambar_hero/1778777485659-8f0bfe095705.webp",
+      "instalasi": "/images/gambar_hero/1778777521930-63c5f404c708.webp",
+      "selesai": "/images/gambar_hero/1778777526427-b5f940c8a42c.webp"
+    },
+    "prosesStepImageZoom": {
+      "konsultasi": 0.75,
+      "survey": 0.75,
+      "produksi": 0.75,
+      "instalasi": 0.75,
+      "selesai": 0.75
     },
     "ctaWhatsApp": {
       "label": "Hubungi kami",
@@ -207,8 +234,8 @@
       "ariaLabel": "Hubungi kami melalui WhatsApp"
     },
     "ctaSecondary": {
-      "label": "LIHAT KATALOG PRODUK",
-      "href": "#produk",
+      "label": "LIHAT PRODUK KAMI",
+      "href": "/#produk",
       "ariaLabel": "Lihat section produk utama"
     },
     "slides": [
@@ -259,7 +286,7 @@
   },
   "layanan": {
     "sectionLabel": "Layanan",
-    "heading": "Layanan terintegrasi",
+    "heading": "Layanan Terintegrasi",
     "lead": "Yang mendukung solusi menyeluruh untuk kebutuhan cold storage dan sistem pendingin refrigerasi, mulai dari tahapan perencanaan hingga layanan purna jual.",
     "quote": "Seluruh proses dikelola oleh satu tim terintegrasi untuk memastikan kualitas teknis yang konsisten, efisiensi pelaksanaan dilapangan, serta ketepatan waktu penyelesaian proyek.",
     "cards": [
@@ -381,7 +408,7 @@
   },
   "produk": {
     "sectionLabel": "Produk",
-    "heading": "Produk & solusi terintegrasi",
+    "heading": "Produk & Solusi Terintegrasi",
     "lead": "Mulai dari sandwich panel, cold storage system, hingga komponen pendukung seperti pintu insulated, dock, dan refrigerasi untuk kebutuhan operasional industri.",
     "closingBlurb": "Untuk informasi produk lebih lanjut, hubungi kami.",
     "closingCtaLabel": "Hubungi via WhatsApp",
@@ -410,7 +437,7 @@
       {
         "id": "produk-utama",
         "eyebrow": "Produk Utama",
-        "title": "Sandwich panel",
+        "title": "Sandwich Panel",
         "description": "Dirancang untuk kebutuhan ruang bersuhu terkontrol dengan peforma termal yang stabil, material standar industri, dan spesifikasi yang dapat disesuaikan terhadap kebutuhan.",
         "cards": [
           {
@@ -469,7 +496,7 @@
       {
         "id": "produk-solusi",
         "eyebrow": "Produk Solusi",
-        "title": "Cold storage & ABF",
+        "title": "Cold Storage & ABF",
         "description": "Mulai desain hingga commissioning, seluruh sistem dirancang mengikuti kebutuhan operasional dan target temperature.",
         "cards": [
           {
@@ -528,7 +555,7 @@
       {
         "id": "produk-accessories",
         "eyebrow": "Accessories",
-        "title": "Komponen pendukung",
+        "title": "Komponen Pendukung",
         "description": "Pintu insulated, sistem dock, loading dock system, dan sistem refrigerasi untuk mendukung operasioanal ruang bersuhu terkontrol secara stabil dan efisien.",
         "cards": [
           {
@@ -652,8 +679,8 @@
     ]
   },
   "portfolio": {
-    "sectionLabel": "Portfolio / proyek",
-    "heading": "Dokumentasi proyek representatif",
+    "sectionLabel": "Portfolio proyek",
+    "heading": "Referensi instalasi & cold storage",
     "lead": "Beberapa contoh proyek yang sudah kami kerjakan, dengan implementasi sistem pendingin refrigersi, sandwich panel insulated, hingga area loading  yang dirancang mengikuti kebutuhan operasioanl yang efisien untuk jangka panjang.",
     "projectLocationLabel": "Lokasi",
     "projectWorkTypeLabel": "Jenis pekerjaan",
@@ -664,8 +691,7 @@
         "name": "Fasilitas Cold Chain Untuk Distribusi Supermarket",
         "location": "Karawang - Jawa Barat",
         "workType": "Cold Storage, Pembekuan Cepat (ABF), Anteroom & Loading",
-        "videoSrc": "/images/gallery/WhatsApp%20Video%202026-05-07%20at%2011.02.55.mp4",
-        "videoPosterSrc": "/images/layanan/instalasi-sistem-pendingin/1.jpg",
+        "videoSrc": "/images/cms/portfolio/portfolio-cold-room-regional/1778770826523-3e535a9f3c27.mov",
         "galleryPhotos": [
           {
             "src": "/images/layanan/instalasi-sistem-pendingin/2.jpg",
@@ -676,10 +702,15 @@
             "alt": "Instalasi sandwich panel — referensi commissioning"
           },
           {
-            "src": "/images/layanan/instalasi-panel-cold-room/1.jpg",
+            "src": "/images/cms/portfolio/portfolio-cold-room-regional/1778770615868-a0efa15135da.webp",
             "alt": "Referensi panel cold room terkait proyek"
+          },
+          {
+            "src": "/images/cms/portfolio/portfolio-cold-room-regional/1778770921559-6a67286e9e83.webp",
+            "alt": "Placeholder foto galeri 4 — ganti lewat CMS"
           }
-        ]
+        ],
+        "videoPosterSrc": "/media/gallery/1778360200430-65daec6c4350-1600.webp"
       },
       {
         "id": "portfolio-blast-freezer",
@@ -687,7 +718,6 @@
         "location": "Tangerang - Banten",
         "workType": "Cold Storage, Chiller Room, Pembekuan Cepat (ABF) & Proses Area",
         "videoSrc": "/images/gallery/WhatsApp%20Video%202026-05-07%20at%2011.02.55.mp4",
-        "videoPosterSrc": "/images/layanan/testing-commissioning/1.jpg",
         "galleryPhotos": [
           {
             "src": "/images/layanan/testing-commissioning/2.jpg",
@@ -700,6 +730,10 @@
           {
             "src": "/images/layanan/instalasi-panel-cold-room/1.jpg",
             "alt": "Panel insulated area ruang dingin"
+          },
+          {
+            "src": "/images/layanan/maintenance-after-sales/2.jpg",
+            "alt": "Placeholder foto galeri 4 — ganti lewat CMS"
           }
         ]
       },
@@ -709,7 +743,6 @@
         "location": "Rembang - Jawa Tengah",
         "workType": "Cold Storage, Pembekuan Cepat (ABF), Proses & Loading Area",
         "videoSrc": "/images/gallery/WhatsApp%20Video%202026-05-07%20at%2011.02.55.mp4",
-        "videoPosterSrc": "/images/layanan/produksi-panel-pu-eps/1.jpg",
         "galleryPhotos": [
           {
             "src": "/images/layanan/produksi-panel-pu-eps/2.jpg",
@@ -722,6 +755,10 @@
           {
             "src": "/images/layanan/maintenance-after-sales/1.jpg",
             "alt": "Perawatan sistem untuk uptime distribusi"
+          },
+          {
+            "src": "/images/layanan/konsultasi-desain-sistem/2.jpg",
+            "alt": "Placeholder foto galeri 4 — ganti lewat CMS"
           }
         ]
       },
@@ -731,7 +768,6 @@
         "location": "Juwana - Jawa Tengah",
         "workType": "Cold Storage, Anteroom & Loading Area",
         "videoSrc": "/images/gallery/WhatsApp%20Video%202026-05-07%20at%2011.02.55.mp4",
-        "videoPosterSrc": "/images/layanan/konsultasi-desain-sistem/1.jpg",
         "galleryPhotos": [
           {
             "src": "/images/layanan/konsultasi-desain-sistem/2.jpg",
@@ -744,6 +780,10 @@
           {
             "src": "/images/layanan/instalasi-panel-cold-room/1.jpg",
             "alt": "Cold room higienis area produksi"
+          },
+          {
+            "src": "/images/layanan/testing-commissioning/1.jpg",
+            "alt": "Placeholder foto galeri 4 — ganti lewat CMS"
           }
         ]
       }
@@ -761,7 +801,7 @@
       {
         "id": "ind-fnb",
         "label": "Food & Beverage",
-        "logoSrc": "/images/trust/industry-fnb.svg",
+        "logoSrc": "/images/cms/industry/row-0/1778773179626-05fa48d4936d.webp",
         "logoAlt": "Sektor industri Food & Beverage"
       },
       {
@@ -781,6 +821,18 @@
         "label": "Pharmaceutical",
         "logoSrc": "/images/trust/industry-pharma.svg",
         "logoAlt": "Sektor industri farmasi"
+      },
+      {
+        "id": "ind-mp5o4byb-16jpto8",
+        "label": "Industri",
+        "logoSrc": "/images/cms/industry/row-4/1778774065042-d65e201e7c45.webp",
+        "logoAlt": "Logo industri",
+        "logoAdjust": {
+          "objectFit": "cover",
+          "focalX": 50,
+          "focalY": 50,
+          "zoom": 0.62
+        }
       }
     ],
     "partners": [
@@ -806,7 +858,13 @@
         "logoSrc": "/images/partners/guentner.svg",
         "logoAlt": "Logo Güntner",
         "width": 180,
-        "height": 48
+        "height": 48,
+        "logoAdjust": {
+          "objectFit": "contain",
+          "focalX": 50,
+          "focalY": 50,
+          "zoom": 0.78
+        }
       },
       {
         "id": "partner-muller",
@@ -838,23 +896,13 @@
         "logoSrc": "/images/partners/daikin.svg",
         "logoAlt": "Logo Daikin",
         "width": 160,
-        "height": 48
-      },
-      {
-        "id": "partner-bock",
-        "name": "Bock Compressor",
-        "logoSrc": "/images/partners/bock.svg",
-        "logoAlt": "Bock Compressor — merek mitra",
-        "width": 240,
-        "height": 52
-      },
-      {
-        "id": "partner-invotech",
-        "name": "Invotech",
-        "logoSrc": "/images/partners/invotech.svg",
-        "logoAlt": "Invotech — merek mitra",
-        "width": 220,
-        "height": 44
+        "height": 48,
+        "logoAdjust": {
+          "objectFit": "contain",
+          "focalX": 50,
+          "focalY": 50,
+          "zoom": 0.9
+        }
       }
     ]
   },
@@ -1017,6 +1065,10 @@
       }
     ]
   },
+  "coldStoragePage": {
+    "heroImageSrc": "/images/cold-storage.jpg",
+    "heroImageAlt": "Ilustrasi cold storage — instalasi panel dan ruang dingin industri"
+  },
   "galleryPage": {
     "loadingText": "Memuat gallery…",
     "title": "Gallery Project",
@@ -1080,5 +1132,14 @@
       "kontak"
     ],
     "hiddenSections": []
+  },
+  "galleryProjectOverrides": {
+    "local-f9090976-6011-4442-af15-03b89fd7a3c5": {
+      "galleryPhotos": {
+        "3": {
+          "src": "/images/gallery/projects/local-f9090976-6011-4442-af15-03b89fd7a3c5/1778771822340-2f1b54b039e7.webp"
+        }
+      }
+    }
   }
 }

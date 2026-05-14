@@ -96,7 +96,6 @@ export default async function GalleryProjectRoute() {
         adminDeviceAllowed={adminDeviceAllowed}
         adminAuthenticated={adminAuthenticated}
         copy={content.galleryPage}
-        footerSeoText={content.siteSettings.seoContent.footerSeoText}
       />
     </Suspense>
   );

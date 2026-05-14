@@ -44,13 +44,7 @@ function mergeArrayByIdentity(baseArr: unknown[], patchArr: unknown[]): unknown[
     merged.push(mergePatchOnto(base, p));
   }
 
-  // Tambahkan item default yang belum ada di patch agar konten tetap utuh.
-  for (const b of baseArr as Record<string, unknown>[]) {
-    const k = keyOf(b);
-    if (!k || used.has(k)) continue;
-    merged.push(structuredClone(b));
-  }
-
+  /** Patch array dari UI = urutan & keanggotaan final; jangan mengembalikan item yang sudah dihapus dari patch. */
   return merged;
 }
 

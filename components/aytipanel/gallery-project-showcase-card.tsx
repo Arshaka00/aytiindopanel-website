@@ -27,13 +27,17 @@ export function GalleryProjectShowcaseCard({ project, showAdminActions, onDelete
       )}
     >
       {/* 1 · Video / hero */}
-      <GalleryCardHeroMedia project={project} />
+      <GalleryCardHeroMedia
+        project={project}
+        cmsOverrideBasePath={`galleryProjectOverrides.${project.id}`}
+      />
 
       {/* 2 · Galeri horizontal */}
       <GalleryPhotosCarousel
         projectId={project.id}
         projectName={project.name}
         photos={project.galleryPhotos ?? []}
+        cmsGalleryBasePath={`galleryProjectOverrides.${project.id}`}
       />
 
       <div className="relative space-y-4 border-t border-border px-5 pb-5 pt-5 dark:border-white/[0.1] md:space-y-3.5 md:px-6 md:pb-5 md:pt-5">
