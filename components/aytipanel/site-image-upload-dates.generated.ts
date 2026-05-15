@@ -512,6 +512,7 @@ export const SITE_IMAGE_UPLOAD_ISO: Record<string, string> = {
   "/images/gambar_produk/produk-solusi-kiri.jpg": "2026-05-06T18:36:31.903Z",
   "/images/gambar_produk/produk-utama-kanan.jpg": "2026-05-06T18:36:31.900Z",
   "/images/gambar_produk/produk-utama-kiri.jpg": "2026-05-06T18:36:31.898Z",
+  "/images/global-home-loader-mark.png": "2026-05-15T18:31:49.995Z",
   "/images/layanan/instalasi-panel-cold-room/1.jpg": "2026-05-07T18:15:05.536Z",
   "/images/layanan/instalasi-panel-cold-room/2.jpg": "2026-05-07T18:15:05.538Z",
   "/images/layanan/instalasi-sistem-pendingin/1.jpg": "2026-05-07T18:15:05.527Z",

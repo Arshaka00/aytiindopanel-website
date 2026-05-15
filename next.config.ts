@@ -35,6 +35,11 @@ const LAYANAN_REDIRECT_TO_ARTIKEL = LAYANAN_PAGE_SLUGS.filter(
 );
 
 const nextConfig: NextConfig = {
+  /**
+   * Sembunyikan badge/indikator dev browser (status serupa “Compiling”) saat `next dev`.
+   * Hanya pengembangan lokal; **production tidak terpengaruh**. Tidak mengurangi error overlay bila Next tetap menampilkannya untuk masalah nyata.
+   */
+  devIndicators: false,
   experimental: {
     /** Kurangi bundle surface untuk import bernama besar (tree-shake lebih agresif). */
     optimizePackageImports: [

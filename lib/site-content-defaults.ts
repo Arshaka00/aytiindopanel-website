@@ -291,10 +291,9 @@ Terima kasih.`,
       sectionLabel: "Tentang Kami",
       heading: "Sistem Pendingin Terintegrasi",
       lead:
-        "PT AYTI INDO PANEL adalah perusahaan yang bergerak dalam bidang fabrikasi sandwich panel, instalasi cold storage, dan sistem refrigerasi untuk kebutuhan industri bersuhu terkontrol.",
-      body: `Didukung pabrik panel milik sendiri, kami mendukung kebutuhan proyek mulai dari produksi panel,
-instalasi, refrigeration system, hingga service dan purna jual dengan pendekatan kerja yang lebih
-terintegrasi dan terukur.`,
+        "PT AYTI INDO PANEL adalah perusahaan yang bergerak dalam bidang fabrikasi sandwich panel cold storage dan sistem refrigerasi untuk kebutuhan usaha Anda.",
+      body:
+        "Didukung pengalaman tim lebih dari 5 tahun dan pabrik panel milik sendiri,\nkami siap mendukung kebutuhan proyek Anda mulai dari konsultasi, desain, produksi sandwich panel, produksi pintu panel dan sistem docking, instalasi sandwich panel, dan instalasi sistem refrigerasi, hingga dukungan purna jual dan after sales secara menyeluruh dan terintegrasi.",
       valuesHeading: "Nilai Kami",
       values: [
         "Pabrik panel milik sendiri",

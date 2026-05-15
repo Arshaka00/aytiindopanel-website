@@ -11,7 +11,7 @@ import { pickScrollRevealPreset } from "@/lib/scroll-reveal-preset";
  *   - opacity 0 → 1 + translate / scale halus (preset bervariasi per `sectionKey`, stabil per build)
  *   - desktop: jarak & durasi lebih cinematic; mobile: section pakai translate3d ringan + opacity (GPU-friendly)
  *   - cubic-bezier(0.22, 1, 0.36, 1) — easing premium / cinematic
- *   - tanpa rotate / blur / parallax — aman di iPhone Safari & Android Chrome
+ *   - tanpa rotate / blur pada reveal — aman di iPhone Safari & Android Chrome
  *
  * Kenapa pakai IntersectionObserver + class CSS (bukan Framer Motion):
  *   - lebih ringan: tidak ada per-frame React render saat reveal
@@ -51,6 +51,11 @@ export type ScrollRevealSectionProps = {
    * Hanya berpengaruh jika `variant` = `"section"`.
    */
   sectionKey?: string;
+  /**
+   * Langsung dalam keadaan ter-reveal (tanpa fade masuk). Untuk hero / above-the-fold
+   * supaya SSR + hydrasi tidak sempat opacity 0 sekali frame.
+   */
+  initialRevealed?: boolean;
 };
 
 /** Ambang “sudah terlihat saat mount”: jika top section < 85% tinggi viewport, anggap sudah dilihat. */
@@ -65,9 +70,10 @@ export function ScrollRevealSection({
   rootMargin = "0px 0px -8% 0px",
   id,
   sectionKey,
+  initialRevealed = false,
 }: ScrollRevealSectionProps) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [revealed, setRevealed] = useState(false);
+  const [revealed, setRevealed] = useState(initialRevealed);
 
   const preset =
     variant === "section" && sectionKey?.trim()
@@ -86,6 +92,11 @@ export function ScrollRevealSection({
     const noAnim = document.documentElement.dataset.performanceNoAnim === "1";
 
     if (prefersReduce || noAnim) {
+      setRevealed(true);
+      return;
+    }
+
+    if (initialRevealed) {
       setRevealed(true);
       return;
     }
@@ -131,7 +142,7 @@ export function ScrollRevealSection({
       cancelled = true;
       io.disconnect();
     };
-  }, [variant, rootMargin, amount, sectionKey]);
+  }, [variant, rootMargin, amount, sectionKey, initialRevealed]);
 
   const [revealComplete, setRevealComplete] = useState(false);
 
@@ -140,7 +151,7 @@ export function ScrollRevealSection({
   // `transitionend`, jadi tandai juga "complete" agar GPU layer dilepas.
   useEffect(() => {
     if (revealed && !revealComplete) {
-      const id = window.setTimeout(() => setRevealComplete(true), 1200);
+      const id = window.setTimeout(() => setRevealComplete(true), 1500);
       return () => window.clearTimeout(id);
     }
   }, [revealed, revealComplete]);

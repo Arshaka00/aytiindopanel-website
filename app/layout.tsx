@@ -8,6 +8,9 @@ import { SiteContentAutoRefresh } from "@/components/common/site-content-auto-re
 import { VisitorAnalyticsTracker } from "@/components/common/visitor-analytics-tracker";
 import { HeroCrystalIceFilters } from "@/components/common/hero-crystal-ice-filters";
 import { UaClassFlags } from "@/components/common/ua-class-flags";
+import { NavigationTransitionProvider } from "@/components/common/app-navigation-transition";
+import { GlobalLoader } from "@/components/common/global-loader";
+import { RouteTransitionShell } from "@/components/common/route-transition-shell";
 import { SiteCmsRoot } from "@/components/site-cms/site-cms-root";
 import { validateRuntimeEnvOrThrow } from "@/lib/env-validate";
 import { listPublishedSeoArticles } from "@/lib/seo-articles/repository";
@@ -133,6 +136,7 @@ export default async function RootLayout({
   ]);
 
   const pm = content.siteSettings.performanceMode;
+  const chromeMotionDisabled = pm.lightweightMode || pm.disableHeavyAnimations;
 
   return (
     <html
@@ -145,23 +149,26 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${sora.variable} h-full scroll-smooth bg-background antialiased`}
     >
       <body className="ayti-title-cold-scope flex min-h-[100dvh] flex-col overflow-x-clip bg-background text-foreground">
+        <GlobalLoader disabled={chromeMotionDisabled} />
         <HeroCrystalIceFilters />
         <SiteAnalyticsScripts analytics={content.siteSettings.analytics} />
         <SiteJsonLd content={content} />
         <UaClassFlags />
         <SiteCmsRoot>
-          <VisitorAnalyticsTracker />
-          <SiteContentAutoRefresh />
-          <SiteHeader
-            header={content.header}
-            homeLayout={content.homeLayout}
-            siteContent={content}
-            siteSettings={content.siteSettings}
-            seoArticles={seoArticles}
-          />
-          <div className="flex min-h-0 flex-1 flex-col pt-[var(--site-header-height,3.65rem)]">
-            {children}
-          </div>
+          <NavigationTransitionProvider disabled={chromeMotionDisabled}>
+            <VisitorAnalyticsTracker />
+            <SiteContentAutoRefresh />
+            <SiteHeader
+              header={content.header}
+              homeLayout={content.homeLayout}
+              siteContent={content}
+              siteSettings={content.siteSettings}
+              seoArticles={seoArticles}
+            />
+            <div className="flex min-h-0 flex-1 flex-col pt-[var(--site-header-height,3.65rem)]">
+              <RouteTransitionShell disabled={chromeMotionDisabled}>{children}</RouteTransitionShell>
+            </div>
+          </NavigationTransitionProvider>
         </SiteCmsRoot>
       </body>
     </html>

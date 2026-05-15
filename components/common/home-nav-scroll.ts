@@ -68,14 +68,14 @@ function sampleEasing(forward: boolean): (t: number) => number {
 
 function computePremiumDurationMs(deltaAbs: number, forward: boolean): number {
   const mobileish = isMobileishViewport();
-  const baseMin = mobileish ? 400 : 500;
-  const baseMax = mobileish ? 560 : 700;
+  const baseMin = mobileish ? 430 : 540;
+  const baseMax = mobileish ? 600 : 780;
   const span = Math.max(window.innerHeight * 1.1, 520);
   const distanceBoost = Math.min(1.15, 0.62 + (deltaAbs / span) * 0.48);
   const base = baseMin + Math.random() * (baseMax - baseMin);
   const dir = forward ? 0.97 + Math.random() * 0.1 : 0.9 + Math.random() * 0.1;
   const ms = Math.round(base * distanceBoost * dir);
-  return Math.max(320, Math.min(960, ms));
+  return Math.max(360, Math.min(1040, ms));
 }
 
 /**
@@ -240,11 +240,20 @@ export function scrollToLandingNavHref(
   queueMicrotask(() => requestAnimationFrame(run));
 }
 
+export type NavigateLandingHashOptions = {
+  /** Next.js App Router — hindari `location.assign` agar transisi & overlay navigasi jalan. */
+  spaNavigate?: (destination: string) => void;
+};
+
 /**
  * Pada `/`: set URL tanpa navigasi halaman baru, lalu scroll.
- * Pada path lain: navigasi full ke `pathname` + hash supaya anchor pasti tepat di atas konten setelah reload.
+ * Pada path lain: navigasi ke beranda + hash; dengan `spaNavigate` memakai client routing Next.
  */
-export function navigateLandingHashFromNav(pathname: string, href: string): void {
+export function navigateLandingHashFromNav(
+  pathname: string,
+  href: string,
+  options?: NavigateLandingHashOptions,
+): void {
   if (typeof window === "undefined") return;
 
   let url: URL;
@@ -254,9 +263,12 @@ export function navigateLandingHashFromNav(pathname: string, href: string): void
     return;
   }
 
-  // Non-landing destination (e.g. /gallery-project) must navigate immediately.
   if (url.pathname !== "/") {
     const target = `${url.pathname}${url.search}${url.hash}`;
+    if (options?.spaNavigate) {
+      options.spaNavigate(target);
+      return;
+    }
     window.location.assign(target);
     return;
   }
@@ -264,6 +276,19 @@ export function navigateLandingHashFromNav(pathname: string, href: string): void
   if (pathname === "/") {
     window.history.replaceState(null, "", `${url.pathname}${url.hash}`);
     scrollToLandingNavHref(href);
+    return;
+  }
+
+  const homeDest = `${url.pathname}${url.search}${url.hash}`;
+  if (options?.spaNavigate) {
+    options.spaNavigate(homeDest);
+    if (url.hash.length > 1) {
+      queueMicrotask(() =>
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => scrollToLandingNavHref(href)),
+        ),
+      );
+    }
     return;
   }
 

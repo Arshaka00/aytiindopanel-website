@@ -7,16 +7,49 @@ import { CmsHeroSlidesEditor } from "@/components/site-cms/cms-hero-slides-edito
 import { CmsText } from "@/components/site-cms/cms-text";
 import type { SiteContent } from "@/lib/site-content";
 
-/** Intro hero: satu bobot, kontras warna sangat halus — tanpa bayangan keras. */
-const heroIntroBodyClass =
-  "[font-family:var(--font-sora),Montserrat,sans-serif] text-pretty text-[clamp(1rem,calc(0.9rem+0.45vw),1.125rem)] font-normal leading-[1.68] tracking-[0.022em] text-white/[0.8] antialiased [font-feature-settings:'kern','liga'] [text-rendering:optimizeLegibility] [text-shadow:0_1px_3px_rgba(2,8,24,0.08)] max-md:leading-[1.66] md:text-[clamp(1.125rem,calc(1rem+0.42vw),1.375rem)] md:leading-[1.72] md:tracking-[0.024em] md:text-white/[0.82]";
+/** Bayangan strip PRODUCTS OF (sedikit lebih tegas dari intro). */
+const HERO_SHADOW_PRODUCTS_STYLE =
+  "[text-shadow:0_0.5px_0_rgb(2,6,16),0_1px_2px_rgba(0,0,0,0.55),0_0_1px_rgba(0,0,0,0.4)]";
 
-const heroIntroRegularClass = "hero-intro-regular font-normal text-inherit";
-const heroIntroSemiboldClass = "hero-intro-semibold font-normal text-white/[0.9]";
+/** Inti warna/halus PRODUCTS OF + bayangan strip. */
+const heroProsesEyebrowVisualCoreClass = [
+  "text-[#F7FAFF] antialiased [text-rendering:geometricPrecision]",
+  HERO_SHADOW_PRODUCTS_STYLE,
+].join(" ");
 
-/** Bingkai kaca intro — latar tipis agar teks tetap terbaca tanpa kotak gelap tebal. */
-const heroIntroGlassShellClass =
-  "hero-intro-glass-shell relative z-[1] mx-auto w-full min-w-0 max-w-[min(100%,46rem)] overflow-hidden rounded-2xl border border-white/[0.08] bg-[linear-gradient(to_bottom_right,rgba(255,255,255,0.06),rgba(255,255,255,0.02)_55%,transparent_72%),linear-gradient(to_bottom_right,rgba(6,10,20,0.14),rgba(6,10,20,0.06))] px-3.5 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_6px_16px_-14px_rgba(2,8,18,0.28)] ring-1 ring-inset ring-white/[0.05] backdrop-blur-[10px] backdrop-saturate-[1.04] md:border-white/10 md:bg-[linear-gradient(to_bottom_right,rgba(8,12,22,0.28),rgba(6,10,18,0.18)_58%,rgba(4,8,16,0.12))] md:shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_4px_14px_-12px_rgba(0,0,0,0.32)] md:backdrop-blur-none max-md:border-white/[0.07] max-md:bg-[linear-gradient(to_bottom_right,rgba(255,255,255,0.05),transparent_58%),linear-gradient(to_bottom_right,rgba(6,10,18,0.12),rgba(4,8,14,0.06))] max-md:px-3 max-md:py-2 md:px-5 md:py-3";
+/** Inti intro: warna + kilau es tipis di globals (`.hero-intro-body-ice`). */
+const heroIntroVisualCoreClass = ["antialiased [text-rendering:geometricPrecision]"].join(" ");
+
+/** Badge strip proses (mis. PRODUCTS OF): medium uppercase. */
+const heroProsesEyebrowTypographyClass = [
+  heroProsesEyebrowVisualCoreClass,
+  "font-medium uppercase leading-tight tracking-[0.2em]",
+  "text-[clamp(10px,2.6vw,11px)] md:text-[12px] md:tracking-[0.24em]",
+].join(" ");
+
+/** Paragraf lead hero: efek es tipis + medium (500), normal-case (warna/bayangan di globals). */
+const heroIntroBodyClass = [
+  "[font-family:var(--font-sora),Montserrat,sans-serif]",
+  "text-center md:text-left font-medium normal-case text-pretty break-words [overflow-wrap:break-word]",
+  heroIntroVisualCoreClass,
+  "tracking-[0.01em] md:tracking-[0.015em]",
+  "max-md:text-[clamp(14.5px,calc(0.8375rem+1.18vw),17.25px)] max-md:leading-snug",
+  "md:text-[21px] md:leading-[1.5] lg:text-[24px] lg:leading-[1.48] xl:text-[26px] 2xl:text-[27px]",
+].join(" ");
+
+const heroIntroRegularClass = "hero-intro-regular text-inherit font-inherit";
+const heroIntroSemiboldClass = "hero-intro-semibold text-inherit font-inherit";
+
+/** Pembungkus lead: mobile veil pekat; desktop goresan kaca tipis. */
+const heroIntroGlassShellClass = [
+  "hero-intro-glass-shell relative z-[1] mx-auto box-border w-full min-w-0 max-w-[min(100%,46rem)] overflow-hidden rounded-2xl",
+  "max-md:isolate max-md:border max-md:border-white/[0.13]",
+  "max-md:bg-[linear-gradient(135deg,rgba(255,255,255,0.076)_0%,rgba(255,255,255,0.042)_100%)] max-md:px-3 max-md:py-2",
+  "max-md:shadow-[inset_0_1px_0_rgb(255_255_255/0.16)] max-md:backdrop-blur-[14px] max-md:backdrop-saturate-[1.05]",
+  "md:isolate md:border md:border-white/[0.02]",
+  "md:bg-[linear-gradient(135deg,rgba(255,255,255,0.0055)_0%,rgba(255,255,255,0.001)_100%)] md:px-2 md:py-1.5",
+  "md:shadow-[inset_0_1px_0_rgb(255_255_255/0.025)] md:backdrop-blur-[3px] md:rounded-lg",
+].join(" ");
 
 export function SectionTop({
   hero,
@@ -59,83 +92,93 @@ export function SectionTop({
         />
         <div className="hero-overlay-top-hairline pointer-events-none absolute inset-x-0 top-0 z-[1] h-px" aria-hidden />
         <div className="hero-layout-shell relative z-10 mx-auto flex w-full min-w-0 max-w-6xl flex-1 items-start pl-[max(1.25rem,env(safe-area-inset-left,0px))] pr-[max(1.25rem,env(safe-area-inset-right,0px))] pt-2 sm:pl-6 sm:pr-6 sm:pt-3 md:items-center md:px-8 md:pt-0">
-          <div className="hero-content-enter w-full drop-shadow-[0_2px_6px_rgba(2,7,18,0.38)] md:drop-shadow-none">
+          <div className="hero-content-enter min-w-0 w-full drop-shadow-[0_2px_6px_rgba(2,7,18,0.38)] md:drop-shadow-none">
             <div className="mx-auto flex w-full min-w-0 max-w-[min(100%,56.25rem)] flex-col text-left">
-              <div className="hero-content-stack mt-5 flex flex-col sm:mt-6 md:mt-0">
+              <div className="hero-content-stack mt-5 flex min-w-0 flex-col sm:mt-6 md:mt-0">
                 <div className="hero-title-intro-block flex flex-col gap-2 md:gap-3">
                   <div className="space-y-1.5 md:space-y-2">
-                  <div className="hero-eyebrow-row -mt-3 -translate-y-3 flex w-full items-center justify-center gap-2.5 sm:-mt-4 sm:translate-y-0 sm:gap-3.5 md:-mt-6 md:-translate-y-2 md:gap-4 lg:-mt-8 lg:-translate-y-4">
-                    <span
-                      className="h-px min-w-[1.25rem] flex-1 rounded-full bg-gradient-to-r from-transparent via-white/12 to-white/20 max-[360px]:max-w-[2.25rem] sm:max-w-none"
-                      aria-hidden
-                    />
-                    <span className="inline-flex shrink-0 items-center gap-2 sm:gap-2.5">
+                    <div className="hero-eyebrow-row -mt-3 -translate-y-3 flex w-full items-center justify-center gap-2.5 sm:-mt-4 sm:translate-y-0 sm:gap-3.5 md:-mt-6 md:-translate-y-2 md:gap-4 lg:-mt-8 lg:-translate-y-4">
                       <span
-                        className="size-1 shrink-0 rounded-full bg-white/55 shadow-[0_0_6px_rgba(255,255,255,0.22)]"
+                        className="h-px min-w-[1.25rem] flex-1 rounded-full bg-gradient-to-r from-transparent via-white/12 to-white/20 max-[360px]:max-w-[2.25rem] sm:max-w-none"
                         aria-hidden
                       />
-                      <CmsText
-                        path="hero.brandLabel"
-                        text={hero.brandLabel}
-                        as="span"
-                        className="shrink-0 text-center text-[clamp(10px,2.6vw,11px)] font-medium uppercase leading-snug tracking-[0.2em] text-white/85 md:text-[12px] md:tracking-[0.24em]"
-                      />
-                      <span
-                        className="size-1 shrink-0 rounded-full bg-white/55 shadow-[0_0_6px_rgba(255,255,255,0.22)]"
-                        aria-hidden
-                      />
-                    </span>
-                    <span
-                      className="h-px min-w-[1.25rem] flex-1 rounded-full bg-gradient-to-l from-transparent via-white/12 to-white/20 max-[360px]:max-w-[2.25rem] sm:max-w-none"
-                      aria-hidden
-                    />
-                  </div>
-                  <div className="flex w-full justify-start px-0.5 sm:px-0">
-                    <h1
-                      id="hero-heading"
-                      className="w-full max-w-[56.25rem] px-[0.02em] text-left uppercase [font-family:var(--font-sora),Montserrat,sans-serif] text-[#F5F7FF] [text-shadow:0_1px_2px_rgba(2,7,18,0.96),0_0_7px_rgba(2,7,18,0.62)] [-webkit-text-stroke:0.32px_rgba(2,7,18,0.32)] max-md:[text-shadow:0_1px_2px_rgba(2,7,18,0.98),0_0_7px_rgba(2,7,18,0.7)]"
-                    >
-                      <span className="hero-heading-line1-row inline-flex max-w-full items-center gap-2 sm:gap-2.5">
+                      <span className="inline-flex shrink-0 items-center gap-2 sm:gap-2.5">
+                        <span
+                          className="size-1 shrink-0 rounded-full bg-white/55 shadow-[0_0_6px_rgba(255,255,255,0.22)]"
+                          aria-hidden
+                        />
                         <CmsText
-                          path="hero.headingLine1"
-                          text={hero.headingLine1}
-                          fallbackText="SOLUSI SISTEM"
+                          path="hero.brandLabel"
+                          text={hero.brandLabel}
                           as="span"
-                          className="hero-heading-glass-line1 min-w-0 shrink-0 font-extrabold leading-[1.02] tracking-[-0.04em] text-[#F5F7FF]/88 text-[clamp(0.9rem,2.6vw,1.2rem)] md:text-[1.6875rem]"
+                          className="shrink-0 text-center text-[clamp(10px,2.6vw,11px)] font-normal uppercase leading-snug tracking-[0.2em] text-white/85 md:text-[12px] md:tracking-[0.24em]"
                         />
                         <span
-                          className="hero-heading-line1-end-rule h-px w-10 shrink-0 rounded-full bg-gradient-to-r from-white/45 via-white/22 to-transparent shadow-[0_0_10px_rgba(255,255,255,0.08)] sm:w-12 md:w-16"
+                          className="size-1 shrink-0 rounded-full bg-white/55 shadow-[0_0_6px_rgba(255,255,255,0.22)]"
                           aria-hidden
                         />
                       </span>
-                      <span className="hero-heading-crystal-wrap relative isolate mt-1 block md:mt-1.5">
-                        <CmsText
-                          path="hero.headingMiddle"
-                          text={hero.headingMiddle}
-                          fallbackText="PENDINGIN"
-                          as="span"
-                          className="hero-heading-crystal hero-heading-glass-middle block text-[clamp(2.35rem,12.75vw,5.1rem)] font-extrabold leading-[0.9] tracking-[-0.022em] md:text-[clamp(5.5rem,10.5vw,6.75rem)] md:leading-[0.88]"
-                        />
-                      </span>
-                      <span className="hero-heading-line2-row mt-0.5 inline-flex max-w-full items-center gap-2 sm:gap-2.5 md:mt-1">
-                        <CmsText
-                          path="hero.headingLine2"
-                          text={hero.headingLine2}
-                          fallbackText="TERINTEGRASI"
-                          as="span"
-                          className="hero-heading-accent hero-heading-glass-line2 min-w-0 shrink-0 font-extrabold leading-[1.02] tracking-[-0.022em] text-[clamp(1rem,4.5vw,1.5rem)] md:text-[clamp(1.34rem,2.55vw,1.9rem)] lg:text-[clamp(1.62rem,3.2vw,2.35rem)]"
-                        />
-                        <span
-                          className="hero-heading-line1-end-rule h-px w-10 shrink-0 rounded-full bg-gradient-to-r from-white/45 via-white/22 to-transparent shadow-[0_0_10px_rgba(255,255,255,0.08)] sm:w-12 md:w-16"
-                          aria-hidden
-                        />
-                      </span>
-                    </h1>
+                      <span
+                        className="h-px min-w-[1.25rem] flex-1 rounded-full bg-gradient-to-l from-transparent via-white/12 to-white/20 max-[360px]:max-w-[2.25rem] sm:max-w-none"
+                        aria-hidden
+                      />
+                    </div>
+                    <div className="flex w-full justify-start px-0">
+                      <h1
+                        id="hero-heading"
+                        className="w-full max-w-[56.25rem] px-[0.02em] text-left uppercase [font-family:var(--font-sora),Montserrat,sans-serif] text-[#F5F7FF] [text-shadow:0_1px_2px_rgba(2,7,18,0.96),0_0_7px_rgba(2,7,18,0.62)] [-webkit-text-stroke:0.32px_rgba(2,7,18,0.32)] max-md:[text-shadow:0_1px_2px_rgba(2,7,18,0.98),0_0_7px_rgba(2,7,18,0.7)]"
+                      >
+                        <span className="hero-heading-line1-row inline-flex max-w-full items-center gap-2 text-[clamp(0.9rem,2.6vw,1.2rem)] sm:gap-2.5 md:text-[1.6875rem]">
+                          <span
+                            className="hero-heading-line1-start-rule h-px w-9 shrink-0 self-center rounded-full bg-gradient-to-r from-transparent via-white/38 to-white/62 shadow-[0_0_10px_rgba(255,255,255,0.1)] sm:w-11 md:w-12"
+                            aria-hidden
+                          />
+                          <CmsText
+                            path="hero.headingLine1"
+                            text={hero.headingLine1}
+                            fallbackText="SOLUSI SISTEM"
+                            as="span"
+                            className="hero-heading-glass-line1 min-w-0 shrink-0 font-extrabold leading-[1.02] tracking-[-0.04em] text-[#F5F7FF]/88"
+                          />
+                          <span
+                            className="hero-heading-line1-end-rule h-px w-10 shrink-0 self-center rounded-full bg-gradient-to-r from-white/45 via-white/22 to-transparent shadow-[0_0_10px_rgba(255,255,255,0.08)] sm:w-12 md:w-16"
+                            aria-hidden
+                          />
+                        </span>
+                        <span className="hero-heading-crystal-wrap relative isolate mt-1 block md:mt-1.5">
+                          <CmsText
+                            path="hero.headingMiddle"
+                            text={hero.headingMiddle}
+                            fallbackText="PENDINGIN"
+                            as="span"
+                            className="hero-heading-crystal hero-heading-glass-middle block text-[clamp(2.35rem,12.75vw,5.1rem)] font-extrabold leading-[0.9] tracking-[-0.022em] md:text-[clamp(5.5rem,10.5vw,6.75rem)] md:leading-[0.88]"
+                          />
+                        </span>
+                        <span className="hero-heading-line2-row mt-0.5 flex w-full max-w-full flex-col items-stretch gap-2 sm:gap-2.5 md:mt-1">
+                          <span className="inline-flex max-w-full items-center gap-2 sm:gap-2.5">
+                            <CmsText
+                              path="hero.headingLine2"
+                              text={hero.headingLine2}
+                              fallbackText="TERINTEGRASI"
+                              as="span"
+                              className="hero-heading-accent hero-heading-glass-line2 min-w-0 shrink-0 font-extrabold leading-[1.02] tracking-[-0.022em] text-[clamp(1rem,4.5vw,1.5rem)] md:text-[clamp(1.34rem,2.55vw,1.9rem)] lg:text-[clamp(1.62rem,3.2vw,2.35rem)]"
+                            />
+                            <span
+                              className="hero-heading-line1-end-rule h-px w-10 shrink-0 rounded-full bg-gradient-to-r from-white/45 via-white/22 to-transparent shadow-[0_0_10px_rgba(255,255,255,0.08)] sm:w-12 md:w-16"
+                              aria-hidden
+                            />
+                          </span>
+                          <span
+                            className="hero-heading-line2-divider h-px w-full max-w-[min(100%,26rem)] shrink-0 rounded-full bg-gradient-to-r from-white/38 via-white/22 to-transparent shadow-[0_0_10px_rgba(255,255,255,0.07)]"
+                            aria-hidden
+                          />
+                        </span>
+                      </h1>
+                    </div>
                   </div>
-                </div>
                 </div>
 
-                <div className="hero-intro-stack mx-auto w-full min-w-0 pt-2 text-left md:pt-4">
+                <div className="hero-intro-stack mx-auto flex w-full min-w-0 flex-col gap-3 pt-2 text-center md:gap-4 md:pt-4 md:text-left">
                   {hero.introBadge.trim() ? (
                     <div className="hero-intro-badge-row -mt-1 mb-2 flex w-full items-center justify-center gap-2.5 sm:mb-2.5 md:mt-0 md:mb-3">
                       <span
@@ -151,7 +194,7 @@ export function SectionTop({
                           path="hero.introBadge"
                           text={hero.introBadge}
                           as="span"
-                          className="shrink-0 text-center text-[clamp(10px,2.6vw,11px)] font-medium uppercase leading-snug tracking-[0.2em] text-white/85 md:text-[12px] md:tracking-[0.24em]"
+                          className="shrink-0 text-center text-[clamp(10px,2.6vw,11px)] font-normal uppercase leading-snug tracking-[0.2em] text-white/85 md:text-[12px] md:tracking-[0.24em]"
                         />
                         <span
                           className="size-1 shrink-0 rounded-full bg-white/55 shadow-[0_0_6px_rgba(255,255,255,0.22)]"
@@ -165,10 +208,11 @@ export function SectionTop({
                     </div>
                   ) : null}
                   <div
-                    className={`${heroIntroGlassShellClass} hero-intro-phone max-md:translate-y-4 w-full min-w-0 text-pretty text-left`}
+                    className={`${heroIntroGlassShellClass} hero-intro-phone relative max-md:translate-y-2.5 w-full max-md:top-[0.35rem] min-w-0 text-center md:top-[0.5rem] md:text-left`}
                   >
                     <p
-                      className={`hero-intro-body ${heroIntroBodyClass} my-0 text-left md:max-w-[44rem]`}
+                      lang="id"
+                      className={`hero-intro-body hero-intro-body-ice ${heroIntroBodyClass} my-0 min-w-0 max-w-full max-md:hyphens-manual md:max-w-[44rem]`}
                     >
                       <CmsText
                         path="hero.intro.before1"
@@ -219,9 +263,9 @@ export function SectionTop({
                 <div className="hero-process-block mt-14 flex w-full min-w-0 flex-col gap-y-0.5 pt-px md:mt-[4.5rem] md:gap-y-2 md:pt-0">
                   <div
                     id="proses"
-                    className="mx-auto w-full min-w-0 scroll-mt-[max(5rem,env(safe-area-inset-top,0px)+4.5rem)] space-y-1.5 py-0 text-center md:scroll-mt-[5.25rem] md:space-y-2 md:py-1"
+                    className="mx-auto w-full min-w-0 scroll-mt-[max(5rem,env(safe-area-inset-top,0px)+4.5rem)] space-y-0 py-0 text-center md:scroll-mt-[5.25rem] md:space-y-0.5 md:py-0"
                   >
-                    <div className="hero-proses-badge-row mb-1 flex w-full flex-col items-center gap-1 sm:mb-1.5 md:mb-2">
+                    <div className="hero-proses-badge-row mb-0 flex w-full flex-col items-center gap-0 sm:mb-px md:mb-0.5">
                       <div className="flex w-full max-w-[min(100%,20rem)] items-center justify-center gap-1.5 sm:max-w-[22rem] sm:gap-2">
                         <span
                           className="h-px w-[1.75rem] shrink-0 rounded-full bg-gradient-to-r from-transparent via-white/10 to-white/16 sm:w-8 md:w-9"
@@ -232,12 +276,12 @@ export function SectionTop({
                             className="size-1 shrink-0 rounded-full bg-white/55 shadow-[0_0_6px_rgba(255,255,255,0.22)]"
                             aria-hidden
                           />
-                          <span className="inline-flex shrink-0 flex-col items-center gap-1">
+                          <span className="inline-flex shrink-0 flex-col items-center gap-0">
                             <CmsText
                               path="hero.prosesBadge"
                               text={hero.prosesBadge}
                               as="span"
-                              className="shrink-0 text-center text-[clamp(10px,2.6vw,11px)] font-semibold uppercase leading-tight tracking-[0.2em] text-[#F7FAFF] antialiased [text-rendering:geometricPrecision] [text-shadow:0_0.5px_0_rgb(2,6,16),0_1px_2px_rgba(0,0,0,0.55),0_0_1px_rgba(0,0,0,0.4)] md:text-[12px] md:tracking-[0.24em]"
+                              className={`shrink-0 text-center ${heroProsesEyebrowTypographyClass}`}
                             />
                             <span className="relative h-[2px] w-[min(100%,11rem)] max-w-[85vw] shrink-0" aria-hidden>
                               <span className="absolute -inset-x-0.5 -inset-y-0.5 rounded-full bg-gradient-to-r from-transparent via-white/22 to-transparent opacity-90 blur-[3px]" />

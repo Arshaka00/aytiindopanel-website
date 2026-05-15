@@ -171,13 +171,13 @@
     "headingMiddle": "PENDINGIN",
     "headingLine2": "Terintegrasi",
     "intro": {
-      "before1": "Untuk memenuhi kebutuhan",
-      "bold1": "bisnis",
-      "middle": "Anda dalam membangun",
+      "before1": "~ Untuk memenuhi kebutuhan",
+      "bold1": "bisnis Anda",
+      "middle": "dalam membangun",
       "bold2": "ruang pendingin",
       "after2": "yang",
       "bold3": "stabil dan efisien",
-      "after3": "untuk jangka panjang."
+      "after3": "untuk jangka panjang ~"
     },
     "introBadge": "",
     "prosesBadge": "PRODUCTS OF",
@@ -191,9 +191,9 @@
     "prosesStepImageZoom": {
       "konsultasi": 1.15,
       "survey": 1.15,
-      "produksi": 0.95,
-      "instalasi": 1.7,
-      "selesai": 1
+      "produksi": 0.9,
+      "instalasi": 1.6,
+      "selesai": 0.9
     },
     "ctaWhatsApp": {
       "label": "Hubungi kami",
@@ -238,8 +238,8 @@
   "tentang": {
     "sectionLabel": "Tentang Kami",
     "heading": "Sistem Pendingin Terintegrasi",
-    "lead": "PT AYTI INDO PANEL adalah perusahaan yang bergerak dalam bidang fabrikasi sandwich panel cold storage, dan sistem refrigerasi untuk kebutuhan usaha Anda.",
-    "body": "Didukung pengalaman tim lebih dari 5 tahun, dan pabrik panel milik sendiri, kami siap mendukung kebutuhan proyek Anda mulai dari konsultasi, desain, produksi sandwich panel, produksi pintu panel dan sistem docking, instalasi sandwich panel, dan instalasi sistem refrigerasi, hingga dukungan purna jual dan after sales secara menyeluruh dan terintegrasi.",
+    "lead": "PT AYTI INDO PANEL adalah perusahaan yang bergerak dalam bidang fabrikasi sandwich panel cold storage dan sistem refrigerasi untuk kebutuhan usaha Anda.",
+    "body": "Didukung pengalaman tim lebih dari 5 tahun dan pabrik panel milik sendiri,\nkami siap mendukung kebutuhan proyek Anda mulai dari konsultasi, desain, produksi sandwich panel, produksi pintu panel dan sistem docking, instalasi sandwich panel, dan instalasi sistem refrigerasi, hingga dukungan purna jual dan after sales secara menyeluruh dan terintegrasi.",
     "valuesHeading": "Nilai Kami",
     "values": [
       "Pabrik panel milik sendiri",

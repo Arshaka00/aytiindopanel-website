@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type ComponentProps } from "react";
 
 import { HeroBackgroundSlider } from "@/components/aytipanel/hero-background-slider";
+import { HeroScrollCinematicBackdrop } from "@/components/aytipanel/hero-scroll-cinematic-backdrop";
 import { useHeroViewportPerformance } from "@/components/aytipanel/use-hero-viewport-performance";
 import { heroSlideSources } from "@/components/aytipanel/hero-slider-config";
 import { useSiteCmsOptional } from "@/components/site-cms/site-cms-provider";
@@ -186,27 +187,31 @@ export function HeroSectionBackground(props?: {
   return (
     <>
       {showVideo && video ? (
-        <div className="hero-bg-root pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[#050B18]" aria-hidden>
-          {/* eslint-disable-next-line jsx-a11y/media-has-caption -- dekoratif */}
-          <video
-            ref={heroVideoRef}
-            key={video.src}
-            src={video.src}
-            poster={videoPoster}
-            muted={video.muted ?? true}
-            playsInline
-            autoPlay
-            loop
-            preload={videoPreload}
-            className="hero-bg-media absolute inset-0 h-full w-full object-cover object-center"
-          />
-        </div>
+        <HeroScrollCinematicBackdrop>
+          <div className="hero-bg-root pointer-events-none relative h-full min-h-0 w-full overflow-hidden bg-[#050B18]" aria-hidden>
+            {/* eslint-disable-next-line jsx-a11y/media-has-caption -- dekoratif */}
+            <video
+              ref={heroVideoRef}
+              key={video.src}
+              src={video.src}
+              poster={videoPoster}
+              muted={video.muted ?? true}
+              playsInline
+              autoPlay
+              loop
+              preload={videoPreload}
+              className="hero-bg-media absolute inset-0 h-full w-full object-cover object-center"
+            />
+          </div>
+        </HeroScrollCinematicBackdrop>
       ) : (
         <>
-          <HeroBackgroundSlider
-            sources={slides}
-            initialViewportIsMobile={props?.initialViewportIsMobile}
-          />
+          <HeroScrollCinematicBackdrop>
+            <HeroBackgroundSlider
+              sources={slides}
+              initialViewportIsMobile={props?.initialViewportIsMobile}
+            />
+          </HeroScrollCinematicBackdrop>
           {cmsHeroEdit && instantPreviewSrc ? (
             <div
               className="pointer-events-none absolute inset-0 z-[2] opacity-100 transition-opacity duration-300 ease-out"

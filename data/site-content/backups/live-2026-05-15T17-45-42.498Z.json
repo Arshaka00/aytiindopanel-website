@@ -172,8 +172,8 @@
     "headingLine2": "Terintegrasi",
     "intro": {
       "before1": "Untuk memenuhi kebutuhan",
-      "bold1": "bisnis",
-      "middle": "Anda dalam membangun",
+      "bold1": "bisnis Anda",
+      "middle": "dalam membangun",
       "bold2": "ruang pendingin",
       "after2": "yang",
       "bold3": "stabil dan efisien",
@@ -191,9 +191,9 @@
     "prosesStepImageZoom": {
       "konsultasi": 1.15,
       "survey": 1.15,
-      "produksi": 0.95,
-      "instalasi": 1.7,
-      "selesai": 1
+      "produksi": 0.9,
+      "instalasi": 1.6,
+      "selesai": 1.05
     },
     "ctaWhatsApp": {
       "label": "Hubungi kami",
@@ -238,8 +238,8 @@
   "tentang": {
     "sectionLabel": "Tentang Kami",
     "heading": "Sistem Pendingin Terintegrasi",
-    "lead": "PT AYTI INDO PANEL adalah perusahaan yang bergerak dalam bidang fabrikasi sandwich panel cold storage, dan sistem refrigerasi untuk kebutuhan usaha anda.",
-    "body": "Didukung pengalaman tim lebih dari 5 tahun, dan pabrik panel milik sendiri, kami siap mendukung kebutuhan proyek anda mulai dari konsultasi, desain, produksi sandwich panel, produksi pintu panel & dock sistem, instalasi sandwich panel, dan instalasi system refrigerasi, hingga dukungan purna jual dan after sales secara menyeluruh dan terintegrasi.",
+    "lead": "PT AYTI INDO PANEL adalah perusahaan yang bergerak dalam bidang fabrikasi sandwich panel cold storage, dan sistem refrigerasi untuk kebutuhan usaha Anda.",
+    "body": "Didukung pengalaman tim lebih dari 5 tahun, dan pabrik panel milik sendiri, kami siap mendukung kebutuhan proyek Anda mulai dari konsultasi, desain, produksi sandwich panel, produksi pintu panel dan sistem docking, instalasi sandwich panel, dan instalasi sistem refrigerasi, hingga dukungan purna jual dan after sales secara menyeluruh dan terintegrasi.",
     "valuesHeading": "Nilai Kami",
     "values": [
       "Pabrik panel milik sendiri",
@@ -1052,7 +1052,7 @@
         "heroImageAlt": "Sandwich panel PU untuk cold room industri",
         "heroH1": "Sandwich Panel PU untuk Cold Room & Industri",
         "heroSubheadline": "Envelope insulasi presisi untuk ruang dingin yang stabil dan efisien.",
-        "heroLead": "Panel sandwich polyuretane (PU) menjadi fondasi thermal cold storage, clean room, dan area proses bersuhu terkontrol. Kami memproduksi dan memasang panel sesuai layout operasi Anda — bukan paket generik.",
+        "heroLead": "Panel sandwich polyurethane (PU) menjadi fondasi thermal cold storage, clean room, dan area proses bersuhu terkontrol. Kami memproduksi dan memasang panel sesuai layout operasi Anda — bukan paket generik.",
         "heroBullets": [
           "Core PU dengan performa insulasi konsisten",
           "Sistem sambungan CamLock atau knock down sesuai kebutuhan proyek",
@@ -1061,7 +1061,7 @@
         "overviewEyebrow": "Penjelasan layanan",
         "overviewTitle": "Panel insulasi sebagai fondasi ruang dingin",
         "overviewParagraphs": [
-          "Sandwich panel PU menggabungkan kulit baja dan inti polyuretane untuk membentuk dinding, plafon, dan partisi yang menahan perpindahan panas. Pada cold storage, kualitas panel menentukan seberapa stabil suhu dijaga dan seberapa efisien sistem refrigerasi bekerja.",
+          "Sandwich panel PU menggabungkan kulit baja dan inti polyurethane untuk membentuk dinding, plafon, dan partisi yang menahan perpindahan panas. Pada cold storage, kualitas panel menentukan seberapa stabil suhu dijaga dan seberapa efisien sistem refrigerasi bekerja.",
           "PT AYTI INDO PANEL memproduksi panel dengan spesifikasi ketebalan, densitas, dan sistem joint yang diselaraskan dengan desain ruangan serta kapasitas pendingin — agar envelope dan mesin saling mendukung, bukan saling membebani."
         ],
         "ctaHeadline": "Konsultasikan kebutuhan sandwich panel PU Anda",
@@ -1395,6 +1395,16 @@
         ]
       }
     ]
+  },
+  "landingKotaPages": {
+    "index": {
+      "eyebrow": "Area layanan Indonesia",
+      "heading": "Landing kota — cold storage & panel per wilayah",
+      "lead": "Halaman SEO lokal untuk setiap kota: ringkasan layanan cold storage, sandwich panel, cold room, dan blast freezer. Pilih wilayah proyek Anda untuk detail teknis dan tautan topik terkait.",
+      "metaTitle": "",
+      "metaDescription": ""
+    },
+    "pages": []
   },
   "galleryPage": {
     "loadingText": "Memuat gallery…",

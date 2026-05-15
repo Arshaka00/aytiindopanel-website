@@ -32,31 +32,30 @@ export function ProsesKerjaFlow({
   const isHero = variant === "hero";
 
   const olClass = isHero
-    ? "mx-auto grid w-full min-w-0 max-w-[27rem] grid-cols-5 items-start gap-x-2 gap-y-1 pt-0 pb-px sm:max-w-[32rem] sm:gap-x-2.5 sm:gap-y-1.5 sm:pt-0 sm:pb-0 md:max-w-[42rem] md:gap-x-3 md:gap-y-1.5 md:pt-0 lg:max-w-[46rem] lg:gap-x-4 lg:gap-y-2 lg:pt-0"
+    ? "mx-auto grid w-full min-w-0 max-w-[27rem] grid-cols-5 items-start gap-x-0 gap-y-0 pt-0 pb-0 sm:max-w-[32rem] sm:gap-x-px sm:gap-y-0 sm:pt-0 sm:pb-0 md:max-w-[41rem] md:gap-x-0 md:gap-y-0 md:pt-0 lg:max-w-[44rem] lg:gap-x-0 lg:gap-y-0 lg:pt-0"
     : "mx-auto max-w-md space-y-0 pt-2 lg:mx-0 lg:max-w-[34rem] lg:grid lg:grid-cols-5 lg:gap-x-1 lg:gap-y-2.5 lg:pt-1";
 
   const liClass = isHero
-    ? "relative flex min-w-0 w-full flex-col items-center gap-0 pb-0 text-center before:pointer-events-none before:absolute before:left-0 before:top-3.5 before:h-7 before:w-px before:bg-white/[0.14] before:content-[''] first:before:hidden max-sm:gap-0 sm:before:top-4 sm:before:h-8 md:max-w-none md:before:top-[1.125rem] md:before:h-9 lg:gap-0 lg:px-0"
+    ? "relative flex min-w-0 w-full flex-col items-center gap-0 pb-0 text-center before:pointer-events-none before:absolute before:left-0 before:content-[''] first:before:hidden max-sm:gap-0 md:max-w-none lg:gap-0 lg:px-0"
     : "relative flex flex-row items-start gap-2.5 pb-6 text-left last:pb-0 lg:flex-col lg:items-center lg:gap-0 lg:px-0 lg:pb-0 lg:text-center lg:before:pointer-events-none lg:before:absolute lg:before:left-0 lg:before:top-0 lg:before:h-12 lg:before:w-px lg:before:bg-border lg:before:content-[''] lg:first:before:hidden";
 
-  /** Hero: hanya area gambar/ikon — tanpa kartu, border, atau latar kotak. */
-  const iconShellHeroBase =
-    "proses-hero-step-media relative inline-flex size-11 shrink-0 items-center justify-center overflow-visible sm:size-12 md:size-14 lg:size-[3.75rem]";
+  /** Hero: anchor ukuran tetap untuk gambar `absolute inset-0`; tanpa kotak/border (ikon produk polos). */
+  const heroIconAnchorClass =
+    "proses-hero-step-anchor relative isolate inline-flex size-10 shrink-0 items-center justify-center sm:size-11 md:size-[2.875rem] lg:size-12";
 
   const iconShellClassLight =
     "relative inline-flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border bg-transparent text-accent shadow-[var(--shadow-card)] lg:h-12 lg:w-12";
 
   const iconGlyphClass = isHero
-    ? "h-6 w-6 shrink-0 sm:h-[1.625rem] sm:w-[1.625rem] md:h-8 md:w-8 lg:h-9 lg:w-9"
+    ? "h-[1.125rem] w-[1.125rem] shrink-0 sm:h-[1.3125rem] sm:w-[1.3125rem] md:h-6 md:w-6 lg:h-[1.625rem] lg:w-[1.625rem]"
     : "h-7 w-7 shrink-0 lg:h-6 lg:w-6";
 
-  const stepLabelClass = isHero
-    ? "sr-only"
-    : "text-[11px] font-semibold uppercase tracking-wider text-muted [text-rendering:geometricPrecision] lg:hidden";
+  const stepMicroLabelLightClass =
+    "text-[12px] font-semibold normal-case tracking-wider text-muted [text-rendering:geometricPrecision] lg:hidden";
 
   const stepTitleClass = isHero
-    ? "whitespace-pre-line line-clamp-3 w-full max-w-[5.125rem] text-[0.5625rem] font-semibold leading-[1.22] tracking-[0.015em] text-balance text-white antialiased [text-rendering:geometricPrecision] sm:max-w-[5.5rem] sm:text-[0.625rem] md:max-w-[6.75rem] md:text-[0.6875rem] md:font-bold lg:max-w-none lg:text-xs"
-    : "whitespace-pre-line text-sm font-semibold leading-snug text-foreground [text-rendering:geometricPrecision] lg:mt-1 lg:text-xs";
+    ? "proses-hero-step-title order-2 -mt-1 w-full whitespace-pre-line line-clamp-3 max-w-[6.5rem] text-center text-[clamp(9px,1.72vw,10px)] font-bold normal-case leading-[1.06] tracking-[0.09em] text-balance text-[#F4F7FD]/95 antialiased [text-rendering:geometricPrecision] [-webkit-text-stroke:0.22px_rgba(2,8,20,0.35)] [paint-order:stroke_fill] [text-shadow:0_0.5px_0_rgb(2,6,18),0_1px_2px_rgba(0,0,0,0.48)] sm:-mt-0.5 sm:max-w-[7.25rem] sm:leading-[1.08] sm:tracking-[0.1em] md:max-w-[7.75rem] md:text-[10px] md:tracking-[0.11em] lg:max-w-[8.35rem] lg:text-[11px] lg:tracking-[0.12em]"
+    : "whitespace-pre-line normal-case text-[0.9375rem] font-semibold leading-snug text-foreground [text-rendering:geometricPrecision] lg:mt-1 lg:text-[0.8125rem]";
 
   return (
     <ol
@@ -84,37 +83,41 @@ export function ProsesKerjaFlow({
             <div
               className={
                 isHero
-                  ? "relative z-10 mx-auto flex w-full min-w-0 flex-col items-center justify-center gap-0 lg:flex lg:w-full lg:flex-col lg:items-center"
+                  ? "proses-hero-step-cluster relative z-10 mx-auto flex w-full min-w-0 flex-col items-center gap-y-0 pt-0 lg:w-full"
                   : "relative z-10 mx-auto flex w-full min-w-0 flex-row items-start gap-2.5 lg:flex lg:w-full lg:flex-col lg:items-center lg:gap-1"
               }
             >
-              <div
-                className={isHero ? iconShellHeroBase : mergeAytiCardClass(iconShellClassLight)}
-                aria-hidden
-              >
-                {useHeroImage ? (
-                  <ProsesStepIconMedia
-                    slug={step.slug}
-                    srcPath={stepImagePath}
-                    initialSrc={stepImage}
-                    alt={step.title.replace("\n", " ")}
-                    zoom={stepZoom}
-                    imageSizes="(max-width: 767px) 48px, 56px"
-                    imageClassName={`proses-hero-step-photo absolute inset-0 z-[1]${index === PROSES_KERJA_STEPS.length - 1 ? " proses-step-glyph--final" : ""}`}
-                    imageFit="contain"
-                    fallback={
-                      <Icon
-                        className={`proses-hero-step-glyph relative z-[1] ${iconGlyphClass} ${step.heroGlyphClass}${index === PROSES_KERJA_STEPS.length - 1 ? " proses-step-glyph--final" : ""}`}
-                        aria-hidden
-                      />
-                    }
-                  />
-                ) : isHero ? (
-                  <Icon
-                    className={`proses-hero-step-glyph relative z-[1] ${iconGlyphClass} ${step.heroGlyphClass}${index === PROSES_KERJA_STEPS.length - 1 ? " proses-step-glyph--final" : ""}`}
-                    aria-hidden
-                  />
-                ) : (
+              {isHero ? (
+                <div
+                  className={`${heroIconAnchorClass} order-1${useHeroImage ? " overflow-hidden" : " overflow-visible"}`}
+                  aria-hidden
+                >
+                  {useHeroImage ? (
+                    <ProsesStepIconMedia
+                      slug={step.slug}
+                      srcPath={stepImagePath}
+                      initialSrc={stepImage}
+                      alt={step.title.replace("\n", " ")}
+                      zoom={stepZoom}
+                      imageSizes="(max-width: 767px) 128px, 160px"
+                      imageClassName={`proses-hero-step-photo absolute inset-0 z-[1]${index === PROSES_KERJA_STEPS.length - 1 ? " proses-step-glyph--final" : ""}`}
+                      imageFit="contain"
+                      fallback={
+                        <Icon
+                          className={`proses-hero-step-glyph relative z-[1] ${iconGlyphClass} ${step.heroGlyphClass}${index === PROSES_KERJA_STEPS.length - 1 ? " proses-step-glyph--final" : ""}`}
+                          aria-hidden
+                        />
+                      }
+                    />
+                  ) : (
+                    <Icon
+                      className={`proses-hero-step-glyph relative z-[1] ${iconGlyphClass} ${step.heroGlyphClass}${index === PROSES_KERJA_STEPS.length - 1 ? " proses-step-glyph--final" : ""}`}
+                      aria-hidden
+                    />
+                  )}
+                </div>
+              ) : (
+                <div className={mergeAytiCardClass(iconShellClassLight)} aria-hidden>
                   <ProsesStepIconMedia
                     slug={step.slug}
                     srcPath={stepImagePath}
@@ -129,43 +132,44 @@ export function ProsesKerjaFlow({
                       />
                     }
                   />
-                )}
-                {!isHero && index === PROSES_KERJA_STEPS.length - 1 ? (
-                  <span
-                    className="proses-step-check proses-step-check--light proses-step-check--final"
-                    aria-hidden
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      className="ayti-icon-cold proses-step-check__svg"
-                      xmlns="http://www.w3.org/2000/svg"
+                  {index === PROSES_KERJA_STEPS.length - 1 ? (
+                    <span
+                      className="proses-step-check proses-step-check--light proses-step-check--final"
+                      aria-hidden
                     >
-                      <path
-                        d="M20 6L9 17l-5-5"
-                        stroke="currentColor"
-                        strokeWidth="2.6"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        vectorEffect="non-scaling-stroke"
-                      />
-                    </svg>
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        className="ayti-icon-cold proses-step-check__svg"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M20 6L9 17l-5-5"
+                          stroke="currentColor"
+                          strokeWidth="2.6"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          vectorEffect="non-scaling-stroke"
+                        />
+                      </svg>
+                    </span>
+                  ) : null}
+                </div>
+              )}
+
+              {isHero ? (
+                <p className={stepTitleClass}>
+                  <span className="sr-only">
+                    Langkah <span className="tabular-nums">{stepNo}</span>:{" "}
                   </span>
-                ) : null}
-              </div>
-
-              {isHero ? <span className="proses-hero-step-divider" aria-hidden /> : null}
-
-              <div
-                className={
-                  isHero
-                    ? "flex w-full min-w-0 flex-col items-center space-y-0 lg:flex lg:w-full lg:flex-col lg:items-center lg:pt-0"
-                    : "min-w-0 flex-1 space-y-0.5 pt-0 lg:flex lg:w-full lg:flex-col lg:items-center lg:space-y-0 lg:pt-0"
-                }
-              >
-                <p className={stepLabelClass}>Langkah {stepNo}</p>
-                <p className={stepTitleClass}>{step.title}</p>
-              </div>
+                  {step.title}
+                </p>
+              ) : (
+                <div className="min-w-0 flex-1 space-y-0.5 pt-0 lg:flex lg:w-full lg:flex-col lg:items-center lg:space-y-0 lg:pt-0">
+                  <p className={stepMicroLabelLightClass}>Langkah {stepNo}</p>
+                  <p className={stepTitleClass}>{step.title}</p>
+                </div>
+              )}
             </div>
           </li>
         );

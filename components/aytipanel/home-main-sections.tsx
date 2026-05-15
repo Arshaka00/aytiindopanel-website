@@ -56,9 +56,10 @@ type Props = {
  * Merender section beranda mengikuti `homeLayout` (urutan + visibilitas).
  * Id section selaras dengan anchor navigasi / CMS.
  *
- * Setiap section (kecuali `beranda` / hero — selalu di atas-fold dan punya animasi
- * masuk sendiri) dibungkus `ScrollRevealSection` dengan `sectionKey` — preset reveal
- * bervariasi per section (deterministik), plus pulse ringan saat navigasi hash (`LandingSectionHashFlash`).
+ * Setiap section (termasuk `beranda` / hero dengan `initialRevealed` + backdrop cinematic)
+ * dibungkus `ScrollRevealSection` dengan `sectionKey` — preset reveal bervariasi per section
+ * (deterministik), durasi/easing cinematic di globals, plus pulse ringan saat navigasi hash
+ * (`LandingSectionHashFlash`).
  *
  * Section di bawah hero dimuat lewat `dynamic()` agar chunk JS client terpecah
  * (SSR tetap aktif — HTML & SEO tidak dikorbankan).
@@ -74,11 +75,13 @@ export function HomeMainSections({
 
   const sections: Record<string, ReactNode> = {
     beranda: (
-      <SectionTop
-        hero={content.hero}
-        disableVideoBackground={content.siteSettings.performanceMode.disableVideoBackground}
-        initialViewportIsMobile={initialViewportIsMobile}
-      />
+      <ScrollRevealSection sectionKey="beranda" initialRevealed>
+        <SectionTop
+          hero={content.hero}
+          disableVideoBackground={content.siteSettings.performanceMode.disableVideoBackground}
+          initialViewportIsMobile={initialViewportIsMobile}
+        />
+      </ScrollRevealSection>
     ),
     tentang: (
       <ScrollRevealSection sectionKey="tentang">

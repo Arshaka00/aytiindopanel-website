@@ -1,5 +1,6 @@
 import dynamic from "next/dynamic";
 
+import { LandingScrollPageVeil } from "@/components/aytipanel/landing-scroll-page-veil";
 import { HomeMainSections } from "@/components/aytipanel/home-main-sections";
 import { HomeInitialHashScroll } from "@/components/common/home-initial-hash-scroll";
 import { LandingSectionHashFlash } from "@/components/common/landing-section-hash-flash";
@@ -25,7 +26,8 @@ export function AytiIndoPanelLanding({
 }: LandingProps) {
   return (
     <WhatsAppPhoneProvider phoneDigits={waPhoneDigits}>
-      <div className="flex w-full flex-col bg-background text-foreground">
+      <div className="relative flex w-full flex-col bg-background text-foreground">
+        <LandingScrollPageVeil />
         <main className="min-w-0">
           <HomeInitialHashScroll />
           <LandingSectionHashFlash />

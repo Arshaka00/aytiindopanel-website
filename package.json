@@ -7,7 +7,8 @@
     "build": "node scripts/generate-site-image-manifest.mjs && next build",
     "site:manifest": "node scripts/generate-site-image-manifest.mjs",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "verify:nav-layout": "node scripts/verify-nav-transition-layout.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

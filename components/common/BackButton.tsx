@@ -5,7 +5,13 @@ import type { PointerEvent, ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { scrollToLandingNavHref } from "@/components/common/home-nav-scroll";
+import {
+  scrollToLandingNavHref,
+} from "@/components/common/home-nav-scroll";
+import {
+  type NavigationTransitionContextValue,
+  useNavigationTransitionOptional,
+} from "@/components/common/app-navigation-transition";
 import {
   clearHomeScrollY,
   clearStoredDetailReturnPath,
@@ -56,11 +62,23 @@ function canLikelyUseHistoryBack(): boolean {
 function navigateToStoredHref(
   href: string,
   router: ReturnType<typeof useRouter>,
+  navTx: NavigationTransitionContextValue | null,
 ): void {
   if (href.includes("#")) {
     clearHomeScrollY();
     markLandingHashNavigationIntent(href);
   }
+
+  if (navTx) {
+    navTx.replace(href);
+    if (href.includes("#")) {
+      queueMicrotask(() =>
+        requestAnimationFrame(() => scrollToLandingNavHref(href)),
+      );
+    }
+    return;
+  }
+
   router.replace(href, { scroll: !href.includes("#") });
   if (href.includes("#")) {
     queueMicrotask(() => scrollToLandingNavHref(href));
@@ -77,6 +95,7 @@ export function BackButton({
   forceNavigateHref,
 }: BackButtonProps) {
   const router = useRouter();
+  const navTx = useNavigationTransitionOptional();
   const isNavigatingRef = useRef(false);
 
   const navigatePrevious = useCallback(() => {
@@ -92,7 +111,7 @@ export function BackButton({
     if (forceNavigateHref) {
       try {
         clearStoredDetailReturnPath();
-        navigateToStoredHref(forceNavigateHref, router);
+        navigateToStoredHref(forceNavigateHref, router, navTx);
       } catch {
         /* fallback */
       }
@@ -104,7 +123,7 @@ export function BackButton({
     if (isMobileViewport && mobileForceHref) {
       try {
         clearStoredDetailReturnPath();
-        navigateToStoredHref(mobileForceHref, router);
+        navigateToStoredHref(mobileForceHref, router, navTx);
       } catch {
         /* fallback */
       }
@@ -115,13 +134,14 @@ export function BackButton({
     try {
       const fromStorage = consumeStoredDetailReturnPathIfEligible(currentFullPath());
       if (fromStorage) {
-        navigateToStoredHref(fromStorage, router);
+        navigateToStoredHref(fromStorage, router, navTx);
         releaseLock();
         return;
       }
 
       if (canLikelyUseHistoryBack()) {
-        router.back();
+        if (navTx) navTx.back();
+        else router.back();
         releaseLock();
         return;
       }
@@ -130,9 +150,9 @@ export function BackButton({
     }
 
     clearStoredDetailReturnPath();
-    navigateToStoredHref(fallbackHref, router);
+    navigateToStoredHref(fallbackHref, router, navTx);
     releaseLock();
-  }, [router, fallbackHref, mobileForceHref, forceNavigateHref]);
+  }, [router, fallbackHref, mobileForceHref, forceNavigateHref, navTx]);
 
   /** iOS/Android: sentuhan memicu `pointerup` sebelum `click`; duplikat diblok `isNavigatingRef`. */
   const handlePointerUpNavigate = useCallback(

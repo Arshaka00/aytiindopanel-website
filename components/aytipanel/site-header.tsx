@@ -14,6 +14,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useNavigationTransition } from "@/components/common/app-navigation-transition";
 import { navigateLandingHashFromNav, scrollLandingHomeTop } from "@/components/common/home-nav-scroll";
 import { HeaderSiteSearchDialog } from "@/components/aytipanel/header-site-search-dialog";
 import { IconSearch } from "@/components/aytipanel/icons";
@@ -286,6 +287,7 @@ export function SiteHeader({
   );
 
   const pathname = usePathname();
+  const { navigate: spaNavigate } = useNavigationTransition();
   const mobileSheetId = useId();
   const headerRef = useRef<HTMLElement>(null);
   const desktopNavRef = useRef<HTMLElement>(null);
@@ -327,25 +329,25 @@ export function SiteHeader({
     (href: string) => {
       closeMenu();
       onSyncHashFromHref(href);
-      navigateLandingHashFromNav(pathname, href);
+      navigateLandingHashFromNav(pathname, href, { spaNavigate });
     },
-    [closeMenu, onSyncHashFromHref, pathname],
+    [closeMenu, onSyncHashFromHref, pathname, spaNavigate],
   );
 
   const onDesktopNavNavigate = useCallback(
     (href: string) => {
       onSyncHashFromHref(href);
-      navigateLandingHashFromNav(pathname, href);
+      navigateLandingHashFromNav(pathname, href, { spaNavigate });
     },
-    [onSyncHashFromHref, pathname],
+    [onSyncHashFromHref, pathname, spaNavigate],
   );
 
   const onSiteSearchPick = useCallback(
     (href: string) => {
       onSyncHashFromHref(href);
-      navigateLandingHashFromNav(pathname, href);
+      navigateLandingHashFromNav(pathname, href, { spaNavigate });
     },
-    [onSyncHashFromHref, pathname],
+    [onSyncHashFromHref, pathname, spaNavigate],
   );
 
   const openSiteSearch = useCallback(() => {

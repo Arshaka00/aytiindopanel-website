@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { WhatsAppCTAButton } from "@/components/aytipanel/whatsapp-cta-button";
 import { IconWhatsApp } from "@/components/aytipanel/icons";
 import { mergeAytiCtaClass } from "@/lib/ayti-icon-cold";
+import { useNavigationTransitionOptional } from "@/components/common/app-navigation-transition";
 import { navigateLandingHashFromNav } from "@/components/common/home-nav-scroll";
 import { CmsText } from "@/components/site-cms/cms-text";
 import { useSiteCmsOptional } from "@/components/site-cms/site-cms-provider";
@@ -43,6 +44,7 @@ function HeroSecondaryNavLink({
   children: ReactNode;
 }) {
   const pathname = usePathname();
+  const navTx = useNavigationTransitionOptional();
   const dest = normalizeHeroSecondaryHref(href.trim());
   const cls = mergeAytiCtaClass(className);
 
@@ -77,7 +79,9 @@ function HeroSecondaryNavLink({
           aria-label={ariaLabel}
           onClick={(e) => {
             e.preventDefault();
-            navigateLandingHashFromNav(pathname, dest);
+            navigateLandingHashFromNav(pathname, dest, {
+              spaNavigate: navTx?.navigate ?? ((t) => window.location.assign(t)),
+            });
           }}
         >
           {children}
