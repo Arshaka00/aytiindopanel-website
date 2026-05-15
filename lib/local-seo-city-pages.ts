@@ -1,0 +1,23 @@
+/** @deprecated Impor dari `@/lib/seo-service-city-pages`. */
+export {
+  LOCAL_SEO_PRODUCT_BASES,
+  LOCAL_SEO_BRAND_TAGLINE,
+  type LocalSeoProductBase,
+  type LocalSeoFaqItem,
+  type LocalSeoServiceLink,
+  type LocalSeoCityPageDef,
+  type ServiceCityPageDef,
+  parseLocalSeoCitySlug,
+  parseServiceCitySlug,
+  isLocalSeoCitySlug,
+  isServiceCitySlug,
+  getLocalSeoCityPageBySlug,
+  getServiceCityPageBySlug,
+  getAllLocalSeoCitySlugs,
+  getAllServiceCitySlugs,
+  localSeoCityPagePath,
+  loadServiceCitySeoOverlayMerged,
+  resolveLocalSeoCityMetadata,
+  resolveServiceCityMetadata,
+  buildServiceCitySeoOverlay,
+} from "@/lib/seo-service-city-pages";

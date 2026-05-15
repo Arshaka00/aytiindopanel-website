@@ -11,6 +11,7 @@ import { resolveSeoArticlesIndexMetadata } from "@/lib/seo-articles/metadata";
 import { estimateReadingMinutesFromMarkdown } from "@/lib/seo-articles/reading-time";
 import { getSiteContent } from "@/lib/site-content";
 import { resolvePrimaryWhatsAppDigits } from "@/lib/site-contact";
+import { LAYANAN_PAGES_BASE_PATH } from "@/lib/service-pages";
 
 export const revalidate = 3600;
 
@@ -63,6 +64,15 @@ export default async function ArtikelIndexPage() {
             <p className="mt-6 text-pretty text-lg leading-[1.65] text-muted-foreground md:text-xl md:leading-[1.65]">
               Artikel ringkas untuk yang kerja di proyek: cold room, gudang beku, blast freezer, panel PU—bukan
               ringkasan teori panjang.
+            </p>
+            <p className="mt-6">
+              <Link
+                href={LAYANAN_PAGES_BASE_PATH}
+                className="inline-flex items-center gap-2 rounded-full border border-accent/25 bg-accent/[0.08] px-4 py-2 text-sm font-semibold text-accent transition hover:border-accent/40 hover:bg-accent/[0.12]"
+              >
+                Lihat halaman layanan (panel, cold storage, refrigerasi)
+                <span aria-hidden>→</span>
+              </Link>
             </p>
           </header>
 

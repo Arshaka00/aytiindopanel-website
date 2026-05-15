@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ComponentProps } from "react";
+import { useEffect, useMemo, useRef, useState, type ComponentProps } from "react";
 
 import { HeroBackgroundSlider } from "@/components/aytipanel/hero-background-slider";
+import { useHeroViewportPerformance } from "@/components/aytipanel/use-hero-viewport-performance";
 import { heroSlideSources } from "@/components/aytipanel/hero-slider-config";
 import { useSiteCmsOptional } from "@/components/site-cms/site-cms-provider";
 import {
@@ -35,6 +36,9 @@ export function HeroSectionBackground(props?: {
 }) {
   const cms = useSiteCmsOptional();
   const cmsHeroEdit = Boolean(cms?.eligible && cms.editMode);
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
+
+  useHeroViewportPerformance();
   const [previewSlides, setPreviewSlides] = useState<Record<string, string>>({});
   const [instantPreviewSrc, setInstantPreviewSrc] = useState<string | null>(null);
   /** Pratinjau transform slide hero sebelum simpan draft. */
@@ -135,16 +139,44 @@ export function HeroSectionBackground(props?: {
     useState<ComponentProps<"video">["preload"]>("auto");
   useEffect(() => {
     if (!showVideo) return;
-    const mq = window.matchMedia("(max-width: 767.98px)");
+    const mobileMq = window.matchMedia("(max-width: 767.98px)");
     const sync = () => {
       queueMicrotask(() => {
-        setVideoPreload(mq.matches ? "metadata" : "auto");
+        setVideoPreload(mobileMq.matches ? "metadata" : "metadata");
       });
     };
     sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
+    mobileMq.addEventListener("change", sync);
+    return () => mobileMq.removeEventListener("change", sync);
   }, [showVideo]);
+
+  /** Jeda decode video saat scroll / hero hampir keluar layar. */
+  useEffect(() => {
+    if (!showVideo) return;
+    const beranda = document.getElementById("beranda");
+    const videoEl = heroVideoRef.current;
+    if (!beranda || !videoEl) return;
+
+    const syncPlayback = () => {
+      const shouldPause = beranda.getAttribute("data-hero-bg-active") === "0";
+      if (shouldPause) {
+        if (!videoEl.paused) videoEl.pause();
+        return;
+      }
+      void videoEl.play().catch(() => {
+        /* autoplay policy / tab background */
+      });
+    };
+
+    syncPlayback();
+    const mo = new MutationObserver(syncPlayback);
+    mo.observe(beranda, {
+      attributes: true,
+      attributeFilter: ["data-hero-bg-active"],
+    });
+    return () => mo.disconnect();
+  }, [showVideo]);
+
   /** Poster eksplisit, atau frame cadangan dari slide pertama — bukan warna solid dummy. */
   const videoPoster =
     showVideo && video
@@ -154,9 +186,10 @@ export function HeroSectionBackground(props?: {
   return (
     <>
       {showVideo && video ? (
-        <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden>
+        <div className="hero-bg-root pointer-events-none absolute inset-0 z-0 overflow-hidden bg-[#050B18]" aria-hidden>
           {/* eslint-disable-next-line jsx-a11y/media-has-caption -- dekoratif */}
           <video
+            ref={heroVideoRef}
             key={video.src}
             src={video.src}
             poster={videoPoster}
@@ -165,16 +198,7 @@ export function HeroSectionBackground(props?: {
             autoPlay
             loop
             preload={videoPreload}
-            className="absolute inset-0 h-full w-full object-cover object-center"
-          />
-          {/* Samakan vignette dengan HeroBackgroundSlider (satu gambar). */}
-          <div
-            className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_100%_92%_at_50%_44%,transparent_32%,rgba(3,8,20,0.15)_62%,rgba(2,6,16,0.38)_100%)]"
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none absolute inset-0 z-[2] shadow-[inset_0_-48px_72px_-12px_rgba(2,6,16,0.11),inset_0_0_44px_rgba(3,9,20,0.06)]"
-            aria-hidden
+            className="hero-bg-media absolute inset-0 h-full w-full object-cover object-center"
           />
         </div>
       ) : (

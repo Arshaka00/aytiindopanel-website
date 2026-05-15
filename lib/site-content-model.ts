@@ -2,6 +2,8 @@ import type { ProductB2BCategoryData } from "@/components/aytipanel/products-b2b
 import type { RichProductDetail } from "@/components/aytipanel/product-detail-rich-data";
 import type { CmsRichTextValue } from "@/lib/cms-rich-text";
 import type { CmsImageTransform } from "@/lib/cms-image-transform";
+import type { LayananPagesCmsContent } from "@/lib/layanan-pages/cms-types";
+import type { LandingKotaPagesCmsContent } from "@/lib/landing-kota-pages/cms-types";
 
 export type { CmsRichTextValue } from "@/lib/cms-rich-text";
 export type { CmsImageTransform } from "@/lib/cms-image-transform";
@@ -394,7 +396,11 @@ export type SiteContent = {
     };
     quickLinks: { id: string; label: string; href: string }[];
   };
-  /** Gambar halaman marketing `/cold-storage` (hero + placeholder kartu ilustrasi). */
+  /** Konten halaman `/artikel/layanan` — teks & hero (editable CMS). */
+  layananPages: LayananPagesCmsContent;
+  /** Indeks `/artikel/lokasi` + override sparse URL landing kota (`/cold-storage-*`, dll.). */
+  landingKotaPages: LandingKotaPagesCmsContent;
+  /** @deprecated Gunakan `layananPages.pages` slug `cold-storage`; disinkronkan saat normalize. */
   coldStoragePage: {
     heroImageSrc: string;
     heroImageAlt: string;

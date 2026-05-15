@@ -2,6 +2,13 @@ import { plainTextFromRichValue } from "@/lib/cms-rich-text";
 import { SERVICE_AREA_CITY_KEYS } from "@/lib/local-seo-geo";
 import { GALLERY_PROJECTS } from "@/components/aytipanel/gallery-project-data";
 import { PRODUCTS } from "@/components/aytipanel/products-catalog";
+import {
+  getLandingKotaHubPages,
+  landingKotaHubPath,
+  LANDING_KOTA_PAGES_BASE_PATH,
+} from "@/lib/landing-kota-pages";
+import { resolveServicePublicPath } from "@/lib/seo-service-paths";
+import { SERVICE_PAGES, LAYANAN_PAGES_BASE_PATH } from "@/lib/service-pages";
 import { DEFAULT_HOME_LAYOUT } from "@/lib/home-layout-defaults";
 import type { SeoArticle } from "@/lib/seo-articles/types";
 import type { SiteContent } from "@/lib/site-content-model";
@@ -345,17 +352,64 @@ function enrichFromSiteContent(byHref: Map<string, HeaderSiteSearchTarget>, site
     });
   }
 
-  if (!byHref.has("/cold-storage")) {
-    byHref.set("/cold-storage", {
-      id: "page-cold-storage",
-      title: "Cold storage",
-      href: "/cold-storage",
+  if (!byHref.has(LAYANAN_PAGES_BASE_PATH)) {
+    byHref.set(LAYANAN_PAGES_BASE_PATH, {
+      id: "page-layanan-index",
+      title: "Layanan",
+      href: LAYANAN_PAGES_BASE_PATH,
       haystack: normalizeHaystack([
-        "cold storage cold room portable plug ruang dingin freezer chiller sandwich panel mobile plug play",
+        "layanan cold storage sandwich panel blast freezer refrigerasi artikel",
+        "halaman layanan industri",
       ]),
     });
   }
-  const coldStoragePage = byHref.get("/cold-storage");
+  for (const sp of SERVICE_PAGES) {
+    const href = resolveServicePublicPath(sp.slug);
+    if (byHref.has(href)) continue;
+    byHref.set(href, {
+      id: `layanan-page-${sp.slug}`,
+      title: sp.navLabel,
+      href,
+      haystack: normalizeHaystack([
+        sp.navLabel,
+        sp.hero.h1,
+        sp.metaDescription,
+        sp.slug.replace(/-/g, " "),
+        ...sp.industries,
+        sp.kind === "support" ? "panduan edukasi investasi kualitas" : "layanan utama jasa instalasi",
+        "artikel layanan cold storage sandwich panel refrigerasi blast freezer cold room",
+      ]),
+    });
+  }
+
+  if (!byHref.has(LANDING_KOTA_PAGES_BASE_PATH)) {
+    byHref.set(LANDING_KOTA_PAGES_BASE_PATH, {
+      id: "page-landing-kota-index",
+      title: "Landing Kota",
+      href: LANDING_KOTA_PAGES_BASE_PATH,
+      haystack: normalizeHaystack([
+        "landing kota lokasi area layanan wilayah cold storage sandwich panel seo lokal indonesia",
+        buildIndonesiaLocalServiceSearchHaystack(),
+      ]),
+    });
+  }
+  for (const hub of getLandingKotaHubPages()) {
+    const href = landingKotaHubPath(hub.slug);
+    if (byHref.has(href)) continue;
+    byHref.set(href, {
+      id: `landing-kota-hub-${hub.slug}`,
+      title: hub.modifierLabel,
+      href,
+      haystack: normalizeHaystack([
+        hub.modifierLabel,
+        hub.h1,
+        hub.metaDescription,
+        hub.slug.replace(/-/g, " "),
+        "landing kota area layanan cold storage sandwich panel",
+      ]),
+    });
+  }
+  const coldStoragePage = byHref.get(resolveServicePublicPath("cold-storage"));
   if (coldStoragePage) {
     mergeHaystack(coldStoragePage, buildIndonesiaLocalServiceSearchHaystack());
   }

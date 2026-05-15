@@ -50,8 +50,7 @@ const GLOBAL_KEYWORDS = [
   "ABF",
   "Pembekuan cepat",
   "Panel PU",
-  "Panel PIU",
-  "panel polyuretane",
+  "panel polyurethane",
   "pintu cold storage",
   "freon",
   "mesin pendingin",
@@ -254,95 +253,10 @@ function applyBrandToMetaTitle(metaTitle: string, brand: string): string {
 }
 
 function buildAllDefinitions(): SeoLandingPageDef[] {
-  const coldStorageCity = buildProductCityPages("cold-storage", {
-    topicLabel: "Cold storage",
-    h1: (city) => `Cold storage industri di ${city} — panel & mesin pendingin terintegrasi`,
-    metaTitle: (city) => `Cold storage ${city} | instalasi ruang dingin & refrigerasi | {brand}`,
-    metaDescription: (city) =>
-      `Solusi cold storage untuk ${city}: sandwich panel PU/EPS, cold room, chiller/freezer room, sistem refrigerasi, pintu cold storage, dan commissioning. Konsultasi teknis PT AYTI INDO PANEL.`,
-    keywords: ["cold storage", "ruang pendingin", "pendingin industri", "sandwich panel", "cold room"],
-    paragraphs: (city) => [
-      `Untuk operasional di ${city}, cold storage harus stabil secara termal, hemat energi, dan mudah diaudit kebersihan serta suhunya. Kami merancang kombinasi panel insulasi, pintu cold room, dan mesin pendingin (evaporator, compressor, kontrol) sesuai kapasitas produksi dan pola traffic gudang.`,
-      `Tim kami mendampingi survey kebutuhan, desain layout, fabrikasi panel, hingga uji performa (pull-down) agar target suhu tercapai sebelum handover. Cocok untuk distribusi dingin, farmasi, F&B, seafood, dan logistik berantai dingin.`,
-    ],
-    faq: (city) => [
-      {
-        question: `Berapa lama proyek cold storage di ${city} biasanya selesai?`,
-        answer:
-          "Tergantung ukuran ruangan, kompleksitas refrigerasi, dan kesiapan site. Modul portabel lebih cepat; cold storage custom mengikuti jadwal sipil dan MEP. Estimasi awal diberikan setelah data beban dingin dan jam operasi tersedia.",
-      },
-      {
-        question: "Apakah sandwich panel PU aman untuk ruang makanan dingin?",
-        answer:
-          "Ya, untuk aplikasi food-grade umumnya memakai material dan finishing sambungan yang memenuhi kebutuhan hygiene proyek. Spesifikasi inti (ketebalan, λ, finishing) disesuaikan target suhu dan siklus CIP/pembersihan.",
-      },
-      {
-        question: "Apakah tersedia layanan perawatan freon dan compressor?",
-        answer:
-          "Kami menyalurkan ke program maintenance berkala: inspeksi kebocoran, tekanan suction/discharge, amp draw compressor, dan kalibrasi sensor — agar freon dan sirkuit refrigerasi tetap efisien.",
-      },
-    ],
-    relatedProductSlugs: [
-      "cold-storage-custom",
-      "cold-storage-portable",
-      "sandwich-panel-pu-camelock",
-      "sistem-refrigerasi",
-      "pintu-panel",
-    ],
-    whatsAppContext: "solusi_sistem",
-    waTopicPhrase: (city) => `cold storage di ${city}`,
-  });
-
-  const sandwichPanelCity = buildProductCityPages("sandwich-panel", {
-    topicLabel: "Sandwich panel",
-    h1: (city) => `Sandwich panel PU/EPS untuk cold room & gudang dingin di ${city}`,
-    metaTitle: (city) => `Sandwich panel ${city} | PU CameLock, knock down & EPS | {brand}`,
-    metaDescription: (city) =>
-      `Supplier sandwich panel untuk ${city}: core PU (CameLock / knock down) dan EPS ekonomis. Cocok cold room, chiller room, freezer room, dan partition industri. Minta spesifikasi tebal panel dan λ sesuai target suhu.`,
-    keywords: [
-      "sandwich panel",
-      "cold storage",
-      "Panel PU",
-      "Panel PIU",
-      "Castorit",
-      "Kastorit",
-      "panel polyuretane",
-    ],
-    paragraphs: (city) => [
-      `Di ${city}, kebutuhan panel insulasi sering berkaitan dengan ekspansi gudang dingin, retrofit cold room, atau line produksi baru. Panel PU memberikan performa termal lebih ketat dibanding EPS pada delta suhu besar; EPS tetap relevan untuk aplikasi ekonomis dengan beban termal moderat.`,
-      `Sambungan CamLock maupun sistem knock down dipilih berdasarkan mobilitas, kecepatan pasang, dan kebutuhan kedap udara. Kami membantu hitung beban dingin kasar sebagai input awal desain ketebalan panel.`,
-    ],
-    faq: (city) => [
-      {
-        question: `Bisa konsultasi teknis sandwich panel untuk proyek di ${city}?`,
-        answer:
-          "Ya. Kirimkan gambar denah, target suhu, dan jenis komoditas; kami sarankan ketebalan panel, tipe sambungan, dan integrasi pintu cold storage.",
-      },
-      {
-        question: "Apa beda panel PU knock down dengan CamLock?",
-        answer:
-          "Keduanya modular. Knock down mendukung fleksibilitas transport dan pemasangan ulang; CamLock umumnya cepat untuk ruang kotak standar dengan presisi sambungan tinggi.",
-      },
-      {
-        question: "Apakah keyword merek seperti Castorit sama dengan panel PU?",
-        answer:
-          "Di pasar Indonesia istilah merek/brand panel PU sering dipakai bergantian. Spesifikasi teknis yang penting adalah densitas inti, λ termal, dan sistem sambungan — kami transparan terkait material yang dipasang di lapangan.",
-      },
-    ],
-    relatedProductSlugs: [
-      "sandwich-panel-pu-camelock",
-      "sandwich-panel-pu-full-knock-down",
-      "sandwich-panel-eps",
-      "pintu-panel",
-    ],
-    whatsAppContext: "produk",
-    waTopicPhrase: (city) => `sandwich panel proyek ${city}`,
-  });
-
   const blastFreezerCity = buildProductCityPages("blast-freezer", {
     topicLabel: "Blast freezer / ABF",
     h1: (city) => `Blast freezer & ABF (pembekuan cepat) untuk industri di ${city}`,
-    metaTitle: (city) => `Blast freezer & ABF ${city} | pembekuan cepat seafood & daging | {brand}`,
+    metaTitle: (city) => `Blast freezer & ABF ${city} | Pembekuan cepat seafood & daging | {brand}`,
     metaDescription: (city) =>
       `Air blast freezer (ABF) dan blast freezer industri di ${city}: pembekuan cepat untuk ikan, daging, dan bahan mudah rusak. Integrasi cold room, conveyor line, dan sistem refrigerasi two-stage bila diperlukan.`,
     keywords: ["blast freezer", "ABF", "Pembekuan cepat", "freezer room"],
@@ -880,8 +794,6 @@ function buildAllDefinitions(): SeoLandingPageDef[] {
 
   return uniqBySlug([
     ...buildCityAreaHubPages(),
-    ...coldStorageCity,
-    ...sandwichPanelCity,
     ...blastFreezerCity,
     ...coldRoomCity,
     ...panelPendinginCity,

@@ -656,8 +656,8 @@ export const RICH_PRODUCT_DETAILS: Record<string, RichProductDetail> = {
     specsHeading: "Fokus layanan",
     specs: [
       "Respons teknis cepat",
-      "Analisa masalah yang terukur",
-      "Minim downtime operasional",
+      "Analisis masalah yang terukur",
+      "Meminimalkan downtime operasional",
       "Dukungan teknisi berpengalaman",
       "Penanganan sesuai standar kerja lapangan",
     ],

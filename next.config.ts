@@ -2,6 +2,38 @@ import type { NextConfig } from "next";
 
 import { SITE_APEX_HOSTNAME, SITE_PUBLIC_HOSTNAME } from "./lib/site-public-host";
 
+/** Slug halaman layanan — sinkron dengan `data/layanan-pages/live.json` (hindari import berat di next.config). */
+const LAYANAN_PAGE_SLUGS = [
+  "sandwich-panel-pu",
+  "sandwich-panel-knock-down",
+  "cold-storage",
+  "cold-storage-portable",
+  "blast-freezer",
+  "refrigeration-system",
+  "cold-room-door",
+  "cold-storage-murah",
+  "cold-storage-berkualitas",
+] as const;
+
+/** Layanan inti dengan canonical di root — tidak diarahkan ke /artikel/layanan. */
+const SEO_ROOT_LAYANAN_SLUGS = [
+  "cold-storage",
+  "cold-room-door",
+  "blast-freezer",
+  "sandwich-panel-pu",
+] as const;
+
+const SEO_ROOT_PUBLIC_PATH: Record<(typeof SEO_ROOT_LAYANAN_SLUGS)[number], string> = {
+  "cold-storage": "/cold-storage",
+  "cold-room-door": "/cold-room",
+  "blast-freezer": "/blast-freezer",
+  "sandwich-panel-pu": "/sandwich-panel-pu",
+};
+
+const LAYANAN_REDIRECT_TO_ARTIKEL = LAYANAN_PAGE_SLUGS.filter(
+  (slug) => !(SEO_ROOT_LAYANAN_SLUGS as readonly string[]).includes(slug),
+);
+
 const nextConfig: NextConfig = {
   experimental: {
     /** Kurangi bundle surface untuk import bernama besar (tree-shake lebih agresif). */
@@ -32,6 +64,19 @@ const nextConfig: NextConfig = {
       },
       /** Halaman indeks katalog dihapus — arahkan ke section Produk di beranda. */
       { source: "/produk", destination: "/#produk", permanent: true },
+      /** Halaman layanan sekunder tetap di /artikel/layanan/[slug]. */
+      ...LAYANAN_REDIRECT_TO_ARTIKEL.map((slug) => ({
+        source: `/${slug}`,
+        destination: `/artikel/layanan/${slug}`,
+        permanent: true,
+      })),
+      /** Canonical layanan inti: /artikel/layanan → root. */
+      ...SEO_ROOT_LAYANAN_SLUGS.map((slug) => ({
+        source: `/artikel/layanan/${slug}`,
+        destination: SEO_ROOT_PUBLIC_PATH[slug],
+        permanent: true,
+      })),
+      { source: "/cold-room-door", destination: "/cold-room", permanent: true },
     ];
   },
   allowedDevOrigins: [

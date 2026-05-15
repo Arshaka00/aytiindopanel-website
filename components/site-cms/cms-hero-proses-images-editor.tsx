@@ -6,11 +6,11 @@ import { useSiteCmsOptional } from "@/components/site-cms/site-cms-provider";
 import type { SiteContent } from "@/lib/site-content-model";
 
 const PROSES_STEP_SLOTS = [
-  { slug: "konsultasi", label: "1 · Konsultasi" },
-  { slug: "survey", label: "2 · Survey" },
-  { slug: "produksi", label: "3 · Produksi" },
-  { slug: "instalasi", label: "4 · Instalasi" },
-  { slug: "selesai", label: "5 · Selesai" },
+  { slug: "konsultasi", label: "1 · Sandwich Panel PU" },
+  { slug: "survey", label: "2 · Sandwich Panel EPS" },
+  { slug: "produksi", label: "3 · Cold Storage" },
+  { slug: "instalasi", label: "4 · Sistem Pendingin" },
+  { slug: "selesai", label: "5 · Door & Dock" },
 ] as const;
 
 type ProsesStepSlug = (typeof PROSES_STEP_SLOTS)[number]["slug"];
@@ -36,7 +36,8 @@ type Props = {
  * Editor CMS untuk 5 gambar kecil pada strip "proses kerja" di hero.
  * Tiap slot mengunggah ke `/api/site-media/upload?scope=hero` lalu mem-stage
  * URL ke path `hero.prosesStepImages.<slug>`. Reset slot mengembalikan ke
- * default (string kosong) sehingga fallback SVG icon muncul kembali.
+ * default (string kosong) sehingga fallback ikon SVG dipakai (varian non-hero).
+ * Strip hero beranda selalu memakai ikon SVG berwarna, bukan slot gambar ini.
  * Zoom disimpan ke staging (`stageProsesStepImageZoom`) — **bukan** otomatis ke server;
  * pengguna menekan **Simpan media** di chrome CMS.
  */

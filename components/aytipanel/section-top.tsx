@@ -7,13 +7,16 @@ import { CmsHeroSlidesEditor } from "@/components/site-cms/cms-hero-slides-edito
 import { CmsText } from "@/components/site-cms/cms-text";
 import type { SiteContent } from "@/lib/site-content";
 
-/** Intro hero: Sora + render halus; tracking & line-height agar kalimat panjang tetap nyaman dibaca. */
+/** Intro hero: satu bobot, kontras warna sangat halus — tanpa bayangan keras. */
 const heroIntroBodyClass =
-  "[font-family:var(--font-sora),Montserrat,sans-serif] text-pretty text-[clamp(1rem,calc(0.9rem+0.55vw),1.15rem)] font-normal leading-[1.5] tracking-[0.012em] text-white/[0.96] antialiased [-moz-osx-font-smoothing:grayscale] [text-rendering:optimizeLegibility] [text-shadow:0_1px_2px_rgba(0,0,0,0.55),0_0_18px_rgba(2,8,20,0.28)] max-md:leading-[1.48] md:text-[clamp(1.125rem,calc(0.98rem+0.5vw),1.375rem)] md:leading-[1.46] md:tracking-[0.01em]";
+  "[font-family:var(--font-sora),Montserrat,sans-serif] text-pretty text-[clamp(1rem,calc(0.9rem+0.45vw),1.125rem)] font-normal leading-[1.68] tracking-[0.022em] text-white/[0.8] antialiased [font-feature-settings:'kern','liga'] [text-rendering:optimizeLegibility] [text-shadow:0_1px_3px_rgba(2,8,24,0.08)] max-md:leading-[1.66] md:text-[clamp(1.125rem,calc(1rem+0.42vw),1.375rem)] md:leading-[1.72] md:tracking-[0.024em] md:text-white/[0.82]";
 
-/** Bingkai kaca intro: lapisan putih + gelap netral (tanpa tint biru dingin). */
+const heroIntroRegularClass = "hero-intro-regular font-normal text-inherit";
+const heroIntroSemiboldClass = "hero-intro-semibold font-normal text-white/[0.9]";
+
+/** Bingkai kaca intro — latar tipis agar teks tetap terbaca tanpa kotak gelap tebal. */
 const heroIntroGlassShellClass =
-  "hero-intro-glass-shell relative z-[1] mx-auto w-full min-w-0 max-w-[min(100%,46rem)] overflow-hidden rounded-2xl border border-white/[0.22] bg-[linear-gradient(to_bottom_right,rgba(255,255,255,0.2),rgba(255,255,255,0.08)_52%,transparent_70%),linear-gradient(to_bottom_right,rgba(255,255,255,0.11),rgba(255,255,255,0.06)_100%),linear-gradient(to_bottom_right,rgba(248,248,250,0.07),rgba(6,10,20,0.06),rgba(1,3,10,0.14))] px-3.5 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_1px_2px_rgba(0,0,0,0.14),0_6px_14px_rgba(0,0,0,0.06),0_14px_30px_rgba(1,6,18,0.12),0_24px_48px_-8px_rgba(2,8,18,0.14)] ring-1 ring-inset ring-white/[0.14] backdrop-blur-[16px] backdrop-saturate-[1.15] max-md:border-white/[0.18] max-md:bg-[linear-gradient(to_bottom_right,rgba(255,255,255,0.16),rgba(255,255,255,0.065)_50%,transparent_68%),linear-gradient(to_bottom_right,rgba(255,255,255,0.09),rgba(255,255,255,0.048)_100%),linear-gradient(to_bottom_right,rgba(248,248,250,0.055),rgba(6,10,18,0.07),rgba(1,3,9,0.12))] max-md:px-3 max-md:py-2 max-md:shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_2px_4px_rgba(0,0,0,0.12),0_6px_18px_rgba(0,0,0,0.05),0_14px_34px_rgba(1,4,14,0.12)] md:px-5 md:py-3";
+  "hero-intro-glass-shell relative z-[1] mx-auto w-full min-w-0 max-w-[min(100%,46rem)] overflow-hidden rounded-2xl border border-white/[0.08] bg-[linear-gradient(to_bottom_right,rgba(255,255,255,0.06),rgba(255,255,255,0.02)_55%,transparent_72%),linear-gradient(to_bottom_right,rgba(6,10,20,0.14),rgba(6,10,20,0.06))] px-3.5 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_6px_16px_-14px_rgba(2,8,18,0.28)] ring-1 ring-inset ring-white/[0.05] backdrop-blur-[10px] backdrop-saturate-[1.04] md:border-white/10 md:bg-[linear-gradient(to_bottom_right,rgba(8,12,22,0.28),rgba(6,10,18,0.18)_58%,rgba(4,8,16,0.12))] md:shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_4px_14px_-12px_rgba(0,0,0,0.32)] md:backdrop-blur-none max-md:border-white/[0.07] max-md:bg-[linear-gradient(to_bottom_right,rgba(255,255,255,0.05),transparent_58%),linear-gradient(to_bottom_right,rgba(6,10,18,0.12),rgba(4,8,14,0.06))] max-md:px-3 max-md:py-2 md:px-5 md:py-3";
 
 export function SectionTop({
   hero,
@@ -31,7 +34,7 @@ export function SectionTop({
       {/* Hero: padding Android dikunci globals. `ua-android`: shift-up + CTA. `ua-iphone`: shift-up (teks + alur kerja) + CTA + skala tombol */}
       <section
         id="beranda"
-        className="hero hero-section-fixed-dark relative isolate flex h-auto min-h-0 scroll-mt-[max(env(safe-area-inset-top,0px),0.75rem)] flex-col items-center justify-start overflow-x-clip overflow-y-visible border-b border-white/[0.06] bg-[#050B18] py-8 pb-[max(7.25rem,calc(env(safe-area-inset-bottom,0px)+1.875rem))] pt-[max(3.25rem,calc(env(safe-area-inset-top,0px)+2.25rem))] text-white [-webkit-font-smoothing:antialiased] sm:pt-[3.75rem] md:min-h-[min(92svh,980px)] md:py-0 lg:min-h-[min(94svh,980px)]"
+        className="hero hero-section-fixed-dark relative flex h-auto min-h-0 scroll-mt-[max(env(safe-area-inset-top,0px),0.75rem)] flex-col items-center justify-start overflow-x-clip overflow-y-visible border-b border-white/[0.06] bg-[#050B18] py-8 pb-[max(7.25rem,calc(env(safe-area-inset-bottom,0px)+1.875rem))] pt-[max(3.25rem,calc(env(safe-area-inset-top,0px)+2.25rem))] text-white [-webkit-font-smoothing:antialiased] sm:pt-[3.75rem] md:min-h-[min(88svh,920px)] md:overflow-hidden md:py-0 lg:min-h-[min(90svh,920px)]"
         aria-labelledby="hero-heading"
       >
         <HeroSectionBackground
@@ -56,12 +59,12 @@ export function SectionTop({
         />
         <div className="hero-overlay-top-hairline pointer-events-none absolute inset-x-0 top-0 z-[1] h-px" aria-hidden />
         <div className="hero-layout-shell relative z-10 mx-auto flex w-full min-w-0 max-w-6xl flex-1 items-start pl-[max(1.25rem,env(safe-area-inset-left,0px))] pr-[max(1.25rem,env(safe-area-inset-right,0px))] pt-2 sm:pl-6 sm:pr-6 sm:pt-3 md:items-center md:px-8 md:pt-0">
-          <div className="hero-content-enter w-full drop-shadow-[0_2px_6px_rgba(2,7,18,0.38)]">
+          <div className="hero-content-enter w-full drop-shadow-[0_2px_6px_rgba(2,7,18,0.38)] md:drop-shadow-none">
             <div className="mx-auto flex w-full min-w-0 max-w-[min(100%,56.25rem)] flex-col text-left">
               <div className="hero-content-stack mt-5 flex flex-col sm:mt-6 md:mt-0">
                 <div className="hero-title-intro-block flex flex-col gap-2 md:gap-3">
                   <div className="space-y-1.5 md:space-y-2">
-                  <div className="hero-eyebrow-row -mt-3 -translate-y-3 flex w-full items-center justify-center gap-2.5 will-change-transform sm:-mt-4 sm:translate-y-0 sm:gap-3.5 md:-mt-6 md:-translate-y-2 md:gap-4 lg:-mt-8 lg:-translate-y-4">
+                  <div className="hero-eyebrow-row -mt-3 -translate-y-3 flex w-full items-center justify-center gap-2.5 sm:-mt-4 sm:translate-y-0 sm:gap-3.5 md:-mt-6 md:-translate-y-2 md:gap-4 lg:-mt-8 lg:-translate-y-4">
                     <span
                       className="h-px min-w-[1.25rem] flex-1 rounded-full bg-gradient-to-r from-transparent via-white/12 to-white/20 max-[360px]:max-w-[2.25rem] sm:max-w-none"
                       aria-hidden
@@ -98,7 +101,7 @@ export function SectionTop({
                           text={hero.headingLine1}
                           fallbackText="SOLUSI SISTEM"
                           as="span"
-                          className="hero-heading-glass-line1 min-w-0 shrink-0 font-extrabold leading-[1.02] tracking-[-0.04em] text-[#F5F7FF]/88 text-[clamp(0.9rem,2.6vw,1.2rem)] md:text-[1.5rem]"
+                          className="hero-heading-glass-line1 min-w-0 shrink-0 font-extrabold leading-[1.02] tracking-[-0.04em] text-[#F5F7FF]/88 text-[clamp(0.9rem,2.6vw,1.2rem)] md:text-[1.6875rem]"
                         />
                         <span
                           className="hero-heading-line1-end-rule h-px w-10 shrink-0 rounded-full bg-gradient-to-r from-white/45 via-white/22 to-transparent shadow-[0_0_10px_rgba(255,255,255,0.08)] sm:w-12 md:w-16"
@@ -111,7 +114,7 @@ export function SectionTop({
                           text={hero.headingMiddle}
                           fallbackText="PENDINGIN"
                           as="span"
-                          className="hero-heading-crystal hero-heading-glass-middle block text-[clamp(2.35rem,12.75vw,5.1rem)] font-extrabold leading-[0.9] tracking-[-0.022em]"
+                          className="hero-heading-crystal hero-heading-glass-middle block text-[clamp(2.35rem,12.75vw,5.1rem)] font-extrabold leading-[0.9] tracking-[-0.022em] md:text-[clamp(5.5rem,10.5vw,6.75rem)] md:leading-[0.88]"
                         />
                       </span>
                       <span className="hero-heading-line2-row mt-0.5 inline-flex max-w-full items-center gap-2 sm:gap-2.5 md:mt-1">
@@ -167,28 +170,48 @@ export function SectionTop({
                     <p
                       className={`hero-intro-body ${heroIntroBodyClass} my-0 text-left md:max-w-[44rem]`}
                     >
-                      <CmsText path="hero.intro.before1" text={hero.intro.before1} as="span" />{" "}
+                      <CmsText
+                        path="hero.intro.before1"
+                        text={hero.intro.before1}
+                        as="span"
+                        className={heroIntroRegularClass}
+                      />{" "}
                       <CmsText
                         path="hero.intro.bold1"
                         text={hero.intro.bold1}
                         as="span"
-                        className="font-semibold tracking-[0.005em] text-[#F7F9FF] [text-shadow:0_1px_2px_rgba(0,0,0,0.42)]"
+                        className={heroIntroSemiboldClass}
                       />{" "}
-                      <CmsText path="hero.intro.middle" text={hero.intro.middle} as="span" />{" "}
+                      <CmsText
+                        path="hero.intro.middle"
+                        text={hero.intro.middle}
+                        as="span"
+                        className={heroIntroRegularClass}
+                      />{" "}
                       <CmsText
                         path="hero.intro.bold2"
                         text={hero.intro.bold2}
                         as="span"
-                        className="font-semibold tracking-[0.005em] text-[#F7F9FF] [text-shadow:0_1px_2px_rgba(0,0,0,0.42)]"
+                        className={heroIntroSemiboldClass}
                       />{" "}
-                      <CmsText path="hero.intro.after2" text={hero.intro.after2} as="span" />{" "}
+                      <CmsText
+                        path="hero.intro.after2"
+                        text={hero.intro.after2}
+                        as="span"
+                        className={heroIntroRegularClass}
+                      />{" "}
                       <CmsText
                         path="hero.intro.bold3"
                         text={hero.intro.bold3}
                         as="span"
-                        className="font-semibold tracking-[0.005em] text-[#9AEAFA] [text-shadow:0_1px_2px_rgba(0,0,0,0.38),0_0_14px_rgba(2,10,24,0.22)]"
+                        className={heroIntroSemiboldClass}
                       />{" "}
-                      <CmsText path="hero.intro.after3" text={hero.intro.after3} as="span" />
+                      <CmsText
+                        path="hero.intro.after3"
+                        text={hero.intro.after3}
+                        as="span"
+                        className={heroIntroRegularClass}
+                      />
                     </p>
                   </div>
                 </div>
@@ -199,9 +222,9 @@ export function SectionTop({
                     className="mx-auto w-full min-w-0 scroll-mt-[max(5rem,env(safe-area-inset-top,0px)+4.5rem)] space-y-1.5 py-0 text-center md:scroll-mt-[5.25rem] md:space-y-2 md:py-1"
                   >
                     <div className="hero-proses-badge-row mb-1 flex w-full flex-col items-center gap-1 sm:mb-1.5 md:mb-2">
-                      <div className="flex w-full max-w-[min(100%,28rem)] items-center justify-center gap-2.5">
+                      <div className="flex w-full max-w-[min(100%,20rem)] items-center justify-center gap-1.5 sm:max-w-[22rem] sm:gap-2">
                         <span
-                          className="h-px min-w-[1.25rem] flex-1 rounded-full bg-gradient-to-r from-transparent via-white/12 to-white/20 max-[360px]:max-w-[2.25rem] sm:max-w-none"
+                          className="h-px w-[1.75rem] shrink-0 rounded-full bg-gradient-to-r from-transparent via-white/10 to-white/16 sm:w-8 md:w-9"
                           aria-hidden
                         />
                         <span className="inline-flex shrink-0 items-center gap-2 sm:gap-2.5">
@@ -228,7 +251,7 @@ export function SectionTop({
                           />
                         </span>
                         <span
-                          className="h-px min-w-[1.25rem] flex-1 rounded-full bg-gradient-to-l from-transparent via-white/12 to-white/20 max-[360px]:max-w-[2.25rem] sm:max-w-none"
+                          className="h-px w-[1.75rem] shrink-0 rounded-full bg-gradient-to-l from-transparent via-white/10 to-white/16 sm:w-8 md:w-9"
                           aria-hidden
                         />
                       </div>

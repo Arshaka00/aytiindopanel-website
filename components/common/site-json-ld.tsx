@@ -5,6 +5,9 @@ import type { SiteContent } from "@/lib/site-content-model";
 export function SiteJsonLd({ content }: { content: SiteContent }) {
   const ss = content.siteSettings;
   const seo = ss.seoContent;
+  const kontak = content.kontak;
+  const street =
+    kontak.addressLines?.map((l) => l.trim()).filter(Boolean).join(", ") ?? "";
   const originUrl = resolvePublicSiteOrigin(ss.siteUrl);
   const origin = originUrl.origin;
 
@@ -49,10 +52,23 @@ export function SiteJsonLd({ content }: { content: SiteContent }) {
 
   const graph: Record<string, unknown>[] = [
     {
-      "@type": "Organization",
+      "@type": ["Organization", "LocalBusiness"],
       "@id": `${origin}/#organization`,
       name: ss.siteName || "Organization",
       url: origin,
+      ...(kontak.phoneTel.trim() ? { telephone: kontak.phoneTel.trim() } : {}),
+      ...(kontak.email.trim()
+        ? { email: kontak.email.trim() }
+        : {}),
+      ...(street
+        ? {
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: street,
+              addressCountry: "ID",
+            },
+          }
+        : {}),
       ...(sameAsAll.length ? { sameAs: sameAsAll } : {}),
       ...(description ? { description } : {}),
       ...(geo ? { geo } : {}),

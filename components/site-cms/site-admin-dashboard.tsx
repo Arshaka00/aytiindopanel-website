@@ -97,6 +97,20 @@ const secondaryLinks: { href: string; title: string; description: string; cta: s
     cta: "Buka beranda",
   },
   {
+    href: "/artikel/layanan",
+    title: "Halaman Layanan",
+    description:
+      "Edit mode di beranda: teks & 1 foto hero per layanan (`layananPages` di Site Settings). Portfolio opsional (maks. 1 foto).",
+    cta: "Buka indeks layanan",
+  },
+  {
+    href: "/site-admin/landing-kota",
+    title: "Landing kota (SEO wilayah)",
+    description:
+      "Indeks `/artikel/lokasi`, meta per URL kota (`cold-storage-bandung`, …), dan opsi sama dengan file `content/cms/cities/*.json`. Tersimpan di SiteContent (`landingKotaPages`).",
+    cta: "Buka editor landing kota",
+  },
+  {
     href: "/gallery-project",
     title: "Gallery proyek",
     description: "Tambah, edit, hapus proyek, unggah video/galeri.",

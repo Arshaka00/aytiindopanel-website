@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ContactMapEmbed } from "@/components/aytipanel/contact-map-embed";
 import { getProductBySlug } from "@/components/aytipanel/products-catalog";
 import { LocalNapBlock } from "@/components/seo/local-nap-block";
+import { cmsPortfolioPreviewSlice } from "@/lib/cms-portfolio-preview";
 import type { SiteContent } from "@/lib/site-content-model";
 import { getCityPlacename, SERVICE_AREA_CITY_KEYS } from "@/lib/local-seo-geo";
 import type { SeoLandingPageDef } from "@/lib/seo-landing";
@@ -86,7 +87,7 @@ export function SeoLandingView({
   const waMessage = generateWhatsAppMessage(landing.waTopicPhrase, landing.whatsAppContext);
   const waHref = generateWhatsAppLink(waMessage, waDigits);
 
-  const projects = content.portfolio.projects.slice(0, 4);
+  const projects = cmsPortfolioPreviewSlice(content, 4);
   const siblings = siblingLinks(landing);
   const showLocalBlock = landing.kind === "city_area" || landing.kind === "product_city";
   const mapSrc = content.kontak.mapEmbedUrl.trim();
@@ -203,8 +204,8 @@ export function SeoLandingView({
             </p>
             <ul className="mt-4 grid gap-4 sm:grid-cols-2">
               {projects.map((proj) => {
-                const img = proj.coverImageSrc?.trim() || proj.galleryPhotos?.[0]?.src?.trim() || "";
-                const alt = proj.coverImageAlt || proj.galleryPhotos?.[0]?.alt || proj.name;
+                const img = proj.imageSrc.trim();
+                const alt = proj.imageAlt;
                 if (!img) {
                   return (
                     <li key={proj.id}>
@@ -233,8 +234,13 @@ export function SeoLandingView({
                         />
                       </div>
                       <div className="p-3">
-                        <p className="font-medium text-foreground">{proj.name}</p>
-                        <p className="text-xs text-muted-foreground">{proj.location}</p>
+                        {proj.snippetLabel ? (
+                          <p className="text-xs leading-snug text-muted-foreground">{proj.snippetLabel}</p>
+                        ) : null}
+                        <p className={`font-medium text-foreground ${proj.snippetLabel ? "mt-1" : ""}`}>
+                          {proj.name}
+                        </p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">{proj.location}</p>
                       </div>
                     </Link>
                   </li>

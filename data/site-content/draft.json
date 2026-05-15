@@ -31,7 +31,7 @@
     "mapsUrl": "https://maps.google.com/maps?q=Jl.%20Diklat%20Pemda%20No.88%2C%20Bojong%20Nangka%2C%20Kec.%20Legok%2C%20Kabupaten%20Tangerang%2C%20Banten%2015810%2C%20Indonesia&hl=id&z=16&output=embed",
     "officeHours": "Senin–Sabtu · 09.00–17.00 WIB",
     "seoContent": {
-      "metaTitle": "PT AYTI INDO PANEL - sandwich panel & refrigerasi sistem",
+      "metaTitle": "PT AYTI INDO PANEL - sandwich panel & sistem refrigerasi",
       "metaDescription": "Produksi sandwich panel, instalasi cold room & sistem refrigerasi industri. Mitra teknik PT AYTI INDO PANEL.",
       "keywords": "sandwich panel, cold storage, refrigerasi industri, panel pendingin, cold room, PT AYTI INDO PANEL",
       "companyDescription": "PT AYTI INDO PANEL adalah mitra produksi sandwich panel, instalasi cold storage, dan sistem refrigerasi untuk industri bersuhu terkontrol.",
@@ -107,8 +107,8 @@
     "navItems": [
       {
         "id": "nav-home",
-        "label": "Home",
-        "shortLabel": "Home",
+        "label": "Beranda",
+        "shortLabel": "Beranda",
         "href": "/#beranda"
       },
       {
@@ -142,12 +142,6 @@
         "href": "/#proyek"
       },
       {
-        "id": "nav-keunggulan",
-        "label": "Keunggulan",
-        "shortLabel": "Keunggulan",
-        "href": "/#keunggulan"
-      },
-      {
         "id": "nav-kontak",
         "label": "Kontak",
         "shortLabel": "Kontak",
@@ -155,15 +149,9 @@
       },
       {
         "id": "nav-gallery-proyek",
-        "label": "Galery proyek",
-        "shortLabel": "Galery proyek",
+        "label": "Gallery proyek",
+        "shortLabel": "Gallery",
         "href": "/gallery-project"
-      },
-      {
-        "id": "nav-artikel",
-        "label": "Artikel",
-        "shortLabel": "Artikel",
-        "href": "/artikel"
       }
     ],
     "mobileNavIds": [
@@ -174,8 +162,7 @@
       "nav-service",
       "nav-proyek",
       "nav-kontak",
-      "nav-gallery-proyek",
-      "nav-artikel"
+      "nav-gallery-proyek"
     ]
   },
   "hero": {
@@ -184,30 +171,9 @@
     "headingMiddle": "PENDINGIN",
     "headingLine2": "Terintegrasi",
     "intro": {
-      "before1": {
-        "text": "Untuk memenuhi kebutuhan",
-        "preset": "premium-heading",
-        "style": {
-          "fontWeight": "400",
-          "fontStyle": "normal",
-          "textTransform": "none",
-          "opacity": 1,
-          "glow": {
-            "color": "#59D8FF",
-            "blurPx": 48,
-            "opacity": 0.45
-          }
-        }
-      },
-      "bold1": {
-        "text": "bisnis",
-        "preset": "premium-heading",
-        "style": {
-          "fontWeight": "400",
-          "fontStyle": "normal"
-        }
-      },
-      "middle": "anda dalam membangun",
+      "before1": "Untuk memenuhi kebutuhan",
+      "bold1": "bisnis",
+      "middle": "Anda dalam membangun",
       "bold2": "ruang pendingin",
       "after2": "yang",
       "bold3": "stabil dan efisien",
@@ -216,18 +182,18 @@
     "introBadge": "",
     "prosesBadge": "PRODUCTS OF",
     "prosesStepImages": {
-      "konsultasi": "/images/gambar_hero/1778777509775-0966305fecf0.webp",
-      "survey": "/images/gambar_hero/1778777516063-35522619f824.webp",
-      "produksi": "/images/gambar_hero/1778777485659-8f0bfe095705.webp",
-      "instalasi": "/images/gambar_hero/1778777521930-63c5f404c708.webp",
-      "selesai": "/images/gambar_hero/1778777526427-b5f940c8a42c.webp"
+      "konsultasi": "/images/spesialisasi/icon-sandwich-panel-pu.png",
+      "survey": "/images/spesialisasi/icon-sandwich-panel-eps.png",
+      "produksi": "/images/spesialisasi/icon-cold-storage.png",
+      "instalasi": "/images/spesialisasi/icon-sistem-pendingin.png",
+      "selesai": "/images/spesialisasi/icon-door-dock-system.png"
     },
     "prosesStepImageZoom": {
-      "konsultasi": 0.75,
-      "survey": 0.75,
-      "produksi": 0.75,
-      "instalasi": 0.75,
-      "selesai": 0.75
+      "konsultasi": 1.15,
+      "survey": 1.15,
+      "produksi": 0.95,
+      "instalasi": 1.7,
+      "selesai": 1
     },
     "ctaWhatsApp": {
       "label": "Hubungi kami",
@@ -272,14 +238,14 @@
   "tentang": {
     "sectionLabel": "Tentang Kami",
     "heading": "Sistem Pendingin Terintegrasi",
-    "lead": "PT AYTI INDO PANEL adalah perusahaan yang bergerak dalam bidang fabrikasi sandwich panel, instalasi cold storage, dan sistem refrigerasi untuk kebutuhan industri bersuhu terkontrol.",
-    "body": "Didukung pabrik panel milik sendiri, kami mendukung kebutuhan proyek mulai dari produksi panel,\ninstalasi, refrigeration system, hingga service dan purna jual dengan pendekatan kerja yang lebih\nterintegrasi dan terukur.",
+    "lead": "PT AYTI INDO PANEL adalah perusahaan yang bergerak dalam bidang fabrikasi sandwich panel cold storage, dan sistem refrigerasi untuk kebutuhan usaha Anda.",
+    "body": "Didukung pengalaman tim lebih dari 5 tahun, dan pabrik panel milik sendiri, kami siap mendukung kebutuhan proyek Anda mulai dari konsultasi, desain, produksi sandwich panel, produksi pintu panel dan sistem docking, instalasi sandwich panel, dan instalasi sistem refrigerasi, hingga dukungan purna jual dan after sales secara menyeluruh dan terintegrasi.",
     "valuesHeading": "Nilai Kami",
     "values": [
       "Pabrik panel milik sendiri",
       "Instalasi & refrigeration system",
       "Service & dukungan purna jual",
-      "Costum sesuai kebutuhan"
+      "Custom sesuai kebutuhan"
     ],
     "imageSrc": "/media/gallery/1778227702990-80e3ab03be13-960.webp",
     "imageAlt": "Ilustrasi fasilitas pendingin — gambar pengganti sementara",
@@ -439,7 +405,7 @@
         "id": "produk-utama",
         "eyebrow": "Produk Utama",
         "title": "Sandwich Panel",
-        "description": "Dirancang untuk kebutuhan ruang bersuhu terkontrol dengan peforma termal yang stabil, material standar industri, dan spesifikasi yang dapat disesuaikan terhadap kebutuhan.",
+        "description": "Dirancang untuk kebutuhan ruang bersuhu terkontrol dengan performa termal yang stabil, material standar industri, dan spesifikasi yang dapat disesuaikan dengan kebutuhan.",
         "cards": [
           {
             "slug": "sandwich-panel-pu-camelock",
@@ -557,7 +523,7 @@
         "id": "produk-accessories",
         "eyebrow": "Accessories",
         "title": "Komponen Pendukung",
-        "description": "Pintu insulated, sistem dock, loading dock system, dan sistem refrigerasi untuk mendukung operasioanal ruang bersuhu terkontrol secara stabil dan efisien.",
+        "description": "Pintu insulated, sistem dock, loading dock system, dan sistem refrigerasi untuk mendukung operasional ruang bersuhu terkontrol secara stabil dan efisien.",
         "cards": [
           {
             "slug": "pintu-panel",
@@ -634,7 +600,7 @@
         "imageAlt": "Maintenance berkala sistem refrigerasi industri",
         "highlights": [
           "Pemeriksaan Sistem Refrigerasi",
-          "Analisa Peforma Operasional",
+          "Analisis Performa Operasional",
           "Tindakan Maintenance",
           "Laporan Kondisi & Evaluasi"
         ],
@@ -650,7 +616,7 @@
         "imageSrc": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80",
         "imageAlt": "Perbaikan dan troubleshooting sistem pendingin",
         "highlights": [
-          "Analisa Gangguan Sistem",
+          "Analisis Gangguan Sistem",
           "Perbaikan Komponen & Kontrol",
           "Meminimalisir Downtime Operasional",
           "Prioritas Penanganan Kondisi Kritis"
@@ -667,8 +633,8 @@
         "imageSrc": "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=1200&q=80",
         "imageAlt": "After sales support dan dukungan teknis",
         "highlights": [
-          "Monitoring Peforma Sistem",
-          "Kordinasi Teknis Menyeluruh",
+          "Monitoring Performa Sistem",
+          "Koordinasi Teknis Menyeluruh",
           "Pembaruan & Update Sistem",
           "Pendampingan Pasca Instalasi"
         ],
@@ -682,7 +648,7 @@
   "portfolio": {
     "sectionLabel": "Portfolio proyek",
     "heading": "Referensi instalasi & cold storage",
-    "lead": "Beberapa contoh proyek yang sudah kami kerjakan, dengan implementasi sistem pendingin refrigersi, sandwich panel insulated, hingga area loading  yang dirancang mengikuti kebutuhan operasioanl yang efisien untuk jangka panjang.",
+    "lead": "Beberapa contoh proyek yang sudah kami kerjakan, dengan implementasi sistem pendingin refrigerasi, sandwich panel insulated, hingga area loading yang dirancang mengikuti kebutuhan operasional yang efisien untuk jangka panjang.",
     "projectLocationLabel": "Lokasi",
     "projectWorkTypeLabel": "Jenis pekerjaan",
     "editorAddProjectLabel": "Proyek",
@@ -918,19 +884,19 @@
       {
         "id": "proc-0",
         "title": "Sistem Terintegrasi",
-        "body": "Mulai dari produksi panel, sistem refrigerasi, instalasi,  hingga dukungan purna jual dalam satu kordinasi.",
+        "body": "Mulai dari produksi panel, sistem refrigerasi, instalasi, hingga dukungan purna jual dalam satu koordinasi.",
         "iconKey": "manufacturing"
       },
       {
         "id": "proc-1",
-        "title": "Costum Sesuai Kebutuhan",
+        "title": "Custom Sesuai Kebutuhan",
         "body": "Desain dan implementasi sistem menyesuaikan kapasitas dan kebutuhan.",
         "iconKey": "rab"
       },
       {
         "id": "proc-2",
         "title": "Material Standar Industri",
-        "body": "Menggunakan material dan komponen yang disesuaikan dengan kebutuhan..",
+        "body": "Menggunakan material dan komponen yang disesuaikan dengan kebutuhan.",
         "iconKey": "clipboard"
       },
       {
@@ -1069,6 +1035,376 @@
   "coldStoragePage": {
     "heroImageSrc": "/images/cold-storage.jpg",
     "heroImageAlt": "Ilustrasi cold storage — instalasi panel dan ruang dingin industri"
+  },
+  "layananPages": {
+    "index": {
+      "eyebrow": "Solusi Sistem Pendingin Terintegrasi",
+      "heading": "Layanan cold storage & panel industri",
+      "lead": "Halaman layanan mendalam untuk kebutuhan teknis — sandwich panel, cold storage, blast freezer, dan sistem refrigerasi. Akses cepat dari menu Halaman Layanan di navbar."
+    },
+    "pages": [
+      {
+        "slug": "sandwich-panel-pu",
+        "navLabel": "Sandwich Panel PU",
+        "metaTitle": "Sandwich Panel PU Industri | PT AYTI INDO PANEL",
+        "metaDescription": "Produksi sandwich panel PU untuk cold room dan fasilitas bersuhu terkontrol. Fabrikasi custom, sambungan presisi, instalasi profesional — Jabodetabek & nasional.",
+        "heroImageSrc": "/images/spesialisasi/spesialisasi-pu.png",
+        "heroImageAlt": "Sandwich panel PU untuk cold room industri",
+        "heroH1": "Sandwich Panel PU untuk Cold Room & Industri",
+        "heroSubheadline": "Envelope insulasi presisi untuk ruang dingin yang stabil dan efisien.",
+        "heroLead": "Panel sandwich polyurethane (PU) menjadi fondasi thermal cold storage, clean room, dan area proses bersuhu terkontrol. Kami memproduksi dan memasang panel sesuai layout operasi Anda — bukan paket generik.",
+        "heroBullets": [
+          "Core PU dengan performa insulasi konsisten",
+          "Sistem sambungan CamLock atau knock down sesuai kebutuhan proyek",
+          "Koordinasi fabrikasi hingga pemasangan lapangan"
+        ],
+        "overviewEyebrow": "Penjelasan layanan",
+        "overviewTitle": "Panel insulasi sebagai fondasi ruang dingin",
+        "overviewParagraphs": [
+          "Sandwich panel PU menggabungkan kulit baja dan inti polyurethane untuk membentuk dinding, plafon, dan partisi yang menahan perpindahan panas. Pada cold storage, kualitas panel menentukan seberapa stabil suhu dijaga dan seberapa efisien sistem refrigerasi bekerja.",
+          "PT AYTI INDO PANEL memproduksi panel dengan spesifikasi ketebalan, densitas, dan sistem joint yang diselaraskan dengan desain ruangan serta kapasitas pendingin — agar envelope dan mesin saling mendukung, bukan saling membebani."
+        ],
+        "ctaHeadline": "Konsultasikan kebutuhan sandwich panel PU Anda",
+        "ctaLead": "Kirim gambar layout atau perkiraan dimensi — tim kami bantu arahkan spesifikasi dan langkah kerja.",
+        "showPortfolioSection": true,
+        "faq": [
+          {
+            "question": "Apa beda panel PU CamLock dan knock down?",
+            "answer": "CamLock cocok untuk cold room permanen dengan sambungan cepat dan rapat. Knock down lebih fleksibel untuk relokasi atau perluasan bertahap. Kami bantu memilih setelah survei layout."
+          },
+          {
+            "question": "Berapa ketebalan panel yang disarankan?",
+            "answer": "Bergantung suhu target, frekuensi buka pintu, dan beban internal. Setelah data operasi terkumpul, ketebalan direkomendasikan agar tidak over- maupun under-insulated."
+          },
+          {
+            "question": "Apakah hanya supply panel tanpa instalasi?",
+            "answer": "Kami juga melayani paket lengkap fabrikasi + instalasi + koordinasi refrigerasi agar envelope dan mesin selaras."
+          }
+        ]
+      },
+      {
+        "slug": "sandwich-panel-knock-down",
+        "navLabel": "Panel Knock Down",
+        "metaTitle": "Sandwich Panel Knock Down Modular | AYTI Indo Panel",
+        "metaDescription": "Sistem sandwich panel knock down modular untuk cold room fleksibel. Instalasi cepat, relokasi mudah, insulasi PU stabil — konsultasi & survei gratis.",
+        "heroImageSrc": "/images/layanan/produksi-panel-pu-eps/1.jpg",
+        "heroImageAlt": "Produksi sandwich panel knock down modular",
+        "heroH1": "Sandwich Panel Knock Down — Sistem Modular Insulasi",
+        "heroSubheadline": "Fleksibel dipasang, diperluas, atau dipindah sesuai evolusi operasi pabrik Anda.",
+        "heroLead": "Panel knock down dirancang untuk proyek yang membutuhkan kecepatan instalasi, kemungkinan relokasi, atau perluasan bertahap tanpa mengganggu operasi utama.",
+        "heroBullets": [
+          "Modular — cocok untuk fase proyek bertahap",
+          "Performa insulasi PU tetap konsisten antar modul",
+          "Koordinasi fabrikasi dan pemasangan oleh tim lapangan"
+        ],
+        "overviewEyebrow": "Penjelasan layanan",
+        "overviewTitle": "Insulasi modular tanpa mengorbankan ketepatan sambungan",
+        "overviewParagraphs": [
+          "Sistem knock down memecah panel menjadi modul yang dirakit di lokasi dengan presisi. Pendekatan ini sering dipilih pabrik yang berencana menambah kapasitas cold room secara bertahap atau memindahkan ruang dingin ke area lain.",
+          "Kami menyelaraskan desain modul dengan akses truk, crane, dan jalur utilitas agar instalasi berjalan terstruktur — bukan sekadar menumpuk panel di gudang."
+        ],
+        "ctaHeadline": "Rencanakan cold room modular bersama tim kami",
+        "ctaLead": "Ceritakan rencana perluasan atau relokasi — kami bantu susun pendekatan knock down yang realistis.",
+        "showPortfolioSection": true,
+        "faq": [
+          {
+            "question": "Apakah knock down kurang kedap dibanding CamLock?",
+            "answer": "Tidak otomatis. Kualitas joint dan cara pemasangan menentukan performa. Kami menerapkan detail sambungan dan seal sesuai standar proyek agar setara kebutuhan suhu target."
+          },
+          {
+            "question": "Bisakah modul lama ditambah modul baru?",
+            "answer": "Ya, dengan perencanaan profil dan ketebalan yang kompatibel. Survei awal membantu memetakan modul existing sebelum perluasan."
+          },
+          {
+            "question": "Berapa lama instalasi di lokasi?",
+            "answer": "Tergantung luas dan kompleksitas utilitas. Setelah layout fix, jadwal instalasi disepakati dalam rencana kerja proyek."
+          }
+        ]
+      },
+      {
+        "slug": "cold-storage",
+        "navLabel": "Cold Storage",
+        "metaTitle": "Jasa Cold Storage Industri Chiller & Freezer | AYTI Indo Panel",
+        "metaDescription": "Jasa pembuatan cold storage lengkap: panel insulated, sistem refrigerasi, pintu cold room. Solusi terintegrasi untuk industri makanan, farmasi, dan logistik.",
+        "heroImageSrc": "/images/cold-storage.jpg",
+        "heroImageAlt": "Ilustrasi cold storage — instalasi panel dan ruang dingin industri",
+        "heroH1": "Jasa Pembuatan Cold Storage Chiller & Freezer",
+        "heroSubheadline": "Ruangan dingin stabil dari panel hingga mesin pendingin — siap operasi.",
+        "heroLead": "Cold storage bukan sekadar kotak dingin. Kami membangun sistem terintegrasi: envelope insulated, distribusi refrigerasi, dan kontrol suhu yang selaras dengan cara Anda beroperasi.",
+        "heroBullets": [
+          "Multi-zona chiller, freezer, dan process area",
+          "Panel PU + koordinasi unit pendingin",
+          "Commissioning dan uji suhu sebelum serah terima"
+        ],
+        "overviewEyebrow": "Penjelasan layanan",
+        "overviewTitle": "Cold storage sebagai investasi operasional",
+        "overviewParagraphs": [
+          "Cold storage yang tepat melindungi nilai stok, mempercepat putaran barang, dan menurunkan risiko reject akibat suhu tidak stabil. Kami merancangnya dari perspektif operasional: traffic pintu, zonasi SKU, kapasitas pendingin, hingga pola maintenance.",
+          "Sebagai mitra Solusi Sistem Pendingin Terintegrasi, PT AYTI INDO PANEL menangani panel, pintu, dan koordinasi refrigerasi dalam satu alur kerja — mengurangi celah komunikasi antar vendor."
+        ],
+        "ctaHeadline": "Konsultasikan kebutuhan cold storage Anda",
+        "ctaLead": "Kirim perkiraan luas atau layout — arah sistem dan langkah kerja bisa dibahas tanpa komitmen awal.",
+        "showPortfolioSection": true,
+        "faq": [
+          {
+            "question": "Berapa lama pengerjaan cold storage?",
+            "answer": "Bergantung luas, kompleksitas zona, dan kesiapan infrastruktur listrik. Setelah survei, jadwal kerja disepakati dalam proposal proyek."
+          },
+          {
+            "question": "Apakah bisa hanya ruangan tanpa mesin pendingin?",
+            "answer": "Kami merekomendasikan paket terintegrasi agar envelope dan kapasitas pendingin selaras. Konsultasi awal membantu menentukan ruang lingkup yang tepat."
+          },
+          {
+            "question": "Area layanan di mana saja?",
+            "answer": "Berbasis Tangerang dengan cakupan Jabodetabek, Jawa Barat, dan proyek nasional sesuai jadwal mobilisasi tim."
+          }
+        ]
+      },
+      {
+        "slug": "cold-storage-portable",
+        "navLabel": "Cold Storage Portable",
+        "metaTitle": "Cold Storage Portable Plug & Play | AYTI Indo Panel",
+        "metaDescription": "Cold storage portable siap operasi: panel insulasi, unit pendingin, dan kontrol terintegrasi. Cocok untuk proyek sementara, musiman, atau lokasi terbatas.",
+        "heroImageSrc": "/images/layanan/instalasi-panel-cold-room/1.jpg",
+        "heroImageAlt": "Cold storage portable siap operasi",
+        "heroH1": "Cold Storage Portable — Solusi Dingin Siap Operasi",
+        "heroSubheadline": "Plug & play untuk kebutuhan sementara, musiman, atau lokasi tanpa konstruksi permanen.",
+        "heroLead": "Unit portable menggabungkan envelope insulated dan sistem pendingin dalam paket yang bisa dioperasikan lebih cepat dibanding membangun cold room permanen dari nol.",
+        "heroBullets": [
+          "Instalasi lebih singkat di lokasi terbatas",
+          "Cocok untuk pilot, musiman, atau backup kapasitas",
+          "Spesifikasi disesuaikan suhu target dan beban produk"
+        ],
+        "overviewEyebrow": "Penjelasan layanan",
+        "overviewTitle": "Fleksibilitas tanpa mengorbankan kontrol suhu",
+        "overviewParagraphs": [
+          "Cold storage portable dipilih ketika waktu proyek singkat, lahan bersifat sewa, atau perusahaan perlu menambah kapasitas dingin sementara tanpa investasi bangunan tetap.",
+          "Kami menyusun spesifikasi modul — dimensi, suhu, dan daya — agar unit dapat dioperasikan dengan prosedur yang jelas sejak hari pertama commissioning."
+        ],
+        "ctaHeadline": "Butuh kapasitas dingin sementara?",
+        "ctaLead": "Jelaskan durasi proyek dan suhu target — kami rekomendasikan konfigurasi portable yang realistis.",
+        "showPortfolioSection": true,
+        "faq": [
+          {
+            "question": "Apakah portable cocok untuk suhu freezer?",
+            "answer": "Ya, dengan perhitungan insulasi dan kapasitas pendingin yang memadai. Profil produk dan siklus buka pintu menjadi acuan desain."
+          },
+          {
+            "question": "Berapa lama unit bisa dipakai?",
+            "answer": "Desain mengikuti durasi proyek Anda — mulai dari bulanan hingga multi-tahun dengan perawatan berkala."
+          },
+          {
+            "question": "Apakah perlu fondasi khusus?",
+            "answer": "Kami evaluasi kondisi lantai dan akses saat survei agar unit stabil dan aman dioperasikan."
+          }
+        ]
+      },
+      {
+        "slug": "blast-freezer",
+        "navLabel": "Blast Freezer",
+        "metaTitle": "Blast Freezer & Air Blast Freezer Industri | AYTI Indo Panel",
+        "metaDescription": "Sistem blast freezer (ABF) untuk pembekuan cepat komoditas makanan. Panel insulated, distribusi udara tinggi, commissioning suhu core — AYTI Indo Panel.",
+        "heroImageSrc": "/images/layanan/testing-commissioning/1.jpg",
+        "heroImageAlt": "Sistem blast freezer industri",
+        "heroH1": "Blast Freezer — Pembekuan Cepat untuk Industri",
+        "heroSubheadline": "Pull-down temperature cepat dengan envelope dan sistem udara yang terukur.",
+        "heroLead": "Blast freezer (air blast freezer) dirancang menurunkan suhu inti produk dalam waktu singkat — menjaga kualitas tekstur, mengurangi kristal es besar, dan mendukung throughput produksi.",
+        "heroBullets": [
+          "Konfigurasi ABF sesuai jenis komoditas",
+          "Panel PU + sistem refrigerasi terkoordinasi",
+          "Commissioning pull-down sesuai target produksi"
+        ],
+        "overviewEyebrow": "Penjelasan layanan",
+        "overviewTitle": "Pembekuan cepat sebagai tahap kritis produksi",
+        "overviewParagraphs": [
+          "Pada industri seafood, daging, dan frozen food, waktu pembekuan mempengaruhi kualitas jual dan shelf life. Ruangan ABF membutuhkan aliran udara tinggi, insulasi kuat, dan kapasitas pendingin yang tidak under-sized.",
+          "Kami membangun blast freezer sebagai sistem lengkap — bukan hanya menambahkan evaporator pada ruangan biasa."
+        ],
+        "ctaHeadline": "Rencanakan blast freezer untuk line produksi Anda",
+        "ctaLead": "Bagikan jenis produk dan target throughput — tim kami bantu gambaran sistem ABF yang sesuai.",
+        "showPortfolioSection": true,
+        "faq": [
+          {
+            "question": "Berapa lama waktu pembekuan yang bisa dicapai?",
+            "answer": "Bergantung jenis produk, ketebalan, dan suhu awal. Setelah data produksi dibagikan, target pull-down dirumuskan dalam desain."
+          },
+          {
+            "question": "Apakah blast freezer bisa ditambah pada cold storage existing?",
+            "answer": "Perlu evaluasi envelope, kapasitas mesin, dan alur operasi. Survei lapangan menentukan apakah upgrade atau ruang baru lebih ekonomis."
+          },
+          {
+            "question": "Bagaimana maintenance ABF?",
+            "answer": "Program perawatan evaporator, defrost, dan cek kebocoran refrigeran — bisa dikombinasikan dengan layanan maintenance kami."
+          }
+        ]
+      },
+      {
+        "slug": "refrigeration-system",
+        "navLabel": "Sistem Refrigerasi",
+        "metaTitle": "Sistem Refrigerasi Industri & Cold Room | AYTI Indo Panel",
+        "metaDescription": "Instalasi sistem refrigerasi industri: unit cooler, condensing, piping, dan balancing. Terintegrasi dengan panel cold storage — mitra teknis AYTI Indo Panel.",
+        "heroImageSrc": "/images/spesialisasi/spesialisasi-refrigerasi.png",
+        "heroImageAlt": "Sistem refrigerasi industri cold storage",
+        "heroH1": "Sistem Refrigerasi Industri Terintegrasi",
+        "heroSubheadline": "Kapasitas pendingin yang selaras dengan envelope dan beban operasi nyata.",
+        "heroLead": "Mesin pendingin adalah jantung cold storage. Kami merancang dan mengkoordinasikan sistem refrigerasi agar kapasitas, distribusi, dan kontrol suhu mendukung pola operasi harian Anda.",
+        "heroBullets": [
+          "Perhitungan kapasitas berdasarkan beban dan suhu target",
+          "Koordinasi dengan panel insulated & pintu cold room",
+          "Commissioning dan tuning sebelum operasi penuh"
+        ],
+        "overviewEyebrow": "Penjelasan layanan",
+        "overviewTitle": "Refrigerasi yang dipahami dalam konteks ruangan",
+        "overviewParagraphs": [
+          "Kesalahan sizing atau distribusi refrigerasi sering membuat cold room terasa \"tidak dingin\" meski listrik membengkak. Kami mendekati sistem refrigerasi bersama envelope insulated — karena keduanya menentukan performa akhir.",
+          "Layanan ini mencakup pemilihan unit, routing pipa, electrical coordination, hingga uji operasional dan penyerahan dokumentasi teknis."
+        ],
+        "ctaHeadline": "Evaluasi sistem refrigerasi fasilitas Anda",
+        "ctaLead": "Ceritakan keluhan operasional atau rencana upgrade — kami bantu identifikasi langkah teknis berikutnya.",
+        "showPortfolioSection": true,
+        "faq": [
+          {
+            "question": "Apakah bisa hanya instalasi mesin tanpa panel?",
+            "answer": "Bisa, dengan catatan envelope existing dievaluasi dulu. Kami cek insulasi dan kebocoran termal agar mesin tidak bekerja berlebihan."
+          },
+          {
+            "question": "Bagaimana jika cold room tidak dingin?",
+            "answer": "Troubleshooting mencakup beban, refrigeran, defrost, dan envelope. Tim kami bisa membantu diagnosa terstruktur."
+          },
+          {
+            "question": "Apakah menyediakan maintenance?",
+            "answer": "Ya, tersedia layanan maintenance berkala dan dukungan pasca proyek — diskusikan SLA sesuai kebutuhan operasi."
+          }
+        ]
+      },
+      {
+        "slug": "cold-room-door",
+        "navLabel": "Pintu Cold Room",
+        "metaTitle": "Pintu Cold Room Industri | PT AYTI INDO PANEL",
+        "metaDescription": "Pintu cold room hinged & sliding untuk chiller dan freezer. Seal termal presisi, hardware tahan suhu rendah, instalasi rapi — AYTI Indo Panel.",
+        "heroImageSrc": "/images/spesialisasi/spesialisasi-doordock.png",
+        "heroImageAlt": "Pintu cold room industri",
+        "heroH1": "Pintu Cold Room — Akses yang Kedap dan Tahan Operasi",
+        "heroSubheadline": "Hardware dan seal yang dirancang untuk suhu rendah dan frekuensi buka tinggi.",
+        "heroLead": "Pintu adalah titik paling aktif pada cold storage. Kami menyediakan pintu cold room dengan seal, heater frame (jika diperlukan), dan hardware yang disesuaikan zona suhu dan traffic operasi.",
+        "heroBullets": [
+          "Hinged & sliding — sesuai layout dan alur forklift",
+          "Seal termal untuk minim infiltrasi udara",
+          "Koordinasi bukaan dengan panel insulated"
+        ],
+        "overviewEyebrow": "Penjelasan layanan",
+        "overviewTitle": "Akses ruang dingin yang sering diremehkan",
+        "overviewParagraphs": [
+          "Kebocoran di pintu cold room memaksa mesin pendingin bekerja lebih keras dan menciptakan es pada frame. Pemilihan tipe pintu, ukuran bukaan, dan sistem seal harus selaras dengan zona suhu dan frekuensi akses.",
+          "Kami memasang pintu sebagai bagian dari sistem cold storage — bukan komponen terpisah yang dipasang tanpa koordinasi panel."
+        ],
+        "ctaHeadline": "Konsultasikan kebutuhan pintu cold room",
+        "ctaLead": "Kirim foto bukaan existing atau gambar kerja — kami bantu pilih tipe dan ukuran yang sesuai.",
+        "showPortfolioSection": true,
+        "faq": [
+          {
+            "question": "Pintu sliding atau swing lebih baik?",
+            "answer": "Sliding menghemat ruang clearance; swing lebih ekonomis untuk bukaan kecil. Layout forklift dan anteroom menjadi penentu utama."
+          },
+          {
+            "question": "Mengapa frame pintu membeku?",
+            "answer": "Biasanya karena infiltrasi udara, seal aus, atau tanpa frame heater pada freezer. Evaluasi lapangan menentukan perbaikan yang tepat."
+          },
+          {
+            "question": "Apakah bisa ganti pintu saja?",
+            "answer": "Ya, dengan pengukuran ulang bukaan dan kondisi panel existing. Kami pastikan dimensi dan seal compatible."
+          }
+        ]
+      },
+      {
+        "slug": "cold-storage-murah",
+        "navLabel": "Cold Storage — Panduan Investasi",
+        "metaTitle": "Cold Storage Efisien Biaya untuk UKM & Industri | AYTI Indo Panel",
+        "metaDescription": "Panduan merencanakan cold storage dengan investasi terukur: prioritas spesifikasi, fase proyek, dan efisiensi operasi jangka panjang — tanpa mengorbankan keamanan produk.",
+        "heroImageSrc": "/images/layanan/konsultasi-desain-sistem/1.jpg",
+        "heroImageAlt": "Konsultasi perencanaan cold storage",
+        "heroH1": "Cold Storage dengan Investasi Terukur dan Aman Operasi",
+        "heroSubheadline": "Efisiensi biaya melalui perencanaan teknis — bukan pemotongan kualitas sembarangan.",
+        "heroLead": "Kebutuhan \"cold storage hemat\" sering muncul dari tekanan budget. Kami membantu Anda memprioritaskan spesifikasi yang benar-benar berdampak pada suhu dan biaya operasi, sambil menghindari risiko mahal di kemudian hari.",
+        "heroBullets": [
+          "Survei lokasi sebelum komitmen investasi",
+          "Opsi fase proyek dan modular",
+          "Fokus pada total cost of ownership, bukan harga unit semata"
+        ],
+        "overviewEyebrow": "Edukasi & solusi",
+        "overviewTitle": "Memahami di mana biaya sebenarnya berada",
+        "overviewParagraphs": [
+          "Biaya cold storage tidak hanya terlihat pada kontrak awal. Ketebalan panel yang kurang, mesin pendingin under-sized, atau pintu yang tidak kedap akan memunculkan tagihan listrik dan reject produk yang jauh lebih mahal dari selisih harga awal.",
+          "Pendekatan kami: transparansi spesifikasi, prioritas kebutuhan operasional, dan rekomendasi fase yang realistis — agar investasi Anda terukur tanpa mengorbankan keamanan stok."
+        ],
+        "ctaHeadline": "Rencanakan cold storage sesuai budget operasional",
+        "ctaLead": "Diskusi awal gratis — kami bantu urutkan prioritas teknis sebelum Anda memutuskan investasi.",
+        "showPortfolioSection": true,
+        "faq": [
+          {
+            "question": "Apakah ada cold storage \"paling murah\"?",
+            "answer": "Harga terendah tanpa konteks spesifikasi sering berisiko. Kami bantu Anda memahami trade-off dan memilih konfigurasi yang masuk akal untuk operasi."
+          },
+          {
+            "question": "Bisakah mulai kecil lalu menambah?",
+            "answer": "Ya, dengan perencanaan modular dan layout yang disiapkan untuk perluasan. Ini sering strategi terbaik untuk cash flow."
+          },
+          {
+            "question": "Bagaimana cara meminta estimasi?",
+            "answer": "Kirim perkiraan luas, suhu target, dan jenis produk via WhatsApp. Tim kami jadwalkan survei untuk angka yang lebih akurat."
+          }
+        ]
+      },
+      {
+        "slug": "cold-storage-berkualitas",
+        "navLabel": "Cold Storage Berkualitas",
+        "metaTitle": "Cold Storage Berkualitas untuk Industri | PT AYTI INDO PANEL",
+        "metaDescription": "Standar kualitas cold storage industri: material, instalasi, commissioning, dan dokumentasi. Mitra teknis untuk stabilitas suhu jangka panjang — AYTI Indo Panel.",
+        "heroImageSrc": "/images/layanan/testing-commissioning/2.jpg",
+        "heroImageAlt": "Commissioning cold storage berkualitas",
+        "heroH1": "Cold Storage Berkualitas untuk Operasi Jangka Panjang",
+        "heroSubheadline": "Kualitas terlihat pada stabilitas suhu, bukan hanya pada hari serah terima.",
+        "heroLead": "Cold storage berkualitas dibangun dari material yang tepat, instalasi disiplin, dan commissioning terukur. Kami menerapkan standar kerja yang bisa diaudit — dari panel hingga sistem refrigerasi.",
+        "heroBullets": [
+          "Checklist kualitas fabrikasi dan lapangan",
+          "Commissioning suhu terdokumentasi",
+          "Dukungan pasca proyek untuk continuity operasi"
+        ],
+        "overviewEyebrow": "Standar & kepercayaan",
+        "overviewTitle": "Kualitas sebagai sistem kerja, bukan slogan",
+        "overviewParagraphs": [
+          "Industri frozen food, farmasi, dan distribusi tidak bisa toleran terhadap fluktuasi suhu. Kualitas cold storage diukur dari kemampuan ruangan mempertahankan setpoint saat beban puncak dan frekuensi buka pintu tinggi.",
+          "PT AYTI INDO PANEL menerapkan koordinasi produksi panel, instalasi, dan refrigerasi dengan dokumentasi proyek yang jelas — sehingga tim Anda punya acuan saat audit internal atau ekspansi berikutnya."
+        ],
+        "ctaHeadline": "Bangun cold storage dengan standar yang jelas",
+        "ctaLead": "Jadwalkan survei — kami tunjukkan pendekatan kualitas yang kami terapkan di lapangan.",
+        "showPortfolioSection": true,
+        "faq": [
+          {
+            "question": "Bagaimana membedakan cold storage berkualitas?",
+            "answer": "Perhatikan stabilitas suhu saat beban puncak, detail sambungan panel, dokumentasi commissioning, dan reputasi pengerjaan — bukan hanya tampilan panel."
+          },
+          {
+            "question": "Apakah ada garansi?",
+            "answer": "Ruang lingkup garansi mengikuti kontrak proyek. Kami jelaskan secara transparan sebelum pekerjaan dimulai."
+          },
+          {
+            "question": "Bisakah audit cold storage lama?",
+            "answer": "Ya, evaluasi envelope dan sistem refrigerasi bisa dilakukan untuk rekomendasi perbaikan atau upgrade."
+          }
+        ]
+      }
+    ]
+  },
+  "landingKotaPages": {
+    "index": {
+      "eyebrow": "Area layanan Indonesia",
+      "heading": "Landing kota — cold storage & panel per wilayah",
+      "lead": "Halaman SEO lokal untuk setiap kota: ringkasan layanan cold storage, sandwich panel, cold room, dan blast freezer. Pilih wilayah proyek Anda untuk detail teknis dan tautan topik terkait.",
+      "metaTitle": "",
+      "metaDescription": ""
+    },
+    "pages": []
   },
   "galleryPage": {
     "loadingText": "Memuat gallery…",

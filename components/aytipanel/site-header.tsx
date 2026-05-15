@@ -33,8 +33,6 @@ const MOBILE_MENU_MQ = "(max-width: 767.98px)";
 const HOME_NAV_HREF = "/#beranda";
 const FALLBACK_HEADER = createDefaultSiteContent().header;
 
-/** Item nav tidak ditampilkan di bilah / sheet (section tetap lewat `/#keunggulan` & pencarian). */
-const HEADER_NAV_SUPPRESSED_IDS = new Set<string>(["nav-keunggulan", "nav-artikel"]);
 
 /** Fallback statis — dipakai hanya jika CMS tidak mengisi logo terang maupun gelap. */
 const FALLBACK_HEADER_LOGO = "/images/logo_ayti.png";
@@ -184,7 +182,17 @@ function isNavItemActive(
   pathname: string,
   activeHash: string,
 ): boolean {
-  if (pathname !== "/" || !itemHref.startsWith("/#")) return false;
+  const href = itemHref.trim();
+
+  if (!href.startsWith("/#")) {
+    const pathOnly = href.split("#")[0] ?? href;
+    if (pathOnly.length > 1) {
+      return pathname === pathOnly || pathname.startsWith(`${pathOnly}/`);
+    }
+    return false;
+  }
+
+  if (pathname !== "/") return false;
   const frag = hashFromHref(itemHref);
   if (itemHref === HOME_NAV_HREF)
     return activeHash === "" || activeHash === "#beranda";
@@ -237,44 +245,35 @@ export function SiteHeader({
     [siteSettings?.brandAssets?.logoDark, siteSettings?.brandAssets?.logoLight],
   );
 
-  const navItems = header.navItems;
+  const navItems = useMemo(() => header.navItems, [header.navItems]);
+  /** Navbar konsumen sama dengan struktur utama (SEO pages tidak ada di bilah ini). */
+  const visibleNavItems = navItems;
+  const desktopNavItemsOrdered = useMemo(() => navItems, [navItems]);
+
+  const desktopSearchAfterItemId = useMemo(() => {
+    const g = navItems.find((i) => i.id === "nav-gallery-proyek");
+    if (g) return "nav-gallery-proyek";
+    return navItems[navItems.length - 1]?.id ?? "nav-kontak";
+  }, [navItems]);
+
+  const mobileNavIds = useMemo(() => header.mobileNavIds, [header.mobileNavIds]);
+  const headerForNav = useMemo(
+    () => ({ ...header, navItems, mobileNavIds }),
+    [header, navItems, mobileNavIds],
+  );
   const siteSearchTargets = useMemo(
     () => buildHeaderSiteSearchTargets(header, homeLayout, siteContent, seoArticles),
     [header, homeLayout, siteContent, seoArticles],
   );
 
-  const visibleNavItems = useMemo(
-    () => navItems.filter((item) => !HEADER_NAV_SUPPRESSED_IDS.has(item.id)),
-    [navItems],
-  );
-
-  /** Desktop: item Artikel (/artikel) di kiri tombol pencarian — setelah Galery proyek bila ada. */
-  const desktopNavItemsOrdered = useMemo(() => {
-    const artikel = visibleNavItems.find((i) => i.id === "nav-artikel");
-    const withoutArtikel = visibleNavItems.filter((i) => i.id !== "nav-artikel");
-    if (!artikel) return visibleNavItems;
-    const galleryIdx = withoutArtikel.findIndex((i) => i.id === "nav-gallery-proyek");
-    if (galleryIdx < 0) return [...withoutArtikel, artikel];
-    return [...withoutArtikel.slice(0, galleryIdx + 1), artikel, ...withoutArtikel.slice(galleryIdx + 1)];
-  }, [visibleNavItems]);
-
-  /** Sisipkan pencarian setelah item ini: Artikel jika ada, selain itu Galery proyek. */
-  const desktopSearchAfterItemId = useMemo(
-    () => (visibleNavItems.some((i) => i.id === "nav-artikel") ? "nav-artikel" : "nav-gallery-proyek"),
-    [visibleNavItems],
-  );
-
   const mobileNavItems = useMemo(
     () =>
-      header.mobileNavIds
+      headerForNav.mobileNavIds
         .map((id) => navItems.find((n) => n.id === id))
         .filter((item): item is SiteContent["header"]["navItems"][number] => Boolean(item)),
-    [header.mobileNavIds, navItems],
+    [headerForNav.mobileNavIds, navItems],
   );
-  const visibleMobileNavItems = useMemo(
-    () => mobileNavItems.filter((item) => !HEADER_NAV_SUPPRESSED_IDS.has(item.id)),
-    [mobileNavItems],
-  );
+  const visibleMobileNavItems = mobileNavItems;
   const navSectionHashes: readonly string[] = useMemo(
     () =>
       visibleNavItems
@@ -289,6 +288,7 @@ export function SiteHeader({
   const pathname = usePathname();
   const mobileSheetId = useId();
   const headerRef = useRef<HTMLElement>(null);
+  const desktopNavRef = useRef<HTMLElement>(null);
   const toolbarRef = useRef<HTMLDivElement>(null);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
   const sheetRef = useRef<HTMLElement>(null);
@@ -636,8 +636,8 @@ export function SiteHeader({
   const active = activeHash || navHash;
 
   const toolbarPad = scrollCompact
-    ? "px-3 py-1.5 sm:px-3.5 sm:py-1.5 md:px-5 md:py-1.5"
-    : "px-3.5 py-2 sm:px-4 sm:py-2.5 md:px-6 md:py-2.5";
+    ? "px-3 py-1.5 sm:px-3.5 sm:py-1.5 md:px-5 md:pt-1.5 md:pb-2"
+    : "px-3.5 py-2 sm:px-4 sm:py-2.5 md:px-6 md:pt-2.5 md:pb-3";
 
   return (
     <>
@@ -652,7 +652,7 @@ export function SiteHeader({
       >
         <div
           ref={toolbarRef}
-          className={`pointer-events-auto relative mx-auto min-w-0 w-full max-w-6xl px-0 pb-1.5 pt-[max(0.3rem,env(safe-area-inset-top))] sm:pb-2 md:max-w-none md:px-0 md:pb-0 ${scrollCompact ? "md:pt-[max(0.1rem,env(safe-area-inset-top))]" : "md:pt-[max(0.18rem,env(safe-area-inset-top))]"}`}
+          className={`pointer-events-auto relative mx-auto min-w-0 w-full max-w-6xl px-0 pb-1.5 pt-[max(0.3rem,env(safe-area-inset-top))] sm:pb-2 md:max-w-none md:px-0 md:pb-2 ${scrollCompact ? "md:pt-[max(0.1rem,env(safe-area-inset-top))]" : "md:pt-[max(0.18rem,env(safe-area-inset-top))]"}`}
         >
           <div
             className={`site-header-shell relative rounded-[1.125rem] md:rounded-none ${menuOpen ? "overflow-visible" : "overflow-hidden"}`}
@@ -683,18 +683,22 @@ export function SiteHeader({
           </Link>
 
           <nav
+            ref={desktopNavRef}
             data-site-header-desktop-nav=""
             className="hidden min-w-0 flex-1 shrink items-center justify-end overflow-x-auto overflow-y-visible [scrollbar-width:thin] md:flex"
             aria-label={header.navAriaLabel}
           >
             <ul className="flex min-w-max flex-nowrap items-center justify-end gap-x-0.5 md:gap-x-1 lg:gap-x-1.5">
               {desktopNavItemsOrdered.map((item) => {
-                const itemIndex = navItems.findIndex((n) => n.id === item.id);
+                const itemIndex = header.navItems.findIndex((n) => n.id === item.id);
                 const isActive = isNavItemActive(item.href, pathname, active);
                 const cls = `${desktopLinkBase} ${isActive ? desktopLinkActive : ""}`;
                 return (
                   <Fragment key={item.id}>
-                    <li className="flex shrink-0 items-center">
+                    <li
+                      className="flex shrink-0 items-center"
+                      data-nav-item-id={item.id}
+                    >
                       <Link
                         href={item.href}
                         className={cls}
@@ -706,12 +710,20 @@ export function SiteHeader({
                         }}
                       >
                         <span className="relative">
-                          <CmsText
-                            path={`header.navItems.${itemIndex}.label`}
-                            text={item.label}
-                            as="span"
-                            className="inline"
-                          />
+                          <>
+                            <CmsText
+                              path={`header.navItems.${itemIndex}.shortLabel`}
+                              text={item.shortLabel || item.label}
+                              as="span"
+                              className="inline xl:hidden"
+                            />
+                            <CmsText
+                              path={`header.navItems.${itemIndex}.label`}
+                              text={item.label}
+                              as="span"
+                              className="hidden xl:inline"
+                            />
+                          </>
                           {isActive ? (
                             <span
                               aria-hidden
@@ -807,7 +819,7 @@ export function SiteHeader({
               {visibleMobileNavItems.map((item) => {
                 const isActive = isNavItemActive(item.href, pathname, active);
                 const cls = `${mobileLinkBase} ${isActive ? mobileLinkActive : ""}`;
-                const idx = navItems.findIndex((n) => n.id === item.id);
+                const idx = header.navItems.findIndex((n) => n.id === item.id);
                 if (idx < 0) return null;
                 return (
                   <Fragment key={item.id}>

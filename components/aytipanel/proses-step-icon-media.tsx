@@ -5,6 +5,7 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import { useSiteCmsOptional } from "@/components/site-cms/site-cms-provider";
 import type { SiteContent } from "@/lib/site-content";
+import { withSiteImageCacheBust } from "@/lib/site-image-cache-bust";
 
 type ProsesStepIconMediaProps = {
   slug: string;
@@ -25,6 +26,8 @@ type ProsesStepIconMediaProps = {
   imageSizes?: string;
   /** Skala tampilan gambar di dalam kartu (1 = default). */
   zoom?: number;
+  /** `contain` = seluruh gambar terlihat (ikon produk); `cover` = isi penuh kartu. */
+  imageFit?: "cover" | "contain";
 };
 
 /**
@@ -41,6 +44,7 @@ export function ProsesStepIconMedia({
   alt,
   imageSizes = "(max-width: 767px) 44px, 56px",
   zoom = 1,
+  imageFit = "cover",
 }: ProsesStepIconMediaProps) {
   const cms = useSiteCmsOptional();
   const stagedSrc = cms?.stagedMediaByPath?.[srcPath];
@@ -73,7 +77,8 @@ export function ProsesStepIconMedia({
     };
   }, [cms, initialSrc, srcPath]);
 
-  const safeSrc = typeof previewSrc === "string" && previewSrc.trim().length > 0 ? previewSrc : null;
+  const rawSrc = typeof previewSrc === "string" && previewSrc.trim().length > 0 ? previewSrc.trim() : null;
+  const safeSrc = rawSrc ? withSiteImageCacheBust(rawSrc) : null;
   const baseZ = typeof zoom === "number" && Number.isFinite(zoom) ? zoom : 1;
   const stagedZ =
     typeof stagedZoomEntry === "number" && Number.isFinite(stagedZoomEntry) ? stagedZoomEntry : undefined;
@@ -83,18 +88,24 @@ export function ProsesStepIconMedia({
     return <>{fallback}</>;
   }
 
+  const isProductIcon = imageFit === "contain";
+  const wrapClass = isProductIcon
+    ? "proses-hero-step-photo-wrap pointer-events-none absolute inset-0 z-[1] overflow-hidden"
+    : "pointer-events-none absolute inset-0 z-[1] overflow-hidden";
+
   return (
-    <span className="pointer-events-none absolute inset-0 z-[1] overflow-hidden">
+    <span className={wrapClass}>
       <span
         className="relative block h-full w-full origin-center"
         style={{ transform: `scale(${safeZoom})` }}
       >
         <Image
+          key={safeSrc}
           src={safeSrc}
           alt={alt}
           fill
           sizes={imageSizes}
-          className={`${imageClassName} object-cover`.trim()}
+          className={`${imageClassName} ${imageFit === "contain" ? "object-contain object-center p-0" : "object-cover"}`.trim()}
           aria-hidden
         />
       </span>

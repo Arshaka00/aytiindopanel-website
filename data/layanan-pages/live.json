@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "updatedAt": "2026-05-15T14:30:00.000Z",
+  "pages": [
+    {
+      "id": "lp-sandwich-panel-pu",
+      "slug": "sandwich-panel-pu",
+      "kind": "primary",
+      "published": true,
+      "publishedAt": "2026-05-15T08:00:00.000Z",
+      "updatedAt": "2026-05-15T14:30:00.000Z",
+      "navLabel": "Sandwich Panel PU"
+    },
+    {
+      "id": "lp-sandwich-panel-knock-down",
+      "slug": "sandwich-panel-knock-down",
+      "kind": "primary",
+      "published": true,
+      "publishedAt": "2026-05-15T08:00:00.000Z",
+      "updatedAt": "2026-05-15T14:30:00.000Z",
+      "navLabel": "Panel Knock Down"
+    },
+    {
+      "id": "lp-cold-storage",
+      "slug": "cold-storage",
+      "kind": "primary",
+      "published": true,
+      "publishedAt": "2026-05-15T08:00:00.000Z",
+      "updatedAt": "2026-05-15T14:30:00.000Z",
+      "navLabel": "Cold Storage"
+    },
+    {
+      "id": "lp-cold-storage-portable",
+      "slug": "cold-storage-portable",
+      "kind": "primary",
+      "published": true,
+      "publishedAt": "2026-05-15T08:00:00.000Z",
+      "updatedAt": "2026-05-15T14:30:00.000Z",
+      "navLabel": "Cold Storage Portable"
+    },
+    {
+      "id": "lp-blast-freezer",
+      "slug": "blast-freezer",
+      "kind": "primary",
+      "published": true,
+      "publishedAt": "2026-05-15T08:00:00.000Z",
+      "updatedAt": "2026-05-15T14:30:00.000Z",
+      "navLabel": "Blast Freezer"
+    },
+    {
+      "id": "lp-refrigeration-system",
+      "slug": "refrigeration-system",
+      "kind": "primary",
+      "published": true,
+      "publishedAt": "2026-05-15T08:00:00.000Z",
+      "updatedAt": "2026-05-15T14:30:00.000Z",
+      "navLabel": "Sistem Refrigerasi"
+    },
+    {
+      "id": "lp-cold-room-door",
+      "slug": "cold-room-door",
+      "kind": "primary",
+      "published": true,
+      "publishedAt": "2026-05-15T08:00:00.000Z",
+      "updatedAt": "2026-05-15T14:30:00.000Z",
+      "navLabel": "Pintu Cold Room"
+    },
+    {
+      "id": "lp-cold-storage-murah",
+      "slug": "cold-storage-murah",
+      "kind": "support",
+      "published": true,
+      "publishedAt": "2026-05-15T08:00:00.000Z",
+      "updatedAt": "2026-05-15T14:30:00.000Z",
+      "navLabel": "Cold Storage — Panduan Investasi"
+    },
+    {
+      "id": "lp-cold-storage-berkualitas",
+      "slug": "cold-storage-berkualitas",
+      "kind": "support",
+      "published": true,
+      "publishedAt": "2026-05-15T08:00:00.000Z",
+      "updatedAt": "2026-05-15T14:30:00.000Z",
+      "navLabel": "Cold Storage Berkualitas"
+    }
+  ]
+}

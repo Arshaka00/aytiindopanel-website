@@ -23,6 +23,12 @@ import {
   GAMBAR_PRODUK_UTAMA_KIRI,
 } from "@/components/aytipanel/gambar-produk-paths";
 import { createDefaultSiteContent } from "@/lib/site-content-defaults";
+import { normalizeLayananPagesInContent } from "@/lib/layanan-pages/cms-merge";
+import { normalizeLandingKotaPagesInContent } from "@/lib/landing-kota-pages/cms-merge";
+import {
+  pickPrimaryHeaderNav,
+  primaryHeaderMobileNavIds,
+} from "@/lib/site-header-primary-nav";
 
 /** Simpan penyesuaian logo CMS (zoom/focal/fit) terklamp aman. */
 function sanitizeLogoAdjustStored(raw: unknown): Partial<CmsImageTransform> | undefined {
@@ -53,10 +59,12 @@ export function normalizeSiteContent(c: SiteContent): SiteContent {
       href: migratedHref ?? def.href,
     };
   });
-  out.header.navItems = mergedNavItems;
-  out.header.mobileNavIds = defaults.header.mobileNavIds.filter((id) =>
-    out.header.navItems.some((n) => n.id === id),
+  /** Navbar utama: hanya jalur konsumen umum — halaman SEO / artikel lewat URL & indeks lain. */
+  out.header.navItems = pickPrimaryHeaderNav(
+    mergedNavItems,
+    defaults.header.navItems,
   );
+  out.header.mobileNavIds = [...primaryHeaderMobileNavIds()];
   out.header.siteSearchPlaceholder =
     typeof out.header.siteSearchPlaceholder === "string" && out.header.siteSearchPlaceholder.trim()
       ? out.header.siteSearchPlaceholder.trim()
@@ -543,6 +551,10 @@ export function normalizeSiteContent(c: SiteContent): SiteContent {
     heroImageSrc: trimStr(inCold.heroImageSrc, defCold.heroImageSrc) || defCold.heroImageSrc,
     heroImageAlt: trimStr(inCold.heroImageAlt, defCold.heroImageAlt) || defCold.heroImageAlt,
   };
+
+  out.layananPages = normalizeLayananPagesInContent(out.layananPages, out.coldStoragePage);
+
+  out.landingKotaPages = normalizeLandingKotaPagesInContent(out.landingKotaPages, defaults.landingKotaPages);
 
   return out;
 }

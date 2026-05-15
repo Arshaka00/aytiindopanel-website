@@ -48,7 +48,7 @@ export const PRODUCTS_B2B_CATEGORIES: readonly ProductB2BCategoryData[] = [
     eyebrow: "Produk Utama",
     title: "Sandwich panel",
     description:
-      "Dirancang untuk kebutuhan ruang bersuhu terkontrol dengan peforma termal yang stabil, material standar industri, dan spesifikasi yang dapat disesuaikan terhadap kebutuhan.",
+      "Dirancang untuk kebutuhan ruang bersuhu terkontrol dengan performa termal yang stabil, material standar industri, dan spesifikasi yang dapat disesuaikan dengan kebutuhan.",
     cards: [
       {
         slug: "sandwich-panel-pu-camelock",
@@ -177,7 +177,7 @@ export const PRODUCTS_B2B_CATEGORIES: readonly ProductB2BCategoryData[] = [
     eyebrow: "Accessories",
     title: "Komponen pendukung",
     description:
-      "Pintu insulated, sistem dock, loading dock system, dan sistem refrigerasi untuk mendukung operasioanal ruang bersuhu terkontrol secara stabil dan efisien.",
+      "Pintu insulated, sistem dock, loading dock system, dan sistem refrigerasi untuk mendukung operasional ruang bersuhu terkontrol secara stabil dan efisien.",
     cards: [
       {
         slug: "pintu-panel",
@@ -260,7 +260,7 @@ export const SERVICE_MAINTENANCE_CATEGORY: ProductB2BCategoryData = {
       imageAlt: "Maintenance berkala sistem refrigerasi industri",
       highlights: [
         "Pemeriksaan Sistem Refrigerasi",
-        "Analisa Peforma Operasional",
+        "Analisis Performa Operasional",
         "Tindakan Maintenance",
         "Laporan Kondisi & Evaluasi",
       ],
@@ -277,7 +277,7 @@ export const SERVICE_MAINTENANCE_CATEGORY: ProductB2BCategoryData = {
       imageSrc: IMG_COLD_STORAGE,
       imageAlt: "Perbaikan dan troubleshooting sistem pendingin",
       highlights: [
-        "Analisa Gangguan Sistem",
+        "Analisis Gangguan Sistem",
         "Perbaikan Komponen & Kontrol",
         "Meminimalisir Downtime Operasional",
         "Prioritas Penanganan Kondisi Kritis",
@@ -295,8 +295,8 @@ export const SERVICE_MAINTENANCE_CATEGORY: ProductB2BCategoryData = {
       imageSrc: IMG_REFRIGERATION,
       imageAlt: "After sales support dan dukungan teknis",
       highlights: [
-        "Monitoring Peforma Sistem",
-        "Kordinasi Teknis Menyeluruh",
+        "Monitoring Performa Sistem",
+        "Koordinasi Teknis Menyeluruh",
         "Pembaruan & Update Sistem",
         "Pendampingan Pasca Instalasi",
       ],

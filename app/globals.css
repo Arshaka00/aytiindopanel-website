@@ -661,16 +661,16 @@ html {
   --hero-canvas: #050b18;
   --hero-overlay-diag: linear-gradient(
     118deg,
-    rgba(3, 8, 20, 0.76) 0%,
-    rgba(5, 11, 24, 0.52) 34%,
-    rgba(5, 12, 22, 0.3) 68%,
-    rgba(4, 10, 22, 0.16) 100%
+    rgba(3, 8, 20, 0.84) 0%,
+    rgba(5, 11, 24, 0.58) 34%,
+    rgba(5, 12, 22, 0.36) 68%,
+    rgba(4, 10, 22, 0.2) 100%
   );
   --hero-overlay-vert: linear-gradient(
     180deg,
-    rgba(2, 6, 17, 0.52) 0%,
-    rgba(3, 8, 18, 0.24) 42%,
-    rgba(2, 6, 17, 0.56) 100%
+    rgba(2, 6, 17, 0.58) 0%,
+    rgba(3, 8, 18, 0.28) 42%,
+    rgba(2, 6, 17, 0.62) 100%
   );
   --hero-overlay-glow: radial-gradient(
       ellipse 64% 50% at 14% 12%,
@@ -681,35 +681,35 @@ html {
     radial-gradient(circle at 52% 90%, rgba(230, 236, 245, 0.012), transparent 54%);
   --hero-overlay-bottom: linear-gradient(
     to top,
-    rgba(2, 5, 14, 0.82) 0%,
-    rgba(4, 10, 22, 0.38) 38%,
-    rgba(5, 11, 24, 0.14) 72%,
+    rgba(2, 5, 14, 0.88) 0%,
+    rgba(4, 10, 22, 0.46) 38%,
+    rgba(5, 11, 24, 0.2) 72%,
     transparent 100%
   );
-  --hero-overlay-bottom-soft: linear-gradient(to top, rgba(3, 9, 23, 0.36) 0%, transparent 100%);
+  --hero-overlay-bottom-soft: linear-gradient(to top, rgba(3, 9, 23, 0.44) 0%, transparent 100%);
   --hero-overlay-rail: linear-gradient(
       100deg,
-      rgba(2, 8, 20, 0.56) 0%,
-      rgba(4, 11, 22, 0.32) 40%,
-      rgba(5, 11, 24, 0.14) 66%,
-      rgba(2, 6, 16, 0.28) 100%
+      rgba(2, 8, 20, 0.64) 0%,
+      rgba(4, 11, 22, 0.38) 40%,
+      rgba(5, 11, 24, 0.18) 66%,
+      rgba(2, 6, 16, 0.34) 100%
     ),
-    linear-gradient(180deg, transparent 48%, rgba(2, 6, 16, 0.13) 100%);
+    linear-gradient(180deg, transparent 48%, rgba(2, 6, 16, 0.18) 100%);
 }
 
 @media (max-width: 767.98px) {
   #beranda.hero.hero-section-fixed-dark {
     --hero-overlay-diag: linear-gradient(
       118deg,
-      rgba(3, 8, 20, 0.74) 0%,
-      rgba(5, 11, 24, 0.5) 38%,
-      rgba(6, 14, 26, 0.28) 100%
+      rgba(3, 8, 20, 0.8) 0%,
+      rgba(5, 11, 24, 0.56) 38%,
+      rgba(6, 14, 26, 0.34) 100%
     );
     --hero-overlay-vert: linear-gradient(
       180deg,
-      rgba(2, 6, 17, 0.5) 0%,
-      rgba(3, 8, 18, 0.22) 42%,
-      rgba(2, 6, 17, 0.52) 100%
+      rgba(2, 6, 17, 0.56) 0%,
+      rgba(3, 8, 18, 0.26) 42%,
+      rgba(2, 6, 17, 0.58) 100%
     );
     --hero-overlay-glow: radial-gradient(
         ellipse 64% 50% at 16% 14%,
@@ -720,11 +720,11 @@ html {
       radial-gradient(circle at 52% 88%, rgba(230, 236, 245, 0.01), transparent 54%);
     --hero-overlay-bottom: linear-gradient(
       to top,
-      rgba(2, 5, 14, 0.78) 0%,
-      rgba(4, 10, 22, 0.32) 40%,
+      rgba(2, 5, 14, 0.86) 0%,
+      rgba(4, 10, 22, 0.4) 40%,
       transparent 100%
     );
-    --hero-overlay-bottom-soft: linear-gradient(to top, rgba(3, 9, 23, 0.34) 0%, transparent 100%);
+    --hero-overlay-bottom-soft: linear-gradient(to top, rgba(3, 9, 23, 0.42) 0%, transparent 100%);
   }
 
   /* Batalkan zoom CMS (scale inline) di hero ponsel — kembalikan tampilan sebelum “full crop” mobile. */
@@ -741,23 +741,23 @@ html {
   background: var(--hero-overlay-vert);
 }
 
-@media (min-width: 768px) {
+@media (min-width: 768px) and (max-width: 1023.98px) {
   #beranda.hero .hero-overlay-diagonal,
   #beranda.hero .hero-overlay-vertical {
-    opacity: 0.78;
+    opacity: 0.88;
   }
 
   #beranda.hero .hero-overlay-glow {
-    opacity: 0.48;
+    opacity: 0.42;
   }
 
   #beranda.hero .hero-overlay-desktop-rail {
-    opacity: 0.68;
+    opacity: 0.76;
   }
 
   #beranda.hero .hero-overlay-bottom,
   #beranda.hero .hero-overlay-bottom-soft {
-    opacity: 0.76;
+    opacity: 0.84;
   }
 }
 
@@ -837,6 +837,34 @@ html {
   #beranda.hero .hero-intro-body {
     max-width: clamp(30rem, 42vw, 36rem);
     overflow-wrap: break-word;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-wrap: pretty;
+  }
+
+  /* Intro: satu bobot — penekanan hanya lewat warna sedikit lebih terang. */
+  #beranda.hero .hero-intro-body .hero-intro-regular,
+  #beranda.hero .hero-intro-body .hero-intro-regular [style] {
+    font-weight: 400 !important;
+    letter-spacing: inherit !important;
+    text-transform: none !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+    color: inherit !important;
+    opacity: 1 !important;
+    text-shadow: inherit !important;
+  }
+
+  #beranda.hero .hero-intro-body .hero-intro-semibold,
+  #beranda.hero .hero-intro-body .hero-intro-semibold [style] {
+    font-weight: 400 !important;
+    letter-spacing: inherit !important;
+    text-transform: none !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+    color: rgb(255 255 255 / 0.9) !important;
+    opacity: 1 !important;
+    text-shadow: inherit !important;
   }
 
   #beranda.hero .hero-process-block {
@@ -1046,8 +1074,9 @@ html {
 
 /*
  * Crystal ice typography — `hero.headingMiddle` (“PENDINGIN”).
- * Performa: tanpa animasi background pada teks (repaint mahal); kilau = opacity di ::after saja.
- * Desktop: filter SVG ringan; mobile: tanpa SVG filter (GPU teks).
+ * Biru ice jelas dibaca: halo + gradient sky/cyan + glow (desktop & mobile).
+ * Performa: kilau animasi hanya pada ::after; gradien teks tetap statis.
+ * Desktop: filter SVG + drop-shadow; mobile: glow lebih kuat tanpa SVG.
  */
 #beranda.hero #hero-heading .hero-heading-crystal-wrap {
   position: relative;
@@ -1057,65 +1086,66 @@ html {
   transform-origin: left center;
 }
 
-/* Bloom di belakang glyph — biru es (sky / cyan halus) */
+/* Bloom — halo biru es yang lebih terbaca di background gelap */
 #beranda.hero #hero-heading .hero-heading-crystal-wrap::before {
   content: "";
   position: absolute;
-  left: -6%;
-  right: -6%;
-  top: -14%;
-  bottom: -4%;
+  left: -8%;
+  right: -8%;
+  top: -18%;
+  bottom: -6%;
   z-index: 0;
   pointer-events: none;
   background:
     radial-gradient(
-      ellipse 72% 68% at 48% 42%,
-      rgba(186, 230, 253, 0.22) 0%,
-      rgba(56, 189, 248, 0.06) 38%,
-      transparent 54%
+      ellipse 78% 72% at 48% 42%,
+      rgba(186, 230, 253, 0.38) 0%,
+      rgba(56, 189, 248, 0.16) 36%,
+      rgba(14, 165, 233, 0.06) 52%,
+      transparent 66%
     ),
     radial-gradient(
-      ellipse 68% 64% at 50% 46%,
-      rgba(125, 211, 252, 0.14) 0%,
-      rgba(56, 189, 248, 0.08) 42%,
-      transparent 70%
+      ellipse 72% 68% at 52% 48%,
+      rgba(125, 211, 252, 0.22) 0%,
+      rgba(56, 189, 248, 0.12) 44%,
+      transparent 72%
     ),
     radial-gradient(
       ellipse 58% 56% at 50% 100%,
-      rgba(15, 23, 42, 0.2) 0%,
-      rgba(30, 58, 138, 0.1) 48%,
-      transparent 76%
+      rgba(15, 23, 42, 0.28) 0%,
+      rgba(37, 99, 235, 0.12) 48%,
+      transparent 82%
     );
-  opacity: 0.88;
+  opacity: 0.94;
 }
 
-/* Kilau es — putih dingin + sky */
+/* Kilau — overlay lebih kontras di atas glyph */
 #beranda.hero #hero-heading .hero-heading-crystal-wrap::after {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: 2;
+  z-index: 1;
   pointer-events: none;
   border-radius: inherit;
   background-image: radial-gradient(
-    ellipse 58% 46% at 44% 36%,
-    rgba(240, 249, 255, 0.38) 0%,
-    rgba(186, 230, 253, 0.22) 28%,
-    rgba(56, 189, 248, 0.14) 46%,
-    rgba(125, 211, 252, 0.08) 58%,
+    ellipse 56% 44% at 42% 34%,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(224, 242, 254, 0.35) 24%,
+    rgba(125, 211, 252, 0.22) 42%,
+    rgba(56, 189, 248, 0.14) 56%,
     transparent 74%
   );
   background-size: 112% 96%;
   background-position: 46% 38%;
-  mix-blend-mode: soft-light;
-  opacity: 0.26;
+  mix-blend-mode: overlay;
+  opacity: 0.38;
   animation: hero-crystal-gloss-soft 14s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
   #beranda.hero #hero-heading .hero-heading-crystal-wrap::after {
     animation: none;
-    opacity: 0.24;
+    opacity: 0.32;
   }
 }
 
@@ -1128,71 +1158,83 @@ html {
 @keyframes hero-crystal-gloss-soft {
   0%,
   100% {
-    opacity: 0.2;
+    opacity: 0.32;
     background-position: 44% 40%;
   }
 
   50% {
-    opacity: 0.34;
+    opacity: 0.46;
     background-position: 48% 36%;
   }
 }
 
 #beranda.hero #hero-heading .hero-heading-crystal {
   position: relative;
-  z-index: 1;
-  text-shadow: none;
+  z-index: 3;
+  /* Bayangan ketat = bentuk huruf tetap tajam; isi warna dari gradient di bawah. */
+  text-shadow:
+    0 0.5px 0 rgba(255, 255, 255, 0.35),
+    0 0 8px rgba(56, 189, 248, 0.35),
+    0 0 20px rgba(14, 165, 233, 0.2);
   filter: url(#heroCrystalIceRefraction)
-    drop-shadow(-0.5px -0.55px 0 rgba(255, 255, 255, 0.94))
-    drop-shadow(0 0.55px 0 rgba(186, 230, 253, 0.55))
-    drop-shadow(0.55px 1.05px 0 rgba(4, 20, 52, 0.88))
-    drop-shadow(0 2px 4px rgba(2, 12, 36, 0.52))
-    drop-shadow(0 0 16px rgba(56, 189, 248, 0.22))
-    drop-shadow(0 0 28px rgba(14, 165, 233, 0.14))
-    drop-shadow(0 0 36px rgba(125, 211, 252, 0.1))
-    drop-shadow(0 0 22px rgba(224, 242, 254, 0.12));
-  -webkit-text-stroke: 0.55px rgba(186, 230, 253, 0.82);
+    drop-shadow(-0.5px -0.55px 0 rgba(255, 255, 255, 0.98))
+    drop-shadow(0 0.65px 0 rgba(186, 230, 253, 0.75))
+    drop-shadow(0.5px 1.1px 0 rgba(4, 20, 52, 0.82))
+    drop-shadow(0 2px 5px rgba(2, 12, 36, 0.5))
+    drop-shadow(0 0 20px rgba(56, 189, 248, 0.32))
+    drop-shadow(0 0 36px rgba(14, 165, 233, 0.22))
+    drop-shadow(0 0 48px rgba(125, 211, 252, 0.16))
+    drop-shadow(0 0 28px rgba(224, 242, 254, 0.2));
+  -webkit-text-stroke: 0.55px rgba(186, 230, 253, 0.88);
   paint-order: stroke fill;
+  /* Lapisan atas = kilau/kristal pada permukaan huruf */
   background-image:
     repeating-linear-gradient(
       -14deg,
       transparent 0px,
+      transparent 6px,
+      rgba(255, 255, 255, 0.06) 6px,
+      rgba(255, 255, 255, 0.06) 7px,
       transparent 7px,
-      rgba(186, 230, 253, 0.055) 7px,
-      rgba(186, 230, 253, 0.055) 8px,
-      transparent 8px,
-      transparent 15px,
-      rgba(125, 211, 252, 0.04) 15px,
-      rgba(125, 211, 252, 0.04) 16px
+      transparent 13px,
+      rgba(125, 211, 252, 0.12) 13px,
+      rgba(125, 211, 252, 0.12) 14px,
+      transparent 14px,
+      transparent 20px,
+      rgba(56, 189, 248, 0.08) 20px,
+      rgba(56, 189, 248, 0.08) 21px
     ),
     radial-gradient(
-      ellipse 96% 84% at 46% 54%,
-      rgba(15, 23, 42, 0.62) 0%,
-      rgba(30, 64, 175, 0.35) 32%,
-      rgba(30, 41, 59, 0.52) 54%,
-      transparent 78%
+      ellipse 100% 88% at 48% 48%,
+      rgba(236, 254, 255, 0.55) 0%,
+      rgba(56, 189, 248, 0.45) 32%,
+      rgba(12, 74, 110, 0.55) 58%,
+      rgba(15, 23, 42, 0.35) 78%,
+      transparent 92%
     ),
     linear-gradient(
-      156deg,
-      rgba(240, 249, 255, 0.98) 0%,
-      rgba(186, 230, 253, 0.82) 10%,
-      rgba(56, 189, 248, 0.58) 24%,
-      rgba(14, 116, 144, 0.52) 40%,
-      rgba(30, 41, 59, 0.72) 56%,
-      rgba(125, 211, 252, 0.55) 70%,
-      rgba(248, 250, 252, 0.96) 100%
+      162deg,
+      rgba(255, 255, 255, 0.99) 0%,
+      rgba(224, 242, 254, 0.98) 12%,
+      rgba(125, 211, 252, 0.95) 28%,
+      rgba(56, 189, 248, 0.88) 42%,
+      rgba(14, 165, 233, 0.72) 52%,
+      rgba(8, 47, 73, 0.78) 58%,
+      rgba(34, 211, 238, 0.75) 72%,
+      rgba(240, 249, 255, 0.98) 100%
     ),
     radial-gradient(
-      ellipse 52% 38% at 40% 34%,
-      rgba(255, 255, 255, 0.45) 0%,
-      rgba(125, 211, 252, 0.28) 42%,
+      ellipse 58% 42% at 36% 30%,
+      rgba(255, 255, 255, 0.75) 0%,
+      rgba(186, 230, 253, 0.55) 28%,
+      rgba(56, 189, 248, 0.35) 52%,
       transparent 78%
     ),
     radial-gradient(
-      ellipse 38% 28% at 62% 58%,
-      rgba(56, 189, 248, 0.22) 0%,
-      rgba(14, 165, 233, 0.12) 52%,
-      transparent 74%
+      ellipse 48% 36% at 68% 62%,
+      rgba(34, 211, 238, 0.45) 0%,
+      rgba(14, 165, 233, 0.28) 48%,
+      transparent 78%
     );
   /* Layer statis + bg-size kompak — minimise repaint (tanpa animasi posisi) */
   background-size:
@@ -1213,16 +1255,20 @@ html {
   -webkit-text-fill-color: transparent;
 }
 
-/* Tanpa filter SVG: mobile, hemat data, atau reduced motion — ringan di GPU */
+/* Tanpa filter SVG: mobile, hemat data, atau reduced motion — glow tetap kuat */
 @media (max-width: 767.98px), (prefers-reduced-data: reduce), (prefers-reduced-motion: reduce) {
   #beranda.hero #hero-heading .hero-heading-crystal {
-    filter: drop-shadow(-0.5px -0.55px 0 rgba(255, 255, 255, 0.94))
-      drop-shadow(0 0.55px 0 rgba(186, 230, 253, 0.5))
-      drop-shadow(0.55px 1.05px 0 rgba(4, 20, 52, 0.88))
-      drop-shadow(0 2px 4px rgba(2, 12, 36, 0.52))
-      drop-shadow(0 0 14px rgba(56, 189, 248, 0.2))
-      drop-shadow(0 0 26px rgba(14, 165, 233, 0.12))
-      drop-shadow(0 0 30px rgba(125, 211, 252, 0.09));
+    filter: drop-shadow(-0.5px -0.55px 0 rgba(255, 255, 255, 0.98))
+      drop-shadow(0 0.65px 0 rgba(186, 230, 253, 0.68))
+      drop-shadow(0.5px 1.1px 0 rgba(4, 20, 52, 0.82))
+      drop-shadow(0 2px 5px rgba(2, 12, 36, 0.5))
+      drop-shadow(0 0 18px rgba(56, 189, 248, 0.38))
+      drop-shadow(0 0 34px rgba(14, 165, 233, 0.26))
+      drop-shadow(0 0 44px rgba(125, 211, 252, 0.2));
+    text-shadow:
+      0 0.5px 0 rgba(255, 255, 255, 0.4),
+      0 0 10px rgba(56, 189, 248, 0.45),
+      0 0 24px rgba(14, 165, 233, 0.28);
   }
 }
 
@@ -1591,51 +1637,82 @@ html {
 }
 
 /*
- * Hero beranda — langkah proses: kartu ikon & label judul “timbul” (raised bevel + bayangan).
- * Hanya `#beranda` agar varian light di halaman lain tidak berubah.
+ * Hero beranda — strip PRODUCTS OF: ikon + judul saja (tanpa kartu kotak).
  */
-#beranda.hero .proses-hero-step-shell--raised {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.14),
-    inset 0 -14px 22px -10px rgba(0, 0, 0, 0.42),
-    0 1px 0 rgba(255, 255, 255, 0.1),
-    0 2px 0 rgba(0, 0, 0, 0.22),
-    0 5px 12px rgba(0, 0, 0, 0.45),
-    0 10px 22px -8px rgba(0, 0, 0, 0.38),
-    0 0 0 1px rgba(255, 255, 255, 0.05);
-  transform: translate3d(0, -1.25px, 0);
-}
-
-#beranda.hero .proses-hero-step-title--raised {
-  text-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.22),
-    0 2px 0 rgba(255, 255, 255, 0.06),
-    0 2px 2px rgba(2, 8, 24, 0.55),
-    0 4px 9px rgba(2, 8, 24, 0.34);
-}
-
-html[data-performance-no-anim="1"] #beranda.hero .proses-hero-step-shell--raised,
-html[data-performance-lightweight="1"] #beranda.hero .proses-hero-step-shell--raised {
+#beranda.hero .proses-hero-step-media {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
   transform: none !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 3px 10px rgba(0, 0, 0, 0.55) !important;
 }
 
-html[data-performance-no-anim="1"] #beranda.hero .proses-hero-step-title--raised,
-html[data-performance-lightweight="1"] #beranda.hero .proses-hero-step-title--raised {
-  text-shadow: 0 1px 2px rgba(2, 8, 24, 0.88) !important;
+/* Pembatas vertikal antar kolom ikon — lebih pendek & halus. */
+#beranda.hero .hero-process-block ol > li::before {
+  height: 1.625rem;
+  top: 0.875rem;
+  background: rgb(255 255 255 / 0.14);
+  box-shadow: 0 0 6px rgb(255 255 255 / 0.04);
+}
+
+@media (min-width: 640px) {
+  #beranda.hero .hero-process-block ol > li::before {
+    height: 1.875rem;
+    top: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  #beranda.hero .hero-process-block ol > li::before {
+    height: 2.125rem;
+    top: 1.125rem;
+  }
+}
+
+/* Ikon produk hero — warna per langkah (tanpa filter dingin global `ayti-icon-cold`). */
+#beranda.hero .proses-hero-step-glyph.ayti-icon-cold {
+  filter: none;
+}
+
+#beranda.hero .proses-hero-step-photo {
+  background: transparent !important;
+  object-position: center;
+  filter: brightness(1.08) contrast(1.06) saturate(1.12);
+}
+
+/* Garis pemisah horizontal di bawah ikon produk (strip PRODUCTS OF). */
+#beranda.hero .proses-hero-step-divider {
+  display: block;
+  width: min(100%, 2.75rem);
+  height: 1px;
+  margin-top: -0.375rem;
+  margin-bottom: 0.0625rem;
+  border-radius: 9999px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(255 255 255 / 0.12) 18%,
+    rgb(255 255 255 / 0.38) 50%,
+    rgb(255 255 255 / 0.12) 82%,
+    transparent 100%
+  );
+  box-shadow: 0 0 10px rgb(255 255 255 / 0.06);
+}
+
+@media (min-width: 640px) {
+  #beranda.hero .proses-hero-step-divider {
+    width: min(100%, 3rem);
+    margin-top: -0.4375rem;
+  }
+}
+
+@media (min-width: 768px) {
+  #beranda.hero .proses-hero-step-divider {
+    width: min(100%, 3.25rem);
+    margin-top: -0.5rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #beranda.hero .proses-hero-step-shell--raised {
-    transform: none;
-  }
-
-  #beranda.hero .proses-hero-step-title--raised {
-    text-shadow: 0 1px 2px rgba(2, 8, 24, 0.88);
-  }
-
   .proses-step-check {
     animation: none !important;
     opacity: 0 !important;
@@ -2724,9 +2801,8 @@ html[data-performance-lightweight="1"] .landing-hash-section-flash {
  *    `position: fixed` adalah salah satu sumber jank scroll terbesar di
  *    Safari iOS dan Chrome Android (recomposite tiap frame). Turunkan dari
  *    24px (`backdrop-blur-xl`) → 6px dan saturate 150% → 110% untuk hemat fillrate.
- *  - Pause hero marquee saat #beranda keluar viewport (ditandai oleh JS via
- *    `data-hero-visible="0"`). Layer GPU dilepas dan tidak terus dianimasikan
- *    saat tidak terlihat.
+ *  - Latar hero: `data-hero-bg-active` (tampil selama hero di layar; sembunyi hanya saat lewat).
+ *  - Pause animasi slide saat `data-hero-past` (`useHeroViewportPerformance`).
  *  - `content-visibility: auto` pada section reveal yang sudah tampil →
  *    skip render saat di luar viewport (boost paint cost saat scroll cepat).
  * ============================================================================ */
@@ -2801,15 +2877,155 @@ html[data-performance-lightweight="1"] .landing-hash-section-flash {
   }
 }
 
-#beranda[data-hero-visible="0"] .hero-marquee-track,
-#beranda[data-hero-visible="0"] .hero-achievement-marquee-track--running {
+#beranda[data-hero-past="1"] .hero-marquee-track,
+#beranda[data-hero-past="1"] .hero-crossfade-slide,
+#beranda[data-hero-past="1"] .hero-achievement-marquee-track--running {
   animation-play-state: paused !important;
   will-change: auto !important;
 }
 
-/* Kurangi reflow lintas sibling hero — tanpa mengubah ukuran visual (contain layout). */
+/* Desktop — scroll halus: overlay tunggal; kata “PENDINGIN” pakai gradien biru-es (tanpa filter SVG). */
+@media (min-width: 768px) {
+  #beranda.hero {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 820px;
+    contain: layout style;
+  }
+
+  #beranda.hero .hero-overlay-diagonal,
+  #beranda.hero .hero-overlay-vertical,
+  #beranda.hero .hero-overlay-glow,
+  #beranda.hero .hero-overlay-bottom,
+  #beranda.hero .hero-overlay-bottom-soft,
+  #beranda.hero .hero-overlay-desktop-rail,
+  #beranda.hero .hero-overlay-top-hairline {
+    display: none !important;
+  }
+
+  #beranda.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      linear-gradient(
+        118deg,
+        rgba(3, 8, 20, 0.78) 0%,
+        rgba(5, 11, 24, 0.48) 42%,
+        rgba(4, 10, 22, 0.18) 100%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(2, 6, 17, 0.5) 0%,
+        transparent 40%,
+        rgba(2, 6, 17, 0.54) 100%
+      ),
+      linear-gradient(to top, rgba(2, 5, 14, 0.78) 0%, rgba(4, 10, 22, 0.22) 42%, transparent 62%);
+  }
+
+  /* Desktop: tanpa filter SVG / pseudo bloom (murah untuk scroll); isi huruf = gradien biru-es satu lapisan */
+  #beranda.hero #hero-heading .hero-heading-crystal-wrap::before,
+  #beranda.hero #hero-heading .hero-heading-crystal-wrap::after {
+    display: none !important;
+  }
+
+  #beranda.hero #hero-heading .hero-heading-crystal-wrap {
+    isolation: auto;
+    transform: none;
+  }
+
+  #beranda.hero #hero-heading .hero-heading-crystal {
+    filter: drop-shadow(0 1px 2px rgba(2, 8, 20, 0.68))
+      drop-shadow(0 0 18px rgba(56, 189, 248, 0.18));
+    background-image: linear-gradient(
+      168deg,
+      #ffffff 0%,
+      #f0f9ff 14%,
+      #bae6fd 32%,
+      #38bdf8 48%,
+      #0ea5e9 56%,
+      #0369a1 62%,
+      #7dd3fc 76%,
+      #e0f2fe 92%,
+      #ffffff 100%
+    ) !important;
+    background-size: 100% 100% !important;
+    background-repeat: no-repeat !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    color: transparent !important;
+    -webkit-text-stroke: 0.45px rgba(186, 230, 253, 0.55) !important;
+    paint-order: stroke fill;
+  }
+
+  #beranda.hero .proses-flow-line--hero-h {
+    filter: none !important;
+  }
+
+  #beranda.hero .hero-content-enter {
+    animation: none !important;
+    opacity: 1 !important;
+    filter: none;
+  }
+
+  #beranda.hero .hero-intro-glass-shell,
+  #beranda.hero .hero-lihat-produk-cta {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+/* Sembunyikan latar hanya saat hero benar-benar lewat layar (scroll naik → foto langsung ikut). */
+#beranda[data-hero-bg-active="0"] .hero-bg-root {
+  visibility: hidden !important;
+}
+
+@media (min-width: 768px) {
+  #beranda .hero-crossfade-stack {
+    contain: strict;
+    isolation: isolate;
+  }
+}
+
+/* Header: matikan blur hanya saat scroll di luar hero (di atas hero tetap kaca terang). */
+html[data-page-scrolling="1"]:has(#beranda[data-hero-past="1"]) .site-header-shell {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transition: none !important;
+}
+
+html[data-page-scrolling="1"] .scroll-reveal-section:not(.is-revealed),
+html[data-page-scrolling="1"] .scroll-reveal-card:not(.is-revealed),
+html[data-page-scrolling="1"] .scroll-reveal-image:not(.is-revealed) {
+  transition: none !important;
+  will-change: auto !important;
+}
+
+#beranda[data-hero-visible="0"] #hero-heading .hero-heading-crystal-wrap::after,
+#beranda[data-hero-scrolling="1"] #hero-heading .hero-heading-crystal-wrap::after {
+  animation-play-state: paused !important;
+}
+
+/* Saat scroll: kurangi blur kaca & filter teks agar compositor tidak terbebani. */
+#beranda[data-hero-scrolling="1"] .hero-intro-glass-shell,
+#beranda[data-hero-scrolling="1"] .hero-lihat-produk-cta {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+#beranda[data-hero-scrolling="1"] .hero-content-enter {
+  filter: none !important;
+}
+
+#beranda[data-hero-scrolling="1"] .hero-overlay-glow {
+  opacity: 0 !important;
+}
+
+/* Kurangi reflow & repaint latar hero saat scroll. */
 #beranda .hero-marquee-viewport {
-  contain: layout;
+  contain: layout paint;
 }
 
 /* ============================================================================
@@ -2874,6 +3090,7 @@ html[data-performance-lightweight="1"] .landing-hash-section-flash {
   #beranda.hero .hero-overlay-vertical {
     opacity: 0.74;
   }
+
 }
 
 /* Saat performance toggle diaktifkan dari CMS, matikan total semua animasi

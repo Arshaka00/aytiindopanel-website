@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000",
-    "build": "next build",
+    "build": "node scripts/generate-site-image-manifest.mjs && next build",
+    "site:manifest": "node scripts/generate-site-image-manifest.mjs",
     "start": "next start",
     "lint": "eslint"
   },

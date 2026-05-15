@@ -14,6 +14,8 @@ import {
   HERO_IMAGE_FOLDER,
 } from "@/components/aytipanel/hero-slider-config";
 import { LAYANAN_UTAMA_CARDS, layananPhotosFromFolder } from "@/components/aytipanel/layanan-card-images";
+import { buildDefaultLayananPagesCms } from "@/lib/layanan-pages/cms-merge";
+import { buildDefaultLandingKotaPages } from "@/lib/landing-kota-pages/cms-merge";
 import {
   PRODUCTS_B2B_CATEGORIES,
   SERVICE_MAINTENANCE_CATEGORY,
@@ -81,16 +83,16 @@ export function createDefaultSiteContent(): SiteContent {
   ];
   const procurementTitles = [
     "Sistem Terintegrasi",
-    "Costum Sesuai Kebutuhan",
+    "Custom Sesuai Kebutuhan",
     "Material Standar Industri",
     "Timeline Terpantau",
     "Instalasi Standar QA/QC",
     "Dokumentasi Lengkap",
   ];
   const procurementBodies = [
-    "Mulai dari produksi panel, sistem refrigerasi, instalasi,  hingga dukungan purna jual dalam satu kordinasi.",
+    "Mulai dari produksi panel, sistem refrigerasi, instalasi, hingga dukungan purna jual dalam satu koordinasi.",
     "Desain dan implementasi sistem menyesuaikan kapasitas dan kebutuhan.",
-    "Menggunakan material dan komponen yang disesuaikan dengan kebutuhan..",
+    "Menggunakan material dan komponen yang disesuaikan dengan kebutuhan.",
     "Progress berbasis milestone dengan reporting rutin ke stakeholder.",
     "Tim lapangan mengikuti SOP ketat dan checklist kualitas hingga commissioning.",
     "Shop drawing, as-built drawing, hingga commissioning report disiapkan sistematis.",
@@ -134,7 +136,7 @@ export function createDefaultSiteContent(): SiteContent {
       mapsUrl: CONTACT_MAP_EMBED_URL,
       officeHours: "Senin–Sabtu · 09.00–17.00 WIB",
       seoContent: {
-        metaTitle: "PT AYTI INDO PANEL - sandwich panel & refrigerasi sistem",
+        metaTitle: "PT AYTI INDO PANEL - sandwich panel & sistem refrigerasi",
         metaDescription:
           "Produksi sandwich panel, instalasi cold room & sistem refrigerasi industri. Mitra teknik PT AYTI INDO PANEL.",
         keywords:
@@ -215,21 +217,19 @@ Terima kasih.`,
       siteSearchNoResultsText:
         "Tidak ada halaman yang cocok dengan pencarian Anda. Coba kata lain atau periksa ejaan.",
       navItems: [
-        { id: "nav-home", label: "Home", shortLabel: "Home", href: "/#beranda" },
+        { id: "nav-home", label: "Beranda", shortLabel: "Beranda", href: "/#beranda" },
         { id: "nav-tentang", label: "Tentang kami", shortLabel: "Tentang", href: "/#tentang" },
         { id: "nav-layanan", label: "Layanan", shortLabel: "Layanan", href: "/#layanan" },
         { id: "nav-produk", label: "Produk", shortLabel: "Produk", href: "/#produk" },
         { id: "nav-service", label: "Service", shortLabel: "Service", href: "/#service-maintenance" },
         { id: "nav-proyek", label: "Proyek", shortLabel: "Proyek", href: "/#proyek" },
-        { id: "nav-keunggulan", label: "Keunggulan", shortLabel: "Keunggulan", href: "/#keunggulan" },
         { id: "nav-kontak", label: "Kontak", shortLabel: "Kontak", href: "/#kontak" },
         {
           id: "nav-gallery-proyek",
-          label: "Galery proyek",
-          shortLabel: "Galery proyek",
+          label: "Gallery proyek",
+          shortLabel: "Gallery",
           href: "/gallery-project",
         },
-        { id: "nav-artikel", label: "Artikel", shortLabel: "Artikel", href: "/artikel" },
       ],
       mobileNavIds: [
         "nav-home",
@@ -240,7 +240,6 @@ Terima kasih.`,
         "nav-proyek",
         "nav-kontak",
         "nav-gallery-proyek",
-        "nav-artikel",
       ],
     },
     hero: {
@@ -251,7 +250,7 @@ Terima kasih.`,
       intro: {
         before1: "Untuk memenuhi kebutuhan",
         bold1: "bisnis",
-        middle: "anda dalam membangun",
+        middle: "Anda dalam membangun",
         bold2: "ruang pendingin",
         after2: "yang",
         bold3: "stabil dan efisien",
@@ -260,11 +259,11 @@ Terima kasih.`,
       introBadge: "",
       prosesBadge: "PRODUCTS OF",
       prosesStepImages: {
-        konsultasi: "/images/spesialisasi/spesialisasi-pu.jpg",
-        survey: "/images/spesialisasi/spesialisasi-eps.jpg",
-        produksi: "/images/spesialisasi/spesialisasi-coldstorage.jpg",
-        instalasi: "/images/spesialisasi/spesialisasi-refrigerasi.jpg",
-        selesai: "/images/spesialisasi/spesialisasi-doordock.jpg",
+        konsultasi: "/images/spesialisasi/icon-sandwich-panel-pu.png",
+        survey: "/images/spesialisasi/icon-sandwich-panel-eps.png",
+        produksi: "/images/spesialisasi/icon-cold-storage.png",
+        instalasi: "/images/spesialisasi/icon-sistem-pendingin.png",
+        selesai: "/images/spesialisasi/icon-door-dock-system.png",
       },
       prosesStepImageZoom: {
         konsultasi: 1,
@@ -301,7 +300,7 @@ terintegrasi dan terukur.`,
         "Pabrik panel milik sendiri",
         "Instalasi & refrigeration system",
         "Service & dukungan purna jual",
-        "Costum sesuai kebutuhan",
+        "Custom sesuai kebutuhan",
       ],
       imageSrc: "/images/cold-storage.jpg",
       imageAlt: "Ilustrasi fasilitas pendingin — gambar pengganti sementara",
@@ -360,7 +359,7 @@ Terima kasih.`,
       sectionLabel: "Portfolio proyek",
       heading: "Referensi instalasi & cold storage",
       lead:
-        "Beberapa contoh proyek yang sudah kami kerjakan, dengan implementasi sistem pendingin refrigersi, sandwich panel insulated, hingga area loading  yang dirancang mengikuti kebutuhan operasioanl yang efisien untuk jangka panjang.",
+        "Beberapa contoh proyek yang sudah kami kerjakan, dengan implementasi sistem pendingin refrigerasi, sandwich panel insulated, hingga area loading yang dirancang mengikuti kebutuhan operasional yang efisien untuk jangka panjang.",
       projectLocationLabel: "Lokasi",
       projectWorkTypeLabel: "Jenis pekerjaan",
       editorAddProjectLabel: "Proyek",
@@ -683,6 +682,8 @@ Terima kasih.`,
       heroImageSrc: "/images/cold-storage.jpg",
       heroImageAlt: "Ilustrasi cold storage — instalasi panel dan ruang dingin industri",
     },
+    layananPages: buildDefaultLayananPagesCms(),
+    landingKotaPages: buildDefaultLandingKotaPages(),
     galleryPage: {
       loadingText: "Memuat gallery…",
       title: "Gallery Project",

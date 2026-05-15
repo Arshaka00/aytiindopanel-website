@@ -423,6 +423,71 @@ export function IconSandwichPanelPU({ className, ...props }: IconProps) {
   );
 }
 
+/** Sandwich Panel EPS — cross-section: skin metal + core EPS (butiran bulat). */
+export function IconSandwichPanelEPS({ className, ...props }: IconProps) {
+  return (
+    <svg
+      className={mergeAytiIconClass(className)}
+      viewBox="0 0 24 24"
+      aria-hidden
+      {...strokeIcon}
+      {...props}
+    >
+      <rect x="2.5" y="6" width="19" height="12" rx="0.75" />
+      <path d="M2.5 8.75h19M2.5 15.25h19" />
+      <circle cx="6.25" cy="11.25" r="0.65" fill="currentColor" stroke="none" />
+      <circle cx="8.75" cy="12.75" r="0.65" fill="currentColor" stroke="none" />
+      <circle cx="11.25" cy="11.25" r="0.65" fill="currentColor" stroke="none" />
+      <circle cx="13.75" cy="12.75" r="0.65" fill="currentColor" stroke="none" />
+      <circle cx="16.25" cy="11.25" r="0.65" fill="currentColor" stroke="none" />
+      <circle cx="18.75" cy="12.75" r="0.65" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+/** Cold storage — ruang dingin + salju. */
+export function IconColdStorage({ className, ...props }: IconProps) {
+  return (
+    <svg
+      className={mergeAytiIconClass(className)}
+      viewBox="0 0 24 24"
+      aria-hidden
+      {...strokeIcon}
+      {...props}
+    >
+      <path d="M4 20V11.5l8-4.5 8 4.5V20H4z" />
+      <path d="M10 20v-4.5h4V20" />
+      <path d="M12 9.5v2.25M10.75 10.625h2.5" />
+      <path d="M16.5 7.25l.9.9M18.75 9.5l.9.9M18.75 7.25l.9-.9" />
+    </svg>
+  );
+}
+
+/** Sistem pendingin — unit kompresor / refrigerasi (alias visual kompresor). */
+export function IconRefrigerationSystem({ className, ...props }: IconProps) {
+  return <IconCompressor className={className} {...props} />;
+}
+
+/** Door & dock — pintu cold room + area bongkar muat. */
+export function IconDoorDock({ className, ...props }: IconProps) {
+  return (
+    <svg
+      className={mergeAytiIconClass(className)}
+      viewBox="0 0 24 24"
+      aria-hidden
+      {...strokeIcon}
+      {...props}
+    >
+      <path d="M3 15.5h18v5.5H3z" />
+      <path d="M7.5 15.5V9.25a1.75 1.75 0 011.75-1.75H11v8" />
+      <path d="M11 7.5h2.25a1.25 1.25 0 011.25 1.25V15.5" />
+      <path d="M14.25 16.25H20v3.25a1 1 0 01-1 1h-4.5a1 1 0 01-1-1v-3.25z" />
+      <circle cx="16" cy="19.75" r="0.9" fill="currentColor" stroke="none" />
+      <circle cx="19.25" cy="19.75" r="0.9" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 /** Proses kerja: selesai */
 export function IconProcessComplete({ className, ...props }: IconProps) {
   return (

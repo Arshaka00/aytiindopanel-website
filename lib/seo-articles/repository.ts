@@ -1,6 +1,6 @@
 import "server-only";
 
-import { readSeoArticlesFile } from "@/lib/seo-articles/storage";
+import { readSeoArticlesFile, readSeoArticlesFileMerged } from "@/lib/seo-articles/storage";
 import type { SeoArticle } from "@/lib/seo-articles/types";
 import { isSeoFriendlySlug } from "@/lib/seo-articles/slug";
 
@@ -11,13 +11,13 @@ function sortPublished(a: SeoArticle, b: SeoArticle): number {
 }
 
 export async function listPublishedSeoArticles(): Promise<SeoArticle[]> {
-  const file = await readSeoArticlesFile();
+  const file = await readSeoArticlesFileMerged();
   return file.articles.filter((a) => a.published).sort(sortPublished);
 }
 
 export async function getPublishedSeoArticleBySlug(slug: string): Promise<SeoArticle | null> {
   if (!isSeoFriendlySlug(slug)) return null;
-  const file = await readSeoArticlesFile();
+  const file = await readSeoArticlesFileMerged();
   const hit = file.articles.find((a) => a.slug === slug && a.published);
   return hit ?? null;
 }
@@ -36,7 +36,7 @@ export async function loadPublishedSeoArticleContext(
   slug: string,
 ): Promise<{ article: SeoArticle | null; published: SeoArticle[] }> {
   if (!isSeoFriendlySlug(slug)) return { article: null, published: [] };
-  const file = await readSeoArticlesFile();
+  const file = await readSeoArticlesFileMerged();
   const published = file.articles.filter((a) => a.published).sort(sortPublished);
   const article = published.find((a) => a.slug === slug) ?? null;
   return { article, published };

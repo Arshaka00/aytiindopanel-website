@@ -1,0 +1,7 @@
+{
+  "metaTitle": "Cold Storage Bandung | contoh dari content/cms — {brand}",
+  "metaDescription": "Contoh pengisian kota dari folder content/cms tanpa menyentuh kode.",
+  "introParagraph": "Paragraf intro khusus Bandung akan disuntikkan sebelum blok overview layanan utama.",
+  "coverageAreas": ["Bandung Kota", "Cimahi", "Kab. Bandung Barat"],
+  "relatedGalleryProjectIds": ["ganti-id-proyek-dari-cms-portfolio"]
+}
