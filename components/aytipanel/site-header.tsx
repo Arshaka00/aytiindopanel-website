@@ -44,9 +44,7 @@ const HEADER_LOGO_IMG_WIDTH = 180;
 const HEADER_LOGO_IMG_HEIGHT = 50;
 
 /**
- * Satukan sumber logo: jika hanya salah satu field CMS yang terisi, dipakai untuk tema terang & gelap.
- * Tanpa ini, `logoLight` kosong + `logoDark` terisi → desktop (light OS) memakai PNG bawaan,
- * ponsel (dark OS / prefers-color-scheme: dark) memakai file lain — terlihat "logo mobile tidak berubah".
+ * Tanpa logoDark terpisah: satu aset logo (logoLight atau fallback).
  */
 function resolveHeaderBrandLogoSrcs(siteSettings?: SiteContent["siteSettings"]) {
   const rawLight = siteSettings?.brandAssets?.logoLight?.trim() ?? "";
@@ -120,15 +118,15 @@ function HeaderLogoMark({
   const wrapCls = `relative inline-flex shrink-0 items-center ${edit ? "overflow-visible" : ""}`;
 
   if (!edit) {
+    const logoSrc = logoLightSrc || logoDarkSrc || FALLBACK_HEADER_LOGO;
     return (
       <span className={wrapCls}>
-        <CmsBrandLogoImg src={logoLightSrc} className={`${imgCls} dark:hidden`} />
-        <CmsBrandLogoImg src={logoDarkSrc} className={`hidden ${imgCls} dark:block`} />
+        <CmsBrandLogoImg src={logoSrc} className={imgCls} />
       </span>
     );
   }
 
-  const light = logoLightSrc || FALLBACK_HEADER_LOGO;
+  const light = logoLightSrc || logoDarkSrc || FALLBACK_HEADER_LOGO;
   const dark = logoDarkSrc || light;
 
   return (
@@ -144,31 +142,33 @@ function HeaderLogoMark({
         fetchPriority="low"
         decoding="async"
         loading="eager"
-        className="dark:hidden"
+        className={imgCls}
         imageClassName={imgCls}
         uploadScope="partners"
         uploadSegment="header"
         enableZoom={false}
         unoptimized={logoSrcUnoptimized(light)}
       />
-      <CmsImage
-        key={`hdr-logo-d-${dark}`}
-        srcPath="siteSettings.brandAssets.logoDark"
-        src={dark}
-        alt=""
-        width={HEADER_LOGO_IMG_WIDTH}
-        height={HEADER_LOGO_IMG_HEIGHT}
-        priority={false}
-        fetchPriority="low"
-        decoding="async"
-        loading="eager"
-        className="hidden dark:block"
-        imageClassName={imgCls}
-        uploadScope="partners"
-        uploadSegment="header"
-        enableZoom={false}
-        unoptimized={logoSrcUnoptimized(dark)}
-      />
+      {dark !== light ? (
+        <CmsImage
+          key={`hdr-logo-d-${dark}`}
+          srcPath="siteSettings.brandAssets.logoDark"
+          src={dark}
+          alt=""
+          width={HEADER_LOGO_IMG_WIDTH}
+          height={HEADER_LOGO_IMG_HEIGHT}
+          priority={false}
+          fetchPriority="low"
+          decoding="async"
+          loading="eager"
+          className="sr-only"
+          imageClassName={imgCls}
+          uploadScope="partners"
+          uploadSegment="header"
+          enableZoom={false}
+          unoptimized={logoSrcUnoptimized(dark)}
+        />
+      ) : null}
     </span>
   );
 }

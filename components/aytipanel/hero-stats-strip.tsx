@@ -19,7 +19,7 @@ const wrapClass =
   "relative mx-auto max-w-6xl w-full px-2.5 max-md:ps-[max(0.625rem,env(safe-area-inset-left,0px))] max-md:pe-[max(0.625rem,env(safe-area-inset-right,0px))] sm:px-0";
 
 const shellClass =
-  "hero-stats-tiles-shell rounded-[1rem] border border-[#59D8FF]/18 bg-[linear-gradient(160deg,rgba(5,11,24,0.76),rgba(7,18,38,0.68))] p-1.5 shadow-[inset_0_1px_0_rgba(245,247,255,0.08),0_24px_48px_-28px_rgba(2,9,24,0.62)] backdrop-blur-[14px] md:contents md:border-0 md:bg-transparent md:p-0 md:shadow-none md:backdrop-blur-none";
+  "hero-stats-tiles-shell rounded-[1rem] border border-white/12 bg-[linear-gradient(160deg,rgba(8,10,14,0.82),rgba(12,14,20,0.76))] p-1.5 shadow-[inset_0_1px_0_rgba(245,247,255,0.08),0_24px_48px_-28px_rgba(0,0,0,0.55)] backdrop-blur-[14px] md:contents md:border-0 md:bg-transparent md:p-0 md:shadow-none md:backdrop-blur-none";
 
 const gridClass =
   "hero-stats-tiles grid grid-cols-2 items-stretch gap-2 sm:gap-3 md:grid-cols-4 md:gap-4 lg:gap-5";
@@ -31,12 +31,12 @@ const hintClass =
   "card-stats__hint w-full max-w-[min(100%,9.25rem)] text-[10px] font-normal leading-[1.48] tracking-[0.01em] text-pretty hyphens-auto max-md:max-w-[min(100%,9.5rem)] max-md:text-[0.59375rem] max-md:leading-[1.45] max-md:tracking-[0.006em] sm:max-w-[12rem] sm:text-[0.6875rem] sm:leading-snug md:max-w-[13rem] md:text-xs md:leading-snug lg:text-sm";
 
 const valueClass =
-  "card-stats__value stats-number min-h-[1em] text-[clamp(1.0625rem,3.9vmin,1.25rem)] font-semibold tabular-nums tracking-tight leading-[1.05] text-[#D9F4FF] [text-shadow:0_0_14px_rgba(89,216,255,0.14)] antialiased max-md:min-h-[1.05em] max-md:font-semibold max-md:tracking-tight max-md:text-[clamp(0.875rem,4vw,1.0625rem)] max-md:leading-[1.02] [@media(max-width:767px)_and_(orientation:landscape)]:text-[clamp(0.75rem,3.4vw,0.9375rem)] sm:text-[1.5rem] md:text-[2.125rem] lg:text-4xl";
+  "card-stats__value stats-number min-h-[1em] text-[clamp(1.0625rem,3.9vmin,1.25rem)] font-semibold tabular-nums tracking-tight leading-[1.05] text-[#F1F5F9] [text-shadow:0_0_14px_rgba(255,255,255,0.1)] antialiased max-md:min-h-[1.05em] max-md:font-semibold max-md:tracking-tight max-md:text-[clamp(0.875rem,4vw,1.0625rem)] max-md:leading-[1.02] [@media(max-width:767px)_and_(orientation:landscape)]:text-[clamp(0.75rem,3.4vw,0.9375rem)] sm:text-[1.5rem] md:text-[2.125rem] lg:text-4xl";
 
 function tileSurfaceClass(isArea: boolean) {
   return [
     "card-stats-tile group relative flex min-h-0 min-w-0 flex-col items-center overflow-hidden rounded-xl px-2.5 py-2 text-center motion-safe:transition-[box-shadow] motion-safe:duration-500 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)] after:pointer-events-none after:absolute after:inset-x-2.5 after:top-0 after:z-[1] after:h-px after:bg-gradient-to-r after:from-transparent after:via-white/23 after:to-transparent max-md:px-1.5 max-md:py-1.5 max-md:rounded-[10px] max-md:after:inset-x-1.5 sm:px-3 sm:py-2.5 sm:after:inset-x-3 md:min-h-0 md:px-4 md:py-3 md:after:inset-x-4 md:after:via-white/25 lg:py-3.5",
-    "bg-[linear-gradient(165deg,rgba(8,16,34,0.82),rgba(5,11,24,0.9))] ring-1 ring-inset ring-[#59D8FF]/12 shadow-[inset_0_1px_0_rgba(245,247,255,0.08),0_14px_30px_-20px_rgba(2,8,24,0.7)]",
+    "bg-[linear-gradient(165deg,rgba(10,12,18,0.88),rgba(5,8,12,0.92))] ring-1 ring-inset ring-white/10 shadow-[inset_0_1px_0_rgba(245,247,255,0.08),0_14px_30px_-20px_rgba(0,0,0,0.65)]",
     isArea ? "min-w-0" : "",
   ]
     .filter(Boolean)

@@ -2,9 +2,16 @@
 @config "../tailwind.config.js";
 
 /*
- * Global theme tokens — light / dark via prefers-color-scheme (Tailwind darkMode: media).
+ * Global theme tokens — light / dark via prefers-color-scheme bila DARK_MODE_ENABLED (lib/site-theme.ts).
  * --bg-main, --text-main, --card-bg, --card-border: canonical surfaces & text.
  */
+@custom-variant dark {
+  @media (prefers-color-scheme: dark) {
+    html[data-dark-mode-enabled="1"] & {
+      @slot;
+    }
+  }
+}
 :root {
   /* Diisi runtime oleh SiteHeader (tinggi bar toolbar + safe area); fallback sampai ukuran pertama */
   --site-header-height: 3.65rem;
@@ -65,7 +72,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  html[data-dark-mode-enabled="1"] {
     --bg-main: #020617;
     --text-main: #e5e7eb;
     --card-bg: #0f172a;
@@ -140,6 +147,10 @@
 }
 
 html {
+  color-scheme: light;
+}
+
+html[data-dark-mode-enabled="1"] {
   color-scheme: light dark;
 }
 
@@ -189,6 +200,10 @@ body {
  * Kartu produk B2B — color-scheme mengikuti prefers-color-scheme; warna permukaan dari Tailwind di komponen.
  */
 .dark-card {
+  color-scheme: light;
+}
+
+html[data-dark-mode-enabled="1"] .dark-card {
   color-scheme: light dark;
 }
 
@@ -289,33 +304,33 @@ body {
   }
 }
 
-/* Layanan ringkas — kartu glass mengikuti tema sistem */
+/* Layanan ringkas — default terang (token situs); gelap hanya bila dark mode situs aktif + OS gelap */
 .layanan-glass-card {
-  color-scheme: dark;
+  color-scheme: light;
   position: relative;
-  background: rgba(18, 23, 32, 0.78);
-  border: 1px solid rgba(255, 255, 255, 0.085);
+  background: color-mix(in srgb, var(--card-bg) 92%, rgba(59, 130, 246, 0.06));
+  border: 1px solid var(--card-border);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.075),
-    0 24px 52px -22px rgba(0, 0, 0, 0.68),
-    0 12px 32px -16px rgba(0, 0, 0, 0.48);
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 16px 40px -18px rgba(15, 23, 42, 0.1),
+    0 8px 24px -12px rgba(15, 23, 42, 0.06);
   transition:
     transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.38s cubic-bezier(0.22, 1, 0.36, 1),
     border-color 0.38s ease !important;
 }
 
-@media (prefers-color-scheme: light) {
-  .layanan-glass-card {
-    color-scheme: light;
-    background: color-mix(in srgb, var(--card-bg) 92%, rgba(59, 130, 246, 0.06));
-    border: 1px solid var(--card-border);
+@media (prefers-color-scheme: dark) {
+  html[data-dark-mode-enabled="1"] .layanan-glass-card {
+    color-scheme: dark;
+    background: rgba(18, 23, 32, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.085);
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.95),
-      0 16px 40px -18px rgba(15, 23, 42, 0.1),
-      0 8px 24px -12px rgba(15, 23, 42, 0.06);
+      inset 0 1px 0 rgba(255, 255, 255, 0.075),
+      0 24px 52px -22px rgba(0, 0, 0, 0.68),
+      0 12px 32px -16px rgba(0, 0, 0, 0.48);
   }
 }
 
@@ -394,7 +409,7 @@ body {
 }
 
 @media (prefers-color-scheme: dark) {
-  .layanan-grid-shell {
+  html[data-dark-mode-enabled="1"] .layanan-grid-shell {
     background-color: color-mix(in srgb, #0a1220 82%, transparent);
     background-image:
       linear-gradient(
@@ -461,7 +476,7 @@ body {
 }
 
 @media (prefers-color-scheme: dark) {
-  .layanan-quote-panel.layanan-quote-panel--premium::before {
+  html[data-dark-mode-enabled="1"] .layanan-quote-panel.layanan-quote-panel--premium::before {
     background: linear-gradient(
       90deg,
       transparent,
@@ -476,29 +491,18 @@ body {
 @media (prefers-reduced-motion: no-preference) {
   .layanan-glass-card:hover {
     transform: translateY(-3px);
-    border-color: rgba(255, 255, 255, 0.118);
+    border-color: color-mix(in srgb, var(--accent) 38%, var(--card-border));
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.1),
-      0 34px 68px -26px rgba(0, 0, 0, 0.76),
-      0 16px 40px -18px rgba(0, 0, 0, 0.52),
-      0 0 0 1px rgba(56, 189, 248, 0.055);
+      inset 0 1px 0 rgba(255, 255, 255, 1),
+      0 28px 56px -22px rgba(15, 23, 42, 0.14),
+      0 14px 36px -16px rgba(15, 23, 42, 0.09),
+      0 0 0 1px rgba(37, 99, 235, 0.14);
   }
 
   /* Sentuhan: perangkat tanpa hover tetap dapat angkat kartu + shimmer saat menekan */
   @media (hover: none) {
     .layanan-glass-card:active {
       transform: translateY(-3px);
-      border-color: rgba(255, 255, 255, 0.118);
-      box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.1),
-        0 34px 68px -26px rgba(0, 0, 0, 0.76),
-        0 16px 40px -18px rgba(0, 0, 0, 0.52),
-        0 0 0 1px rgba(56, 189, 248, 0.055);
-    }
-  }
-
-  @media (prefers-color-scheme: light) {
-    .layanan-glass-card:hover {
       border-color: color-mix(in srgb, var(--accent) 38%, var(--card-border));
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 1),
@@ -506,15 +510,26 @@ body {
         0 14px 36px -16px rgba(15, 23, 42, 0.09),
         0 0 0 1px rgba(37, 99, 235, 0.14);
     }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    html[data-dark-mode-enabled="1"] .layanan-glass-card:hover {
+      border-color: rgba(255, 255, 255, 0.118);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 34px 68px -26px rgba(0, 0, 0, 0.76),
+        0 16px 40px -18px rgba(0, 0, 0, 0.52),
+        0 0 0 1px rgba(56, 189, 248, 0.055);
+    }
 
     @media (hover: none) {
-      .layanan-glass-card:active {
-        border-color: color-mix(in srgb, var(--accent) 38%, var(--card-border));
+      html[data-dark-mode-enabled="1"] .layanan-glass-card:active {
+        border-color: rgba(255, 255, 255, 0.118);
         box-shadow:
-          inset 0 1px 0 rgba(255, 255, 255, 1),
-          0 28px 56px -22px rgba(15, 23, 42, 0.14),
-          0 14px 36px -16px rgba(15, 23, 42, 0.09),
-          0 0 0 1px rgba(37, 99, 235, 0.14);
+          inset 0 1px 0 rgba(255, 255, 255, 0.1),
+          0 34px 68px -26px rgba(0, 0, 0, 0.76),
+          0 16px 40px -18px rgba(0, 0, 0, 0.52),
+          0 0 0 1px rgba(56, 189, 248, 0.055);
       }
     }
   }
@@ -523,20 +538,20 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .layanan-glass-card:hover {
     transform: none;
-    border-color: rgba(255, 255, 255, 0.085);
+    border-color: var(--card-border);
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.075),
-      0 24px 52px -22px rgba(0, 0, 0, 0.68),
-      0 12px 32px -16px rgba(0, 0, 0, 0.48);
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      0 16px 40px -18px rgba(15, 23, 42, 0.1),
+      0 8px 24px -12px rgba(15, 23, 42, 0.06);
   }
 
-  @media (prefers-color-scheme: light) {
-    .layanan-glass-card:hover {
-      border-color: var(--card-border);
+  @media (prefers-color-scheme: dark) {
+    html[data-dark-mode-enabled="1"] .layanan-glass-card:hover {
+      border-color: rgba(255, 255, 255, 0.085);
       box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.95),
-        0 16px 40px -18px rgba(15, 23, 42, 0.1),
-        0 8px 24px -12px rgba(15, 23, 42, 0.06);
+        inset 0 1px 0 rgba(255, 255, 255, 0.075),
+        0 24px 52px -22px rgba(0, 0, 0, 0.68),
+        0 12px 32px -16px rgba(0, 0, 0, 0.48);
     }
   }
 }
@@ -640,75 +655,76 @@ html {
 }
 
 /*
- * Hero — overlay netral gelap (kurang biru/cyan); foto & video latar lebih dominan.
+ * Hero — overlay gelap bertingkat (netral navy): kontras teks aman, latar foto/video tetap terbaca.
  */
 #beranda.hero.hero-section-fixed-dark {
   --hero-canvas: #050b18;
   --hero-overlay-diag: linear-gradient(
     118deg,
-    rgba(5, 11, 24, 0.4) 0%,
-    rgba(5, 12, 22, 0.22) 38%,
-    rgba(6, 14, 26, 0.12) 72%,
-    rgba(5, 11, 24, 0.07) 100%
+    rgba(3, 8, 20, 0.76) 0%,
+    rgba(5, 11, 24, 0.52) 34%,
+    rgba(5, 12, 22, 0.3) 68%,
+    rgba(4, 10, 22, 0.16) 100%
   );
   --hero-overlay-vert: linear-gradient(
     180deg,
-    rgba(2, 7, 18, 0.2) 0%,
-    rgba(3, 8, 18, 0.08) 46%,
-    rgba(2, 6, 17, 0.22) 100%
+    rgba(2, 6, 17, 0.52) 0%,
+    rgba(3, 8, 18, 0.24) 42%,
+    rgba(2, 6, 17, 0.56) 100%
   );
   --hero-overlay-glow: radial-gradient(
       ellipse 64% 50% at 14% 12%,
-      rgba(245, 247, 255, 0.022),
-      transparent 60%
+      rgba(245, 247, 255, 0.028),
+      transparent 58%
     ),
-    radial-gradient(ellipse 52% 40% at 86% 70%, rgba(200, 210, 225, 0.014), transparent 62%),
-    radial-gradient(circle at 52% 90%, rgba(230, 236, 245, 0.01), transparent 56%);
+    radial-gradient(ellipse 52% 40% at 86% 70%, rgba(200, 210, 225, 0.018), transparent 60%),
+    radial-gradient(circle at 52% 90%, rgba(230, 236, 245, 0.012), transparent 54%);
   --hero-overlay-bottom: linear-gradient(
     to top,
-    rgba(2, 6, 17, 0.3) 0%,
-    rgba(5, 11, 24, 0.07) 46%,
+    rgba(2, 5, 14, 0.82) 0%,
+    rgba(4, 10, 22, 0.38) 38%,
+    rgba(5, 11, 24, 0.14) 72%,
     transparent 100%
   );
-  --hero-overlay-bottom-soft: linear-gradient(to top, rgba(3, 9, 23, 0.15) 0%, transparent 100%);
+  --hero-overlay-bottom-soft: linear-gradient(to top, rgba(3, 9, 23, 0.36) 0%, transparent 100%);
   --hero-overlay-rail: linear-gradient(
       100deg,
-      rgba(3, 10, 24, 0.32) 0%,
-      rgba(4, 11, 22, 0.14) 42%,
-      rgba(5, 11, 24, 0.05) 68%,
-      rgba(2, 6, 16, 0.1) 100%
+      rgba(2, 8, 20, 0.56) 0%,
+      rgba(4, 11, 22, 0.32) 40%,
+      rgba(5, 11, 24, 0.14) 66%,
+      rgba(2, 6, 16, 0.28) 100%
     ),
-    linear-gradient(180deg, transparent 52%, rgba(2, 6, 16, 0.06) 100%);
+    linear-gradient(180deg, transparent 48%, rgba(2, 6, 16, 0.13) 100%);
 }
 
 @media (max-width: 767.98px) {
   #beranda.hero.hero-section-fixed-dark {
     --hero-overlay-diag: linear-gradient(
       118deg,
-      rgba(5, 11, 24, 0.38) 0%,
-      rgba(5, 12, 22, 0.22) 40%,
-      rgba(6, 14, 26, 0.12) 100%
+      rgba(3, 8, 20, 0.74) 0%,
+      rgba(5, 11, 24, 0.5) 38%,
+      rgba(6, 14, 26, 0.28) 100%
     );
     --hero-overlay-vert: linear-gradient(
       180deg,
-      rgba(2, 7, 18, 0.22) 0%,
-      rgba(3, 8, 18, 0.1) 44%,
-      rgba(2, 6, 17, 0.26) 100%
+      rgba(2, 6, 17, 0.5) 0%,
+      rgba(3, 8, 18, 0.22) 42%,
+      rgba(2, 6, 17, 0.52) 100%
     );
     --hero-overlay-glow: radial-gradient(
         ellipse 64% 50% at 16% 14%,
-        rgba(245, 247, 255, 0.018),
-        transparent 62%
+        rgba(245, 247, 255, 0.024),
+        transparent 58%
       ),
-      radial-gradient(ellipse 54% 40% at 82% 68%, rgba(200, 210, 225, 0.012), transparent 60%),
-      radial-gradient(circle at 52% 88%, rgba(230, 236, 245, 0.008), transparent 56%);
+      radial-gradient(ellipse 54% 40% at 82% 68%, rgba(200, 210, 225, 0.016), transparent 58%),
+      radial-gradient(circle at 52% 88%, rgba(230, 236, 245, 0.01), transparent 54%);
     --hero-overlay-bottom: linear-gradient(
       to top,
-      rgba(2, 6, 17, 0.28) 0%,
-      rgba(5, 11, 24, 0.05) 44%,
+      rgba(2, 5, 14, 0.78) 0%,
+      rgba(4, 10, 22, 0.32) 40%,
       transparent 100%
     );
-    --hero-overlay-bottom-soft: linear-gradient(to top, rgba(3, 9, 23, 0.13) 0%, transparent 100%);
+    --hero-overlay-bottom-soft: linear-gradient(to top, rgba(3, 9, 23, 0.34) 0%, transparent 100%);
   }
 
   /* Batalkan zoom CMS (scale inline) di hero ponsel — kembalikan tampilan sebelum “full crop” mobile. */
@@ -728,20 +744,20 @@ html {
 @media (min-width: 768px) {
   #beranda.hero .hero-overlay-diagonal,
   #beranda.hero .hero-overlay-vertical {
-    opacity: 0.42;
+    opacity: 0.78;
   }
 
   #beranda.hero .hero-overlay-glow {
-    opacity: 0.32;
+    opacity: 0.48;
   }
 
   #beranda.hero .hero-overlay-desktop-rail {
-    opacity: 0.38;
+    opacity: 0.68;
   }
 
   #beranda.hero .hero-overlay-bottom,
   #beranda.hero .hero-overlay-bottom-soft {
-    opacity: 0.46;
+    opacity: 0.76;
   }
 }
 
@@ -765,40 +781,11 @@ html {
   background: linear-gradient(to right, transparent, rgba(245, 247, 255, 0.028), transparent);
 }
 
-/* Desktop standard-density refinement: fluid scaling without OS/browser detection. */
+/* Desktop standard-density (≤1.75dppx): tata letak hero lebar + intro; tipografi judul dari utility section-top (selaras Retina / Mac). */
 @media (min-width: 1024px) and (max-resolution: 1.75dppx) {
   html,
   body {
     overflow-x: hidden;
-  }
-
-  [data-site-header-sticky] .site-header-shell > div {
-    gap: clamp(0.5rem, 1vw, 1rem);
-    padding-block: clamp(0.24rem, 0.52svh, 0.42rem);
-  }
-
-  [data-site-header-sticky] img {
-    max-height: clamp(1.75rem, 3.8svh, 2.2rem);
-  }
-
-  /* Satu baris: rapatkan jarak & teks; scroll horizontal halus bila viewport sempit. */
-  [data-site-header-sticky] nav[data-site-header-desktop-nav] ul {
-    flex-wrap: nowrap;
-    justify-content: flex-end;
-    gap: clamp(0.1rem, 0.22vw, 0.35rem);
-  }
-
-  [data-site-header-sticky] nav a {
-    padding-block: clamp(0.18rem, 0.36svh, 0.3rem);
-    padding-inline: clamp(0.34rem, 0.46vw, 0.54rem);
-    font-size: clamp(0.68rem, 0.7vw, 0.76rem);
-    white-space: nowrap;
-  }
-
-  [data-site-header-sticky] nav button {
-    min-height: clamp(1.55rem, 2.9svh, 1.75rem);
-    min-width: clamp(1.55rem, 2.9svh, 1.75rem);
-    padding: clamp(0.18rem, 0.4svh, 0.3rem);
   }
 
   #beranda.hero {
@@ -833,21 +820,6 @@ html {
     letter-spacing: 0.22em;
   }
 
-  #beranda.hero .hero-heading-glass-line1 {
-    font-size: clamp(0.95rem, 1.8vw, 1.3rem);
-    line-height: 1.02;
-  }
-
-  #beranda.hero .hero-heading-glass-middle {
-    font-size: clamp(4.5rem, 7.35vw, 6.15rem);
-    line-height: 0.88;
-  }
-
-  #beranda.hero .hero-heading-glass-line2 {
-    font-size: clamp(1.34rem, 2.55vw, 1.9rem);
-    line-height: 1.02;
-  }
-
   #beranda.hero .hero-title-intro-block {
     gap: clamp(0.5rem, 1.1svh, 0.875rem);
     transform: translateY(4.4rem);
@@ -865,8 +837,6 @@ html {
   #beranda.hero .hero-intro-body {
     max-width: clamp(30rem, 42vw, 36rem);
     overflow-wrap: break-word;
-    font-size: clamp(1.28rem, 1.38vw, 1.5rem);
-    line-height: 1.36;
   }
 
   #beranda.hero .hero-process-block {
@@ -905,10 +875,6 @@ html {
     padding-top: clamp(0.25rem, 0.8svh, 0.75rem);
   }
 
-  #beranda.hero .hero-heading-glass-middle {
-    font-size: clamp(3.9rem, 6.5vw, 5.35rem);
-  }
-
   #beranda.hero .hero-intro-stack {
     margin-top: 3rem;
     transform: translateY(0.7rem);
@@ -920,8 +886,6 @@ html {
 
   #beranda.hero .hero-intro-body {
     max-width: clamp(28rem, 42vw, 34rem);
-    font-size: clamp(1.15rem, 1.22vw, 1.32rem);
-    line-height: 1.34;
   }
 
   #beranda.hero .hero-process-block {
@@ -932,13 +896,6 @@ html {
     margin-top: max(0.35rem, calc(clamp(0.85rem, 1.7svh, 1.25rem) - clamp(2rem, 4.5svh, 3.25rem)));
     padding-top: 1.25rem;
     transform: translateY(clamp(0.7rem, 1.6svh, 1.15rem));
-  }
-}
-
-/* Desktop Retina refinement: keep Mac-style layout, only enlarge the final hero line optically. */
-@media (min-width: 1024px) and (min-resolution: 1.76dppx) {
-  #beranda.hero .hero-heading-glass-line2 {
-    font-size: clamp(1.62rem, 3.2vw, 2.35rem);
   }
 }
 
@@ -1088,23 +1045,6 @@ html {
 }
 
 /*
- * Windows (ClearType + skala tampilan): sedikit turunkan optik judul kristal agar selaras Mac.
- * Hanya tipografi; desktop premium di breakpoint lain tidak disentuh.
- */
-@media (min-width: 768px) {
-  html.ua-windows #beranda.hero #hero-heading .hero-heading-glass-middle {
-    font-size: clamp(2.05rem, 10.9vw, 4.65rem);
-    letter-spacing: -0.024em;
-  }
-}
-
-@media (max-width: 767px) {
-  html.ua-windows #beranda.hero #hero-heading .hero-heading-glass-middle {
-    font-size: clamp(2.05rem, 10.9vw, 4.65rem);
-  }
-}
-
-/*
  * Crystal ice typography — `hero.headingMiddle` (“PENDINGIN”).
  * Performa: tanpa animasi background pada teks (repaint mahal); kilau = opacity di ::after saja.
  * Desktop: filter SVG ringan; mobile: tanpa SVG filter (GPU teks).
@@ -1117,7 +1057,7 @@ html {
   transform-origin: left center;
 }
 
-/* Bloom di belakang glyph — lebih netral, saturasi lebih rendah */
+/* Bloom di belakang glyph — biru es (sky / cyan halus) */
 #beranda.hero #hero-heading .hero-heading-crystal-wrap::before {
   content: "";
   position: absolute;
@@ -1130,24 +1070,26 @@ html {
   background:
     radial-gradient(
       ellipse 72% 68% at 48% 42%,
-      rgba(200, 230, 245, 0.09) 0%,
-      transparent 52%
+      rgba(186, 230, 253, 0.22) 0%,
+      rgba(56, 189, 248, 0.06) 38%,
+      transparent 54%
     ),
     radial-gradient(
       ellipse 68% 64% at 50% 46%,
-      rgba(120, 170, 210, 0.14) 0%,
-      rgba(90, 150, 200, 0.1) 42%,
+      rgba(125, 211, 252, 0.14) 0%,
+      rgba(56, 189, 248, 0.08) 42%,
       transparent 70%
     ),
     radial-gradient(
       ellipse 58% 56% at 50% 100%,
-      rgba(40, 70, 100, 0.12) 0%,
+      rgba(15, 23, 42, 0.2) 0%,
+      rgba(30, 58, 138, 0.1) 48%,
       transparent 76%
     );
   opacity: 0.88;
 }
 
-/* Kilau es — lebih putih/slate, biru dikurangi */
+/* Kilau es — putih dingin + sky */
 #beranda.hero #hero-heading .hero-heading-crystal-wrap::after {
   content: "";
   position: absolute;
@@ -1157,9 +1099,10 @@ html {
   border-radius: inherit;
   background-image: radial-gradient(
     ellipse 58% 46% at 44% 36%,
-    rgba(248, 250, 252, 0.32) 0%,
-    rgba(180, 200, 220, 0.16) 34%,
-    rgba(120, 160, 195, 0.1) 52%,
+    rgba(240, 249, 255, 0.38) 0%,
+    rgba(186, 230, 253, 0.22) 28%,
+    rgba(56, 189, 248, 0.14) 46%,
+    rgba(125, 211, 252, 0.08) 58%,
     transparent 74%
   );
   background-size: 112% 96%;
@@ -1200,53 +1143,55 @@ html {
   z-index: 1;
   text-shadow: none;
   filter: url(#heroCrystalIceRefraction)
-    drop-shadow(-0.5px -0.55px 0 rgba(255, 255, 255, 0.92))
-    drop-shadow(0 0.55px 0 rgba(200, 215, 230, 0.5))
+    drop-shadow(-0.5px -0.55px 0 rgba(255, 255, 255, 0.94))
+    drop-shadow(0 0.55px 0 rgba(186, 230, 253, 0.55))
     drop-shadow(0.55px 1.05px 0 rgba(4, 20, 52, 0.88))
     drop-shadow(0 2px 4px rgba(2, 12, 36, 0.52))
-    drop-shadow(0 0 14px rgba(100, 160, 200, 0.14))
-    drop-shadow(0 0 28px rgba(90, 150, 190, 0.08))
-    drop-shadow(0 0 22px rgba(160, 200, 220, 0.08));
-  -webkit-text-stroke: 0.55px rgba(210, 225, 240, 0.85);
+    drop-shadow(0 0 16px rgba(56, 189, 248, 0.22))
+    drop-shadow(0 0 28px rgba(14, 165, 233, 0.14))
+    drop-shadow(0 0 36px rgba(125, 211, 252, 0.1))
+    drop-shadow(0 0 22px rgba(224, 242, 254, 0.12));
+  -webkit-text-stroke: 0.55px rgba(186, 230, 253, 0.82);
   paint-order: stroke fill;
   background-image:
     repeating-linear-gradient(
       -14deg,
       transparent 0px,
       transparent 7px,
-      rgba(200, 215, 228, 0.04) 7px,
-      rgba(200, 215, 228, 0.04) 8px,
+      rgba(186, 230, 253, 0.055) 7px,
+      rgba(186, 230, 253, 0.055) 8px,
       transparent 8px,
       transparent 15px,
-      rgba(170, 195, 215, 0.03) 15px,
-      rgba(170, 195, 215, 0.03) 16px
+      rgba(125, 211, 252, 0.04) 15px,
+      rgba(125, 211, 252, 0.04) 16px
     ),
     radial-gradient(
       ellipse 96% 84% at 46% 54%,
-      rgba(8, 28, 52, 0.62) 0%,
-      rgba(20, 70, 110, 0.38) 38%,
-      rgba(10, 45, 78, 0.52) 54%,
+      rgba(15, 23, 42, 0.62) 0%,
+      rgba(30, 64, 175, 0.35) 32%,
+      rgba(30, 41, 59, 0.52) 54%,
       transparent 78%
     ),
     linear-gradient(
       156deg,
-      rgba(241, 248, 255, 0.98) 0%,
-      rgba(170, 200, 230, 0.78) 12%,
-      rgba(50, 120, 170, 0.62) 28%,
-      rgba(24, 100, 150, 0.58) 44%,
-      rgba(8, 55, 92, 0.68) 58%,
-      rgba(90, 165, 210, 0.55) 72%,
-      rgba(230, 244, 252, 0.96) 100%
+      rgba(240, 249, 255, 0.98) 0%,
+      rgba(186, 230, 253, 0.82) 10%,
+      rgba(56, 189, 248, 0.58) 24%,
+      rgba(14, 116, 144, 0.52) 40%,
+      rgba(30, 41, 59, 0.72) 56%,
+      rgba(125, 211, 252, 0.55) 70%,
+      rgba(248, 250, 252, 0.96) 100%
     ),
     radial-gradient(
       ellipse 52% 38% at 40% 34%,
-      rgba(255, 255, 255, 0.4) 0%,
-      rgba(100, 160, 200, 0.22) 46%,
+      rgba(255, 255, 255, 0.45) 0%,
+      rgba(125, 211, 252, 0.28) 42%,
       transparent 78%
     ),
     radial-gradient(
       ellipse 38% 28% at 62% 58%,
-      rgba(150, 185, 210, 0.22) 0%,
+      rgba(56, 189, 248, 0.22) 0%,
+      rgba(14, 165, 233, 0.12) 52%,
       transparent 74%
     );
   /* Layer statis + bg-size kompak — minimise repaint (tanpa animasi posisi) */
@@ -1271,13 +1216,13 @@ html {
 /* Tanpa filter SVG: mobile, hemat data, atau reduced motion — ringan di GPU */
 @media (max-width: 767.98px), (prefers-reduced-data: reduce), (prefers-reduced-motion: reduce) {
   #beranda.hero #hero-heading .hero-heading-crystal {
-    filter: drop-shadow(-0.5px -0.55px 0 rgba(255, 255, 255, 0.92))
-      drop-shadow(0 0.55px 0 rgba(200, 215, 230, 0.5))
+    filter: drop-shadow(-0.5px -0.55px 0 rgba(255, 255, 255, 0.94))
+      drop-shadow(0 0.55px 0 rgba(186, 230, 253, 0.5))
       drop-shadow(0.55px 1.05px 0 rgba(4, 20, 52, 0.88))
       drop-shadow(0 2px 4px rgba(2, 12, 36, 0.52))
-      drop-shadow(0 0 16px rgba(100, 160, 200, 0.14))
-      drop-shadow(0 0 26px rgba(90, 150, 190, 0.1))
-      drop-shadow(0 0 28px rgba(160, 200, 220, 0.08));
+      drop-shadow(0 0 14px rgba(56, 189, 248, 0.2))
+      drop-shadow(0 0 26px rgba(14, 165, 233, 0.12))
+      drop-shadow(0 0 30px rgba(125, 211, 252, 0.09));
   }
 }
 
@@ -1429,7 +1374,7 @@ html {
   ) !important;
   background-size: 100% 100% !important;
   background-repeat: no-repeat !important;
-  filter: drop-shadow(0 0 10px rgb(56 189 248 / 0.28)) drop-shadow(0 0 4px rgb(255 255 255 / 0.12))
+  filter: drop-shadow(0 0 10px rgb(255 255 255 / 0.12)) drop-shadow(0 0 4px rgb(255 255 255 / 0.12))
     drop-shadow(0 0 1px rgb(255 255 255 / 0.1));
   backface-visibility: hidden;
 }
@@ -1494,11 +1439,11 @@ html {
   height: 13px;
   background: linear-gradient(
     90deg,
-    rgb(125 211 252 / 0.55),
+    rgb(203 213 225 / 0.55),
     rgb(255 255 255 / 0.98)
   );
   clip-path: polygon(0 14%, 0 86%, 100% 50%);
-  filter: drop-shadow(0 0 8px rgb(56 189 248 / 0.45)) drop-shadow(0 0 2px rgb(255 255 255 / 0.35));
+  filter: drop-shadow(0 0 8px rgb(255 255 255 / 0.22)) drop-shadow(0 0 2px rgb(255 255 255 / 0.35));
   animation: none;
   transform: translateY(-50%);
   will-change: auto;
@@ -1559,7 +1504,7 @@ html {
   }
 
   .proses-flow-arrow-march--hero-h {
-    filter: drop-shadow(0 0 6px rgb(56 189 248 / 0.35)) drop-shadow(0 0 2px rgb(255 255 255 / 0.22));
+    filter: drop-shadow(0 0 6px rgb(255 255 255 / 0.18)) drop-shadow(0 0 2px rgb(255 255 255 / 0.22));
   }
 
   .proses-flow-arrow-march--light-h {
@@ -1581,7 +1526,7 @@ html {
   }
 
   .proses-flow-arrow-march--hero-h {
-    filter: drop-shadow(0 0 5px rgb(56 189 248 / 0.32)) drop-shadow(0 0 1px rgb(255 255 255 / 0.2));
+    filter: drop-shadow(0 0 5px rgb(255 255 255 / 0.16)) drop-shadow(0 0 1px rgb(255 255 255 / 0.2));
   }
 
   .proses-flow-arrow-march--light-h {
@@ -2421,18 +2366,18 @@ html[data-performance-lightweight="1"] #beranda.hero .proses-hero-step-title--ra
   }
 
   @media (prefers-color-scheme: dark) {
-    #produk-utama[data-featured-scroll="active"],
-    #produk-solusi[data-featured-scroll="active"],
-    #accessories[data-featured-scroll="active"] {
+    html[data-dark-mode-enabled="1"] #produk-utama[data-featured-scroll="active"],
+    html[data-dark-mode-enabled="1"] #produk-solusi[data-featured-scroll="active"],
+    html[data-dark-mode-enabled="1"] #accessories[data-featured-scroll="active"] {
       filter: brightness(1.022);
       box-shadow:
         0 0 0 1px color-mix(in srgb, rgb(125 211 252 / 1) 11%, transparent),
         0 16px 42px -18px color-mix(in srgb, rgb(0 0 0 / 1) 42%, transparent);
     }
 
-    #produk-utama[data-featured-scroll="idle"],
-    #produk-solusi[data-featured-scroll="idle"],
-    #accessories[data-featured-scroll="idle"] {
+    html[data-dark-mode-enabled="1"] #produk-utama[data-featured-scroll="idle"],
+    html[data-dark-mode-enabled="1"] #produk-solusi[data-featured-scroll="idle"],
+    html[data-dark-mode-enabled="1"] #accessories[data-featured-scroll="idle"] {
       filter: brightness(0.991);
     }
   }
@@ -2463,7 +2408,7 @@ html[data-performance-lightweight="1"] #beranda.hero .proses-hero-step-title--ra
   }
 
   @media (prefers-color-scheme: dark) {
-    #service-maintenance [data-service-maintenance-scroll="active"] {
+    html[data-dark-mode-enabled="1"] #service-maintenance [data-service-maintenance-scroll="active"] {
       filter: brightness(1.022);
       border-color: color-mix(in srgb, rgb(56 189 248 / 1) 22%, rgba(255 255 255 / 0.12)) !important;
       box-shadow:
@@ -2471,15 +2416,14 @@ html[data-performance-lightweight="1"] #beranda.hero .proses-hero-step-title--ra
         0 16px 42px -18px color-mix(in srgb, rgb(0 0 0 / 1) 42%, transparent);
     }
 
-    #service-maintenance [data-service-maintenance-scroll="idle"] {
+    html[data-dark-mode-enabled="1"] #service-maintenance [data-service-maintenance-scroll="idle"] {
       filter: brightness(0.991);
     }
   }
 
 }
 
-/* ============================================================================
- * Premium scroll reveal — section & card stagger (lihat ScrollRevealSection)
+/* Premium scroll reveal — section & card stagger (lihat ScrollRevealSection)
  * Desktop/tablet: opacity + translate / scale (preset per `sectionKey` pada section beranda).
  * Mobile (≤767.98px): kartu/gambar = opacity saja; section tanpa preset = opacity + translate3d ringan;
  *   section dengan `data-scroll-reveal-preset` = opacity + translate3d/scale sesuai preset (GPU).
@@ -2806,7 +2750,7 @@ html[data-performance-lightweight="1"] .landing-hash-section-flash {
 }
 
 @media (prefers-color-scheme: dark) {
-  .site-header-shell {
+  html[data-dark-mode-enabled="1"] .site-header-shell {
     background:
       linear-gradient(165deg, rgba(56, 189, 248, 0.07) 0%, transparent 46%),
       linear-gradient(to bottom, var(--header-glass-fill), color-mix(in srgb, var(--header-glass-fill) 94%, #030712));
@@ -2828,7 +2772,7 @@ html[data-performance-lightweight="1"] .landing-hash-section-flash {
 }
 
 @media (prefers-color-scheme: dark) {
-  .site-header-shell[data-header-scrolled="true"] {
+  html[data-dark-mode-enabled="1"] .site-header-shell[data-header-scrolled="true"] {
     background:
       linear-gradient(165deg, rgba(56, 189, 248, 0.05) 0%, transparent 42%),
       color-mix(in srgb, var(--header-glass-fill-solid) 96%, transparent);
@@ -2918,16 +2862,17 @@ html[data-performance-lightweight="1"] .landing-hash-section-flash {
   }
 
   #beranda.hero .hero-overlay-glow {
-    opacity: 0.36;
+    opacity: 0.48;
   }
 
-  #beranda.hero .hero-overlay-bottom {
-    opacity: 0.52;
+  #beranda.hero .hero-overlay-bottom,
+  #beranda.hero .hero-overlay-bottom-soft {
+    opacity: 0.7;
   }
 
   #beranda.hero .hero-overlay-diagonal,
   #beranda.hero .hero-overlay-vertical {
-    opacity: 0.58;
+    opacity: 0.74;
   }
 }
 

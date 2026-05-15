@@ -45,14 +45,14 @@ type Props = {
   items: readonly HeroStatItem[];
 };
 
-/** Beda dari kartu “Proses kerja”: aksen sky, tanpa glass hitam yang sama. */
+/** Beda dari kartu “Proses kerja”: aksen netral, tanpa glass hitam yang sama. */
 const cardShell = mergeAytiCardClass(
-  "flex min-h-0 w-[9rem] shrink-0 flex-col items-center justify-start rounded-md border border-[#59D8FF]/35 bg-gradient-to-b from-[#0A1D3E]/62 via-[#081327]/82 to-[#050B18]/92 px-2 py-2 text-center shadow-[inset_0_1px_0_rgba(245,247,255,0.12),0_10px_28px_-16px_rgba(3,14,34,0.55)] backdrop-blur-[8px] sm:w-[9.5rem] sm:rounded-lg sm:px-2 sm:py-2 md:w-[10rem] md:py-2.5",
+  "flex min-h-0 w-[9rem] shrink-0 flex-col items-center justify-start rounded-md border border-white/14 bg-gradient-to-b from-[#0d121c]/72 via-[#080c14]/88 to-[#050B18]/92 px-2 py-2 text-center shadow-[inset_0_1px_0_rgba(245,247,255,0.1),0_10px_28px_-16px_rgba(0,0,0,0.5)] backdrop-blur-[8px] sm:w-[9.5rem] sm:rounded-lg sm:px-2 sm:py-2 md:w-[10rem] md:py-2.5",
 );
 
 /** Padding horizontal strip — kartu tidak menempel ke tepi mask */
 const stripChrome = mergeAytiCardClass(
-  "hero-achievement-marquee-viewport relative overflow-hidden rounded-xl border border-[#59D8FF]/24 bg-gradient-to-r from-[#071126]/58 via-[#0A1B39]/42 to-[#071126]/58 px-3 py-2 shadow-[0_0_48px_-20px_rgba(89,216,255,0.2),inset_0_1px_0_rgba(245,247,255,0.08)] sm:px-4 sm:py-2.5",
+  "hero-achievement-marquee-viewport relative overflow-hidden rounded-xl border border-white/12 bg-gradient-to-r from-[#070a10]/65 via-[#0a0e16]/48 to-[#070a10]/65 px-3 py-2 shadow-[0_0_36px_-18px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(245,247,255,0.06)] sm:px-4 sm:py-2.5",
 );
 
 const listRow =
@@ -92,10 +92,10 @@ function AchievementCardBody({
   if (isArea) {
     return (
       <div className="flex w-full flex-col items-center gap-1">
-        <p className="max-w-[9rem] text-[0.59375rem] font-semibold leading-snug tracking-[0.018em] text-sky-50 sm:max-w-[10rem] sm:text-[0.625rem] md:max-w-[11rem] md:text-[0.6875rem]">
+        <p className="max-w-[9rem] text-[0.59375rem] font-semibold leading-snug tracking-[0.018em] text-slate-100 sm:max-w-[10rem] sm:text-[0.625rem] md:max-w-[11rem] md:text-[0.6875rem]">
           {item.label}
         </p>
-        <p className="max-w-[9.5rem] text-[0.5625rem] leading-[1.42] text-sky-100/72 sm:text-[0.59375rem] md:max-w-[11.5rem] md:text-[0.625rem] md:leading-snug">
+        <p className="max-w-[9.5rem] text-[0.5625rem] leading-[1.42] text-slate-300/85 sm:text-[0.59375rem] md:max-w-[11.5rem] md:text-[0.625rem] md:leading-snug">
           {item.hint}
         </p>
         <div className="relative mt-px w-full max-w-[2.75rem] sm:max-w-[3rem] md:max-w-[3.5rem]">
@@ -117,7 +117,7 @@ function AchievementCardBody({
   return (
     <div className="flex w-full flex-col items-center gap-0.5 sm:gap-1">
       {item.value ? (
-        <p className="text-[clamp(0.9375rem,2.8vw,1.1875rem)] font-semibold tabular-nums tracking-tight text-sky-200 sm:text-xl md:text-[1.35rem]">
+        <p className="text-[clamp(0.9375rem,2.8vw,1.1875rem)] font-semibold tabular-nums tracking-tight text-slate-100 sm:text-xl md:text-[1.35rem]">
           {countUp && parsed.kind === "count" ? (
             <StatCountUp end={parsed.end} delayMs={countDelayMs} />
           ) : (
@@ -125,10 +125,10 @@ function AchievementCardBody({
           )}
         </p>
       ) : null}
-      <p className="max-w-[9rem] text-[0.59375rem] font-semibold leading-snug tracking-[0.018em] text-sky-50 sm:max-w-[10rem] sm:text-[0.625rem] md:max-w-[11rem] md:text-[0.6875rem]">
+      <p className="max-w-[9rem] text-[0.59375rem] font-semibold leading-snug tracking-[0.018em] text-slate-100 sm:max-w-[10rem] sm:text-[0.625rem] md:max-w-[11rem] md:text-[0.6875rem]">
         {item.label}
       </p>
-      <p className="max-w-[9.5rem] text-[0.5625rem] leading-[1.42] text-sky-100/70 sm:text-[0.59375rem] md:max-w-[11.5rem] md:text-[0.625rem] md:leading-snug">
+      <p className="max-w-[9.5rem] text-[0.5625rem] leading-[1.42] text-slate-300/85 sm:text-[0.59375rem] md:max-w-[11.5rem] md:text-[0.625rem] md:leading-snug">
         {item.hint}
       </p>
     </div>

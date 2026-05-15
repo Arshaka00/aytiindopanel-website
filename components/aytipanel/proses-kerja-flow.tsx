@@ -7,10 +7,10 @@ export type ProsesStepImages = Partial<Record<ProsesKerjaSlug, string>>;
 
 /** Ikon hero (fallback SVG): netral + bayangan timbul saja — tanpa glow warna per langkah. */
 const HERO_STEP_GLYPH_RAISED =
-  "text-slate-100 drop-shadow-[0_1px_0_rgba(255,255,255,0.14)] drop-shadow-[0_1.5px_2px_rgba(0,0,0,0.48)]";
+  "text-slate-100 drop-shadow-[0_1px_0_rgba(255,255,255,0.28)] drop-shadow-[0_2px_2px_rgba(0,0,0,0.62)] drop-shadow-[0_3.5px_6px_rgba(0,0,0,0.45)]";
 
-/** Kartu ikon hero: fill gelap + kelas raised (bayangan di `globals.css` → `#beranda.hero .proses-hero-step-shell--raised`). */
-const HERO_STEP_SHELL_BLACK = "!border-0 bg-neutral-950 proses-hero-step-shell--raised";
+/** Kartu ikon hero: kaca + timbul (`proses-hero-step-shell--raised` / `--glass` di globals.css). */
+const HERO_STEP_SHELL_GLASS = "proses-hero-step-shell--raised proses-hero-step-shell--glass";
 
 type ProsesKerjaFlowVariant = "light" | "hero";
 
@@ -47,7 +47,7 @@ export function ProsesKerjaFlow({
     : "relative flex flex-row items-start gap-2.5 pb-6 text-left last:pb-0 lg:flex-col lg:items-center lg:gap-0 lg:px-0 lg:pb-0 lg:text-center lg:before:pointer-events-none lg:before:absolute lg:before:left-0 lg:before:top-0 lg:before:h-12 lg:before:w-px lg:before:bg-border lg:before:content-[''] lg:first:before:hidden";
 
   const iconShellHeroBase =
-    "relative inline-flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-solid bg-transparent sm:size-11 md:size-12 md:rounded-[11px]";
+    "relative isolate inline-flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-solid sm:size-11 md:size-12 md:rounded-[11px]";
 
   const iconShellClassLight =
     "relative inline-flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border bg-transparent text-accent shadow-[var(--shadow-card)] lg:h-12 lg:w-12";
@@ -88,7 +88,7 @@ export function ProsesKerjaFlow({
               <div
                 className={
                   isHero
-                    ? `${iconShellHeroBase} ${HERO_STEP_SHELL_BLACK}`
+                    ? `${iconShellHeroBase} ${HERO_STEP_SHELL_GLASS}`
                     : mergeAytiCardClass(iconShellClassLight)
                 }
                 aria-hidden

@@ -15,6 +15,7 @@ import { getDraftSiteContent, getSiteContent } from "@/lib/site-content";
 import { getPreviewCookieName, verifyPreviewToken } from "@/lib/preview-token";
 import { resolveOgImageUrl } from "@/lib/site-seo-resolve";
 import { resolvePublicSiteOrigin } from "@/lib/site-url-resolve";
+import { DARK_MODE_ENABLED } from "@/lib/site-theme";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -140,6 +141,7 @@ export default async function RootLayout({
       data-performance-lightweight={pm.lightweightMode ? "1" : "0"}
       data-performance-no-anim={pm.disableHeavyAnimations ? "1" : "0"}
       data-performance-no-video={pm.disableVideoBackground ? "1" : "0"}
+      data-dark-mode-enabled={DARK_MODE_ENABLED ? "1" : "0"}
       className={`${geistSans.variable} ${geistMono.variable} ${sora.variable} h-full scroll-smooth bg-background antialiased`}
     >
       <body className="ayti-title-cold-scope flex min-h-[100dvh] flex-col overflow-x-clip bg-background text-foreground">
