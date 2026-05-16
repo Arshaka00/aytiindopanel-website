@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { InternalDetailNavLink } from "@/components/common/internal-detail-nav-link";
+
 import { LayananPageCmsText } from "@/components/aytipanel/layanan-page-cms-text";
 import { LayananPageHeroAltEditor } from "@/components/aytipanel/layanan-page-hero-alt-editor";
 import { LayananPageHeroImage } from "@/components/aytipanel/layanan-page-hero-image";
@@ -538,13 +540,13 @@ export function ServicePageView({
                     <ul className="mt-3 flex flex-wrap gap-2" role="list">
                       {relatedProducts.map((prod) => (
                         <li key={prod.slug}>
-                          <Link
+                          <InternalDetailNavLink
                             href={`/produk/${prod.slug}`}
                             className="inline-flex rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-accent/35 hover:text-accent"
                           >
                             {prod.title}
                             {prod.subtitle ? ` ${prod.subtitle}` : ""}
-                          </Link>
+                          </InternalDetailNavLink>
                         </li>
                       ))}
                     </ul>

@@ -3,7 +3,10 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
-import { LANDING_SECTION_ENTER_EVENT } from "@/components/common/home-nav-scroll";
+import {
+  isMobileishViewport,
+  LANDING_SECTION_ENTER_EVENT,
+} from "@/components/common/home-nav-scroll";
 
 const FLASH_CLASS = "landing-hash-section-flash";
 const FLASH_MS = 780;
@@ -38,7 +41,7 @@ export function LandingSectionHashFlash() {
         window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const noAnim = document.documentElement.dataset.performanceNoAnim === "1";
       const light = document.documentElement.dataset.performanceLightweight === "1";
-      if (reduce || noAnim || light) return;
+      if (reduce || noAnim || light || isMobileishViewport()) return;
 
       el.classList.remove(FLASH_CLASS);
       void el.offsetWidth;

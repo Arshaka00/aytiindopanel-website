@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 
 import { PortfolioHomeHeroMedia } from "@/components/aytipanel/gallery-project-card-media";
 import { GalleryPhotosCarousel } from "@/components/aytipanel/gallery-photos-carousel";
@@ -11,9 +11,67 @@ import { useSiteCmsOptional } from "@/components/site-cms/site-cms-provider";
 import { emptyPortfolioProject } from "@/lib/cms-item-factories";
 import type { SiteContent } from "@/lib/site-content-model";
 
+/** Empat baris detail teknis tetap (Temperatur … Insulasi Ruangan) — kartu portfolio sama tinggi. */
+const PORTFOLIO_TECHNICAL_SPEC_SLOTS = 4;
+
 const portfolioCardShell = mergeAytiCardClass(
-  "group min-h-0 overflow-hidden rounded-xl border border-border bg-card shadow-[var(--shadow-card)] transition-all duration-300 [transition-timing-function:var(--ease-premium-soft)] active:scale-[0.98] md:motion-safe:hover:-translate-y-0.5 md:hover:shadow-[var(--shadow-card-hover)] md:active:scale-100",
+  "portfolio-project-card group flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-[var(--shadow-card)] transition-all duration-300 [transition-timing-function:var(--ease-premium-soft)] active:scale-[0.98] md:motion-safe:hover:-translate-y-0.5 md:hover:shadow-[var(--shadow-card-hover)] md:active:scale-100",
 );
+
+const portfolioMetaPanelClass = "flex flex-1 flex-col";
+const portfolioSpecRowClass = "py-1.5 md:py-1.5";
+/** Nilai meta — selaras `featuredBulletRow` / detail galeri (`text-xs` → `text-sm`). */
+const portfolioMetaValueClass =
+  "mt-0.5 text-xs font-medium leading-snug text-foreground md:text-sm dark:text-slate-100";
+const portfolioSpecValueClass = `${portfolioMetaValueClass} line-clamp-2 min-h-[1.6rem] md:min-h-[1.55rem]`;
+const portfolioWorkTypeValueClass = `${portfolioMetaValueClass} line-clamp-3 min-h-[2.35rem] font-normal text-muted-foreground md:min-h-[2.25rem] dark:text-slate-300/95`;
+const portfolioTitleClass =
+  "line-clamp-2 min-h-[2rem] text-balance text-sm font-semibold leading-snug tracking-tight text-foreground md:min-h-[2.1rem] md:text-[0.9375rem] dark:text-slate-50";
+
+/** Samakan tinggi keempat slide kartu portfolio (satu baris flex). */
+function useEqualPortfolioSlideHeights(
+  stripRef: React.RefObject<HTMLDivElement | null>,
+  slideCount: number,
+) {
+  useLayoutEffect(() => {
+    const root = stripRef.current;
+    if (!root || slideCount < 1) return;
+
+    const equalize = () => {
+      const slides = [...root.children].filter((n): n is HTMLElement => n instanceof HTMLElement);
+      if (!slides.length) return;
+
+      slides.forEach((el) => {
+        el.style.height = "";
+        el.style.minHeight = "";
+      });
+
+      const maxH = Math.max(...slides.map((el) => el.getBoundingClientRect().height));
+      if (!Number.isFinite(maxH) || maxH <= 0) return;
+
+      const px = `${Math.ceil(maxH)}px`;
+      slides.forEach((el) => {
+        el.style.height = px;
+        el.style.minHeight = px;
+      });
+    };
+
+    equalize();
+
+    const slides = [...root.children].filter((n): n is HTMLElement => n instanceof HTMLElement);
+    const ro = new ResizeObserver(equalize);
+    ro.observe(root);
+    for (const slide of slides) {
+      ro.observe(slide);
+    }
+
+    window.addEventListener("resize", equalize);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", equalize);
+    };
+  }, [stripRef, slideCount]);
+}
 
 const SortList = dynamic(
   () => import("@/components/site-cms/cms-sortable-list").then((m) => m.CmsSortableList),
@@ -33,8 +91,9 @@ function PortfolioMetaDivider() {
   );
 }
 
+/** Selaras label detail galeri / eyebrow section (`text-[10px]` · tracking rapat). */
 const portfolioLabelClass =
-  "text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-sky-200/45";
+  "text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground dark:text-slate-500";
 
 function ChevronLeftIcon({ className }: { className?: string }) {
   return (
@@ -188,17 +247,19 @@ function PortfolioProjectsStrip({
 
   const showNav = projects.length > 1;
 
+  useEqualPortfolioSlideHeights(stripRef, projects.length);
+
   return (
-    <div>
+    <div className="portfolio-projects-strip">
       <div
         ref={stripRef}
-        className="relative flex w-full min-w-0 snap-x snap-mandatory gap-5 overflow-x-auto overflow-y-visible px-4 pb-2 scroll-auto scrollbar-none overscroll-x-contain [overscroll-behavior-y:auto] transform-gpu [touch-action:manipulation] [-webkit-overflow-scrolling:touch] md:scroll-smooth md:px-0 md:pb-3"
+        className="portfolio-projects-strip__track relative flex w-full min-w-0 snap-x snap-mandatory items-stretch gap-5 overflow-x-auto overflow-y-visible px-4 pb-2 scroll-auto scrollbar-none overscroll-x-contain [overscroll-behavior-y:auto] transform-gpu [touch-action:manipulation] [-webkit-overflow-scrolling:touch] md:scroll-smooth md:px-0 md:pb-3"
         aria-label="Daftar proyek — geser horizontal untuk melihat lainnya"
       >
         {projects.map((project, pi) => (
           <div
             key={project.id}
-            className="w-[92vw] min-w-[92vw] max-w-[92vw] shrink-0 snap-center max-md:last:pr-2 md:w-[calc((100%-1.25rem)/2)] md:min-w-[calc((100%-1.25rem)/2)] md:max-w-[calc((100%-1.25rem)/2)] md:snap-start md:last:pr-0 md:transform-gpu md:[will-change:transform]"
+            className="portfolio-project-slide flex h-full w-[92vw] min-w-[92vw] max-w-[92vw] shrink-0 snap-center flex-col max-md:last:pr-2 md:w-[calc((100%-1.25rem)/2)] md:min-w-[calc((100%-1.25rem)/2)] md:max-w-[calc((100%-1.25rem)/2)] md:snap-start md:last:pr-0 md:transform-gpu md:[will-change:transform]"
           >
             {renderSlide(project, pi)}
           </div>
@@ -290,23 +351,25 @@ export function PortfolioProjectsClient({
 
   const renderCard = (project: SiteContent["portfolio"]["projects"][number], pi: number) => (
     <article className={portfolioCardShell}>
-      <PortfolioHomeHeroMedia
-        cmsProjectIndex={pi}
-        uploadSegmentId={project.id}
-        name={project.name}
-        videoSrc={project.videoSrc}
-        videoPosterSrc={project.videoPosterSrc}
-        /* Beranda: video kartu hanya setelah interaksi; flag CMS tidak memicu autoplay di strip ini. */
-        videoAutoplay={false}
-        coverImageSrc={project.coverImageSrc}
-        coverImageAlt={project.coverImageAlt}
-      />
-      <GalleryPhotosCarousel
-        cmsProjectIndex={pi}
-        projectId={project.id}
-        projectName={project.name}
-        photos={project.galleryPhotos ?? []}
-      />
+      <div className="shrink-0">
+        <PortfolioHomeHeroMedia
+          cmsProjectIndex={pi}
+          uploadSegmentId={project.id}
+          name={project.name}
+          videoSrc={project.videoSrc}
+          videoPosterSrc={project.videoPosterSrc}
+          /* Beranda: video kartu hanya setelah interaksi; flag CMS tidak memicu autoplay di strip ini. */
+          videoAutoplay={false}
+          coverImageSrc={project.coverImageSrc}
+          coverImageAlt={project.coverImageAlt}
+        />
+        <GalleryPhotosCarousel
+          cmsProjectIndex={pi}
+          projectId={project.id}
+          projectName={project.name}
+          photos={project.galleryPhotos ?? []}
+        />
+      </div>
       {edit ? (
         <div className="border-t border-border bg-muted-bg/40 px-3 py-2 dark:border-white/[0.06] dark:bg-white/[0.03]">
           <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
@@ -327,24 +390,24 @@ export function PortfolioProjectsClient({
           </ul>
         </div>
       ) : null}
-      <div className="relative border-t border-sky-500/15 bg-gradient-to-b from-slate-950/[0.03] to-transparent dark:border-sky-400/12 dark:from-white/[0.025] dark:to-transparent">
+      <div className="relative mt-auto flex flex-1 flex-col border-t border-sky-500/15 bg-gradient-to-b from-slate-950/[0.03] to-transparent dark:border-sky-400/12 dark:from-white/[0.025] dark:to-transparent">
         <div
           className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky-400/45 to-transparent opacity-90 dark:via-sky-400/35"
           aria-hidden
         />
-        <div className="px-4 pb-5 pt-5 md:px-5 md:pb-6 md:pt-6">
+        <div className="flex flex-1 flex-col px-4 pb-3 pt-3 md:px-5 md:pb-4 md:pt-3.5">
           <div
-            className="relative overflow-hidden rounded-xl border border-sky-500/[0.14] bg-card/85 px-4 py-5 shadow-[inset_0_1px_0_0_rgba(56,189,248,0.07)] backdrop-blur-[2px] [transition-timing-function:var(--ease-premium-soft)] dark:border-sky-400/[0.12] dark:bg-[linear-gradient(168deg,rgba(15,23,42,0.42)_0%,rgba(8,12,22,0.28)_55%,rgba(6,9,18,0.15)_100%)] dark:shadow-[inset_0_1px_0_0_rgba(56,189,248,0.09),0_1px_0_0_rgba(255,255,255,0.03)] md:px-5 md:py-6"
+            className="relative flex flex-1 flex-col overflow-hidden rounded-xl border border-sky-500/[0.14] bg-card/85 px-3 py-2.5 shadow-[inset_0_1px_0_0_rgba(56,189,248,0.07)] backdrop-blur-[2px] [transition-timing-function:var(--ease-premium-soft)] dark:border-sky-400/[0.12] dark:bg-[linear-gradient(168deg,rgba(15,23,42,0.42)_0%,rgba(8,12,22,0.28)_55%,rgba(6,9,18,0.15)_100%)] dark:shadow-[inset_0_1px_0_0_rgba(56,189,248,0.09),0_1px_0_0_rgba(255,255,255,0.03)] md:px-3.5 md:py-3"
             role="group"
             aria-label="Informasi proyek"
           >
             <span
-              className="pointer-events-none absolute left-3 top-5 bottom-5 w-[3px] rounded-full bg-gradient-to-b from-sky-400/25 via-sky-500/45 to-cyan-400/30 opacity-95 shadow-[0_0_14px_rgba(56,189,248,0.12)] dark:from-sky-400/35 dark:via-sky-400/40 dark:to-cyan-400/25 md:left-4"
+              className="pointer-events-none absolute left-3 top-3.5 bottom-3.5 w-[3px] rounded-full bg-gradient-to-b from-sky-400/25 via-sky-500/45 to-cyan-400/30 opacity-95 shadow-[0_0_14px_rgba(56,189,248,0.12)] dark:from-sky-400/35 dark:via-sky-400/40 dark:to-cyan-400/25 md:left-4"
               aria-hidden
             />
-            <div className="relative space-y-0 pl-6 md:pl-7">
-              <header className="pb-4 md:pb-5">
-                <h3 className="text-balance text-[1.08rem] font-semibold leading-snug tracking-tight text-foreground md:text-[1.05rem] dark:text-slate-50">
+            <div className={`relative space-y-0 pl-5 md:pl-6 ${portfolioMetaPanelClass}`}>
+              <header className="pb-1 md:pb-1.5">
+                <h3 className={portfolioTitleClass}>
                   <CmsText
                     path={`portfolio.projects.${pi}.name`}
                     text={project.name}
@@ -357,9 +420,9 @@ export function PortfolioProjectsClient({
               <PortfolioMetaDivider />
 
               <dl className="m-0 divide-y divide-sky-500/[0.13] p-0 dark:divide-sky-400/[0.11]">
-                <div className="py-4 md:py-[1.125rem]">
+                <div className={portfolioSpecRowClass}>
                   <dt className={portfolioLabelClass}>{locationLabel}</dt>
-                  <dd className="mt-2.5 text-[0.95rem] font-medium leading-relaxed text-slate-800 md:text-[0.9375rem] dark:text-slate-100">
+                  <dd className={portfolioMetaValueClass}>
                     <CmsText
                       path={`portfolio.projects.${pi}.location`}
                       text={project.location}
@@ -369,13 +432,13 @@ export function PortfolioProjectsClient({
                   </dd>
                 </div>
 
-                <div className="relative pb-1 pt-4 md:pt-[1.125rem]">
+                <div className={`relative ${portfolioSpecRowClass}`}>
                   <span
                     className="pointer-events-none absolute -top-px left-1/2 z-[1] size-1.5 -translate-x-1/2 rounded-full bg-gradient-to-br from-sky-400/85 to-cyan-500/65 shadow-[0_0_12px_rgba(56,189,248,0.35)] ring-2 ring-card dark:from-sky-300/75 dark:to-cyan-400/55 dark:shadow-[0_0_14px_rgba(56,189,248,0.22)] dark:ring-[#0b1222]"
                     aria-hidden
                   />
                   <dt className={portfolioLabelClass}>{workTypeLabel}</dt>
-                  <dd className="mt-2.5 text-[0.92rem] leading-relaxed text-slate-600 md:text-[0.9rem] dark:text-slate-300/95">
+                  <dd className={portfolioWorkTypeValueClass}>
                     <CmsText
                       path={`portfolio.projects.${pi}.workType`}
                       text={project.workType}
@@ -384,6 +447,43 @@ export function PortfolioProjectsClient({
                     />
                   </dd>
                 </div>
+
+                {Array.from({ length: PORTFOLIO_TECHNICAL_SPEC_SLOTS }, (_, si) => {
+                  const spec = project.technicalSpecs?.[si];
+                  const isPlaceholder = !spec;
+                  return (
+                    <div
+                      key={`${project.id}-spec-${si}`}
+                      className={`${portfolioSpecRowClass}${isPlaceholder ? " invisible pointer-events-none select-none" : ""}`}
+                      aria-hidden={isPlaceholder}
+                    >
+                      <dt className={portfolioLabelClass}>
+                        {isPlaceholder ? (
+                          <span className="block">&nbsp;</span>
+                        ) : (
+                          <CmsText
+                            path={`portfolio.projects.${pi}.technicalSpecs.${si}.label`}
+                            text={spec.label}
+                            as="span"
+                            className="block"
+                          />
+                        )}
+                      </dt>
+                      <dd className={portfolioSpecValueClass}>
+                        {isPlaceholder ? (
+                          <span className="block">&nbsp;</span>
+                        ) : (
+                          <CmsText
+                            path={`portfolio.projects.${pi}.technicalSpecs.${si}.value`}
+                            text={spec.value}
+                            as="span"
+                            className="block"
+                          />
+                        )}
+                      </dd>
+                    </div>
+                  );
+                })}
               </dl>
             </div>
           </div>

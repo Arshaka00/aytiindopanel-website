@@ -171,13 +171,13 @@
     "headingMiddle": "PENDINGIN",
     "headingLine2": "Terintegrasi",
     "intro": {
-      "before1": "Untuk memenuhi kebutuhan",
+      "before1": "~ Untuk memenuhi kebutuhan",
       "bold1": "bisnis Anda",
       "middle": "dalam membangun",
       "bold2": "ruang pendingin",
       "after2": "yang",
       "bold3": "stabil dan efisien",
-      "after3": "untuk jangka panjang."
+      "after3": "untuk jangka panjang ~"
     },
     "introBadge": "",
     "prosesBadge": "PRODUCTS OF",
@@ -191,9 +191,9 @@
     "prosesStepImageZoom": {
       "konsultasi": 1.15,
       "survey": 1.15,
-      "produksi": 1.05,
-      "instalasi": 2.1,
-      "selesai": 1.05
+      "produksi": 0.9,
+      "instalasi": 1.6,
+      "selesai": 0.9
     },
     "ctaWhatsApp": {
       "label": "Hubungi kami",
@@ -238,8 +238,8 @@
   "tentang": {
     "sectionLabel": "Tentang Kami",
     "heading": "Sistem Pendingin Terintegrasi",
-    "lead": "PT AYTI INDO PANEL adalah perusahaan yang bergerak dalam bidang fabrikasi sandwich panel cold storage, dan sistem refrigerasi untuk kebutuhan usaha Anda.",
-    "body": "Didukung pengalaman tim lebih dari 5 tahun, dan pabrik panel milik sendiri, kami siap mendukung kebutuhan proyek Anda mulai dari konsultasi, desain, produksi sandwich panel, produksi pintu panel dan sistem docking, instalasi sandwich panel, dan instalasi sistem refrigerasi, hingga dukungan purna jual dan after sales secara menyeluruh dan terintegrasi.",
+    "lead": "PT AYTI INDO PANEL adalah perusahaan yang bergerak dalam bidang fabrikasi sandwich panel cold storage dan sistem refrigerasi untuk kebutuhan usaha Anda.",
+    "body": "Didukung pengalaman tim lebih dari 5 tahun dan pabrik panel milik sendiri, kami siap mendukung kebutuhan proyek Anda mulai dari konsultasi, desain, produksi sandwich panel, produksi pintu panel dan sistem docking, instalasi sandwich panel, dan instalasi sistem refrigerasi, hingga dukungan purna jual dan after sales secara menyeluruh dan terintegrasi.",
     "valuesHeading": "Nilai Kami",
     "values": [
       "Pabrik panel milik sendiri",
@@ -658,6 +658,24 @@
         "name": "Fasilitas Cold Chain Untuk Distribusi Supermarket",
         "location": "Karawang - Jawa Barat",
         "workType": "Cold Storage, Pembekuan Cepat (ABF), Anteroom & Loading",
+        "technicalSpecs": [
+          {
+            "label": "Temperatur",
+            "value": "Chiller +2°C s/d +8°C · Freezer −18°C s/d −25°C"
+          },
+          {
+            "label": "Kapasitas penyimpanan",
+            "value": "1.000 ton"
+          },
+          {
+            "label": "Sistem pendingin",
+            "value": "±120 TR (sistem refrigerasi terpadu)"
+          },
+          {
+            "label": "Insulasi Ruangan",
+            "value": "Sandwich panel PU 100 mm · sistem camlock"
+          }
+        ],
         "videoSrc": "/images/cms/portfolio/portfolio-cold-room-regional/1778770826523-3e535a9f3c27.mov",
         "galleryPhotos": [
           {
@@ -702,6 +720,24 @@
             "src": "/images/layanan/maintenance-after-sales/2.jpg",
             "alt": "Placeholder foto galeri 4 — ganti lewat CMS"
           }
+        ],
+        "technicalSpecs": [
+          {
+            "label": "Temperatur",
+            "value": "ABF −35°C · Cold storage −22°C · Blast −40°C"
+          },
+          {
+            "label": "Kapasitas penyimpanan",
+            "value": "800 ton"
+          },
+          {
+            "label": "Sistem pendingin",
+            "value": "±180 TR · multi-kompresor"
+          },
+          {
+            "label": "Insulasi Ruangan",
+            "value": "PU/EPS 80–120 mm · pintu cold room industri"
+          }
         ]
       },
       {
@@ -727,6 +763,24 @@
             "src": "/images/layanan/konsultasi-desain-sistem/2.jpg",
             "alt": "Placeholder foto galeri 4 — ganti lewat CMS"
           }
+        ],
+        "technicalSpecs": [
+          {
+            "label": "Temperatur",
+            "value": "Ruang proses +2°C s/d +8°C · Cold storage −18°C s/d −25°C · ABF −35°C"
+          },
+          {
+            "label": "Kapasitas penyimpanan",
+            "value": "400 ton"
+          },
+          {
+            "label": "Sistem pendingin",
+            "value": "±95 TR"
+          },
+          {
+            "label": "Insulasi Ruangan",
+            "value": "PU 100 mm food-grade · sambungan higienis"
+          }
         ]
       },
       {
@@ -751,6 +805,24 @@
           {
             "src": "/images/layanan/testing-commissioning/1.jpg",
             "alt": "Placeholder foto galeri 4 — ganti lewat CMS"
+          }
+        ],
+        "technicalSpecs": [
+          {
+            "label": "Temperatur",
+            "value": "Penyimpanan ikan −25°C s/d −30°C"
+          },
+          {
+            "label": "Kapasitas penyimpanan",
+            "value": "6.000 ton"
+          },
+          {
+            "label": "Sistem pendingin",
+            "value": "±280 TR"
+          },
+          {
+            "label": "Insulasi Ruangan",
+            "value": "PU 150 mm high density · sistem pendingin terintegrasi"
           }
         ]
       }

@@ -4,9 +4,8 @@ import { LandingScrollPageVeil } from "@/components/aytipanel/landing-scroll-pag
 import { HomeMainSections } from "@/components/aytipanel/home-main-sections";
 import { HomeInitialHashScroll } from "@/components/common/home-initial-hash-scroll";
 import { LandingSectionHashFlash } from "@/components/common/landing-section-hash-flash";
-import { WhatsAppPhoneProvider } from "@/components/common/whatsapp-phone-context";
 import { ScrollToSectionOnLoad } from "@/components/common/scroll-to-section-on-load";
-
+import { WhatsAppPhoneProvider } from "@/components/common/whatsapp-phone-context";
 import type { SiteContent } from "@/lib/site-content-model";
 
 const SiteFooter = dynamic(() =>
@@ -29,9 +28,9 @@ export function AytiIndoPanelLanding({
       <div className="relative flex w-full flex-col bg-background text-foreground">
         <LandingScrollPageVeil />
         <main className="min-w-0">
+          <ScrollToSectionOnLoad />
           <HomeInitialHashScroll />
           <LandingSectionHashFlash />
-          <ScrollToSectionOnLoad />
           <HomeMainSections
             content={content}
             waPhoneDigits={waPhoneDigits}

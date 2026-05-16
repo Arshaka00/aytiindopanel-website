@@ -18,6 +18,12 @@ export function emptyPortfolioProject(): SiteContent["portfolio"]["projects"][nu
     name: "Judul proyek",
     location: "Lokasi",
     workType: "Deskripsi pekerjaan",
+    technicalSpecs: [
+      { label: "Temperatur", value: "Contoh: −18°C s/d −25°C" },
+      { label: "Kapasitas penyimpanan", value: "Contoh: 1.000 ton" },
+      { label: "Sistem pendingin", value: "Contoh: ±120 TR" },
+      { label: "Insulasi Ruangan", value: "Contoh: PU 100 mm" },
+    ],
     videoSrc: "/images/gallery/WhatsApp%20Video%202026-05-07%20at%2011.02.55.mp4",
     videoPosterSrc: "/images/layanan/instalasi-sistem-pendingin/1.jpg",
     videoAutoplay: false,

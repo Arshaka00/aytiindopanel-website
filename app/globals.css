@@ -808,7 +808,7 @@ html {
   }
 
   #beranda.hero {
-    min-height: clamp(44rem, 88svh, 54rem);
+    min-height: calc(100dvh - var(--site-header-height, 3.65rem));
     overflow-x: clip;
   }
 
@@ -1706,6 +1706,53 @@ html {
  */
 #beranda.hero .proses-hero-step-anchor {
   transform: none !important;
+}
+
+/* Strip produk hero — garis horizontal di bawah teks (bukan text-decoration). */
+#beranda.hero .hero-proses-eyebrow-rule,
+#beranda.hero .hero-proses-step-rule {
+  display: block;
+  height: 1px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(244 247 253 / 0.22) 12%,
+    rgb(244 247 253 / 0.58) 50%,
+    rgb(244 247 253 / 0.22) 88%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 8px rgb(255 255 255 / 0.1),
+    0 0 4px rgb(186 230 253 / 0.12);
+}
+
+#beranda.hero .hero-proses-eyebrow-rule {
+  width: 5.5rem;
+  max-width: 72%;
+  height: 1.5px;
+}
+
+#beranda.hero .hero-proses-step-rule {
+  width: 2.65rem;
+}
+
+@media (min-width: 640px) {
+  #beranda.hero .hero-proses-step-rule {
+    width: 2.85rem;
+  }
+}
+
+@media (min-width: 768px) {
+  #beranda.hero .hero-proses-step-rule {
+    width: 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  #beranda.hero .hero-proses-step-rule {
+    width: 3.15rem;
+  }
 }
 
 /* Pembatas vertikal antar kolom ikon — lebih terbaca (garis + glow tipis). */
@@ -3205,6 +3252,20 @@ html[data-performance-lightweight="1"] .proses-flow-arrow-march--light-v {
       0 0 10px rgb(125 211 252 / 0.06),
       0 1px 2px rgb(2 12 26 / 0.3);
     -webkit-text-stroke: 0.18px rgb(224 242 254 / 0.22);
+  }
+}
+
+/* Tentang — paragraf lead/body rapi di layar sempit (hindari span CMS jadi blok penuh). */
+@media (max-width: 767px) {
+  #tentang .tentang-copy > p {
+    text-align: left;
+  }
+
+  #tentang .tentang-copy > p span[style] {
+    display: inline !important;
+    width: auto !important;
+    max-width: 100% !important;
+    text-align: left !important;
   }
 }
 

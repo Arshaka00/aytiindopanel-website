@@ -41,21 +41,25 @@ export function ProsesKerjaFlow({
 
   /** Hero: anchor ukuran tetap untuk gambar `absolute inset-0`; tanpa kotak/border (ikon produk polos). */
   const heroIconAnchorClass =
-    "proses-hero-step-anchor relative isolate inline-flex size-10 shrink-0 items-center justify-center sm:size-11 md:size-[2.875rem] lg:size-12";
+    "proses-hero-step-anchor relative isolate inline-flex size-12 shrink-0 items-center justify-center sm:size-[3.25rem] md:size-14 lg:size-[3.75rem]";
 
   const iconShellClassLight =
     "relative inline-flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border bg-transparent text-accent shadow-[var(--shadow-card)] lg:h-12 lg:w-12";
 
   const iconGlyphClass = isHero
-    ? "h-[1.125rem] w-[1.125rem] shrink-0 sm:h-[1.3125rem] sm:w-[1.3125rem] md:h-6 md:w-6 lg:h-[1.625rem] lg:w-[1.625rem]"
+    ? "h-[1.375rem] w-[1.375rem] shrink-0 sm:h-[1.5rem] sm:w-[1.5rem] md:h-[1.875rem] md:w-[1.875rem] lg:h-8 lg:w-8"
     : "h-7 w-7 shrink-0 lg:h-6 lg:w-6";
 
   const stepMicroLabelLightClass =
-    "text-[12px] font-semibold normal-case tracking-wider text-muted [text-rendering:geometricPrecision] lg:hidden";
+    "text-[10px] font-semibold normal-case tracking-wider text-muted [text-rendering:geometricPrecision] lg:hidden";
+
+  const stepTitleWrapClass = isHero
+    ? "proses-hero-step-label order-2 -mt-1 flex w-full min-w-0 max-w-[6.5rem] flex-col items-center gap-0.5 sm:-mt-0.5 sm:max-w-[7.25rem] md:max-w-[7.75rem] lg:max-w-[8.35rem]"
+    : "";
 
   const stepTitleClass = isHero
-    ? "proses-hero-step-title order-2 -mt-1 w-full whitespace-pre-line line-clamp-3 max-w-[6.5rem] text-center text-[clamp(9px,1.72vw,10px)] font-bold normal-case leading-[1.06] tracking-[0.09em] text-balance text-[#F4F7FD]/95 antialiased [text-rendering:geometricPrecision] [-webkit-text-stroke:0.22px_rgba(2,8,20,0.35)] [paint-order:stroke_fill] [text-shadow:0_0.5px_0_rgb(2,6,18),0_1px_2px_rgba(0,0,0,0.48)] sm:-mt-0.5 sm:max-w-[7.25rem] sm:leading-[1.08] sm:tracking-[0.1em] md:max-w-[7.75rem] md:text-[10px] md:tracking-[0.11em] lg:max-w-[8.35rem] lg:text-[11px] lg:tracking-[0.12em]"
-    : "whitespace-pre-line normal-case text-[0.9375rem] font-semibold leading-snug text-foreground [text-rendering:geometricPrecision] lg:mt-1 lg:text-[0.8125rem]";
+    ? "proses-hero-step-title m-0 w-full whitespace-pre-line line-clamp-3 text-center text-[clamp(7px,1.72vw,8px)] font-bold normal-case leading-[1.06] tracking-[0.09em] text-balance text-[#F4F7FD]/95 antialiased [text-rendering:geometricPrecision] [-webkit-text-stroke:0.22px_rgba(2,8,20,0.35)] [paint-order:stroke_fill] [text-shadow:0_0.5px_0_rgb(2,6,18),0_1px_2px_rgba(0,0,0,0.48)] sm:leading-[1.08] sm:tracking-[0.1em] md:text-[8px] md:tracking-[0.11em] lg:text-[9px] lg:tracking-[0.12em]"
+    : "whitespace-pre-line normal-case text-[0.8125rem] font-semibold leading-snug text-foreground [text-rendering:geometricPrecision] lg:mt-1 lg:text-[0.6875rem]";
 
   return (
     <ol
@@ -158,12 +162,15 @@ export function ProsesKerjaFlow({
               )}
 
               {isHero ? (
-                <p className={stepTitleClass}>
-                  <span className="sr-only">
-                    Langkah <span className="tabular-nums">{stepNo}</span>:{" "}
-                  </span>
-                  {step.title}
-                </p>
+                <div className={stepTitleWrapClass}>
+                  <p className={stepTitleClass}>
+                    <span className="sr-only">
+                      Langkah <span className="tabular-nums">{stepNo}</span>:{" "}
+                    </span>
+                    {step.title}
+                  </p>
+                  <span className="hero-proses-step-rule" aria-hidden />
+                </div>
               ) : (
                 <div className="min-w-0 flex-1 space-y-0.5 pt-0 lg:flex lg:w-full lg:flex-col lg:items-center lg:space-y-0 lg:pt-0">
                   <p className={stepMicroLabelLightClass}>Langkah {stepNo}</p>

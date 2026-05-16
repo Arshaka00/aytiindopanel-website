@@ -42,6 +42,41 @@ function nid(prefix: string, i: number): string {
 }
 
 /** Pastikan item repeater punya `id` stabil untuk drag/reorder (kompatibel data lama). */
+const PORTFOLIO_TECH_SPEC_ORDER = [
+  "Temperatur",
+  "Kapasitas penyimpanan",
+  "Sistem pendingin",
+  "Insulasi Ruangan",
+] as const;
+
+function canonicalPortfolioSpecLabel(raw: string): (typeof PORTFOLIO_TECH_SPEC_ORDER)[number] | null {
+  const n = raw.trim().toLowerCase();
+  if (!n || n === "refrigeran") return null;
+  if (n === "temperatur" || n === "temperature") return "Temperatur";
+  if (n === "kapasitas penyimpanan") return "Kapasitas penyimpanan";
+  if (n === "sistem pendingin") return "Sistem pendingin";
+  if (n === "panel" || n === "insulasi ruangan") return "Insulasi Ruangan";
+  for (const label of PORTFOLIO_TECH_SPEC_ORDER) {
+    if (n === label.toLowerCase()) return label;
+  }
+  return null;
+}
+
+function canonicalizePortfolioTechnicalSpecs(
+  specs: { label: string; value: string }[],
+): { label: string; value: string }[] {
+  const byLabel = new Map<string, string>();
+  for (const row of specs) {
+    const label = canonicalPortfolioSpecLabel(row.label);
+    if (!label) continue;
+    byLabel.set(label, row.value);
+  }
+  return PORTFOLIO_TECH_SPEC_ORDER.filter((label) => byLabel.has(label)).map((label) => ({
+    label,
+    value: byLabel.get(label)!,
+  }));
+}
+
 export function normalizeSiteContent(c: SiteContent): SiteContent {
   const defaults = createDefaultSiteContent();
   const out = structuredClone(c);
@@ -113,10 +148,18 @@ export function normalizeSiteContent(c: SiteContent): SiteContent {
   if (introValues.every((x) => x.length === 0)) {
     out.hero.intro = { ...defaults.hero.intro };
   }
-  out.tentang.body = normalizeRichTextValue(
-    out.tentang?.body,
-    plainTextFromRichValue(defaults.tentang.body, ""),
-  );
+  const tentangBodyFallback = plainTextFromRichValue(defaults.tentang.body, "");
+  let tentangBody = normalizeRichTextValue(out.tentang?.body, tentangBodyFallback);
+  const tentangBodyPlain = plainTextFromRichValue(tentangBody, tentangBodyFallback)
+    .replace(/,\s*\n\s*/g, ", ")
+    .replace(/\s*\n+\s*/g, " ")
+    .trim();
+  if (typeof tentangBody === "string") {
+    tentangBody = tentangBodyPlain;
+  } else if (tentangBodyPlain !== plainTextFromRichValue(tentangBody, "")) {
+    tentangBody = { ...tentangBody, text: tentangBodyPlain };
+  }
+  out.tentang.body = tentangBody;
   out.hero.headingMiddle = out.hero?.headingMiddle ?? defaults.hero.headingMiddle;
   const defHero = defaults.hero;
   const heroStr = (v: unknown, fb: string) => {
@@ -438,6 +481,21 @@ export function normalizeSiteContent(c: SiteContent): SiteContent {
     const galleryPhotos =
       patchedPhotos.length > 0 ? patchedPhotos : normPhotos(def?.galleryPhotos);
 
+    const normTechnicalSpecs = (arr: unknown): { label: string; value: string }[] => {
+      if (!Array.isArray(arr)) return [];
+      return arr
+        .map((row) => ({
+          label: trimSrc((row as { label?: unknown })?.label),
+          value: trimSrc((row as { value?: unknown })?.value),
+        }))
+        .filter((row) => row.label.length > 0 && row.value.length > 0);
+    };
+    const patchedSpecs = canonicalizePortfolioTechnicalSpecs(normTechnicalSpecs(p.technicalSpecs));
+    const technicalSpecs =
+      patchedSpecs.length > 0
+        ? patchedSpecs
+        : canonicalizePortfolioTechnicalSpecs(normTechnicalSpecs(def?.technicalSpecs));
+
     const videoSrc = trimSrc(p.videoSrc) || trimSrc(def?.videoSrc) || undefined;
     const videoPosterSrc = trimSrc(p.videoPosterSrc) || trimSrc(def?.videoPosterSrc) || undefined;
     const coverImageSrc = trimSrc(p.coverImageSrc) || trimSrc(def?.coverImageSrc) || undefined;
@@ -449,6 +507,7 @@ export function normalizeSiteContent(c: SiteContent): SiteContent {
       name: trimSrc(p.name) || trimSrc(def?.name) || "",
       location: trimSrc(p.location) || trimSrc(def?.location) || "",
       workType: trimSrc(p.workType) || trimSrc(def?.workType) || "",
+      technicalSpecs: technicalSpecs.length > 0 ? technicalSpecs : undefined,
       videoSrc,
       videoPosterSrc,
       videoAutoplay: p.videoAutoplay === true ? true : undefined,

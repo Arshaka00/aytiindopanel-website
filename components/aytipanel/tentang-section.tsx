@@ -14,6 +14,23 @@ import { mergeAytiCardClass } from "@/lib/ayti-icon-cold";
 
 type Props = { tentang: SiteContent["tentang"] };
 
+/** Paragraf lead/body — full width & line-height rapat di mobile. */
+const tentangParagraphClass = [
+  lightLead,
+  "m-0 w-full max-w-none text-left text-pretty",
+  "break-words [overflow-wrap:break-word] hyphens-auto",
+  "max-md:text-[0.9375rem] max-md:leading-[1.62] max-md:tracking-[0.01em]",
+  "md:max-w-2xl",
+].join(" ");
+
+const tentangValuesItemClass = [
+  lightLead,
+  "max-w-none text-left text-pretty",
+  "break-words [overflow-wrap:break-word] hyphens-auto",
+  "max-md:text-[0.9375rem] max-md:leading-[1.58]",
+  "md:max-w-2xl",
+].join(" ");
+
 export function TentangSection({ tentang }: Props) {
   return (
     <section
@@ -66,7 +83,7 @@ export function TentangSection({ tentang }: Props) {
           />
         </div>
 
-        <div className="grid grid-cols-1 gap-5 sm:gap-6 lg:grid-cols-2 lg:items-start lg:gap-8 xl:gap-9">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2 lg:items-start lg:gap-8 xl:gap-9">
           <figure
             className={mergeAytiCardClass(
               "relative order-2 mx-auto aspect-video w-full max-w-[min(100%,21.5rem)] overflow-hidden rounded-xl border border-border bg-muted-bg shadow-[var(--shadow-card)] transition-[transform,box-shadow] duration-[340ms] [transition-timing-function:var(--ease-premium-soft)] sm:max-w-md md:max-w-lg lg:order-none lg:col-start-1 lg:mx-0 lg:max-w-none lg:sticky lg:top-28 md:rounded-xl md:motion-safe:hover:-translate-y-0.5 md:hover:shadow-[var(--shadow-card-hover)]",
@@ -87,30 +104,30 @@ export function TentangSection({ tentang }: Props) {
             <figcaption className="sr-only">{tentang.figcaptionSr}</figcaption>
           </figure>
 
-          <div className="order-1 space-y-4 text-pretty lg:order-none lg:col-start-2 lg:row-start-1 lg:space-y-5">
-            <p className={lightLead}>
-              <CmsText path="tentang.lead" text={tentang.lead} />
+          <div className="tentang-copy order-1 flex flex-col gap-3 text-pretty max-md:gap-3 md:gap-4 lg:order-none lg:col-start-2 lg:row-start-1 lg:gap-[1.125rem]">
+            <p className={tentangParagraphClass}>
+              <CmsText path="tentang.lead" text={tentang.lead} as="span" />
             </p>
-            <div className={`${lightLead} whitespace-pre-line`}>
-              <CmsText path="tentang.body" text={tentang.body} as="div" />
-            </div>
+            <p className={tentangParagraphClass}>
+              <CmsText path="tentang.body" text={tentang.body} as="span" />
+            </p>
 
             <p
-              className="text-center text-base leading-none tracking-[0.2em] text-muted-foreground"
+              className="m-0 shrink-0 pt-0.5 text-center text-sm leading-none tracking-[0.2em] text-muted-foreground max-md:pt-0 max-md:text-xs md:text-base"
               aria-hidden
             >
               ⸻
             </p>
 
-            <div className="space-y-3">
-              <h3 className="text-base font-semibold leading-snug text-foreground md:text-lg">
+            <div className="space-y-2.5 max-md:space-y-2 md:space-y-3">
+              <h3 className="text-base font-semibold leading-snug text-foreground max-md:text-[0.9375rem] md:text-lg">
                 <CmsText path="tentang.valuesHeading" text={tentang.valuesHeading} />
               </h3>
-              <ul className="mt-0 list-none space-y-2.5 sm:space-y-3">
+              <ul className="mt-0 list-none space-y-2 max-md:space-y-2 sm:space-y-3">
                 <CmsStringList
                   items={tentang.values}
                   patchPath="tentang.values"
-                  itemClassName={lightLead}
+                  itemClassName={tentangValuesItemClass}
                   leadingIconRingClassName={lightFeaturedBulletIconRing}
                 />
               </ul>

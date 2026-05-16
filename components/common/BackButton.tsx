@@ -6,17 +6,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import {
-  scrollToLandingNavHref,
-} from "@/components/common/home-nav-scroll";
-import {
   type NavigationTransitionContextValue,
   useNavigationTransitionOptional,
 } from "@/components/common/app-navigation-transition";
 import {
-  clearHomeScrollY,
   clearStoredDetailReturnPath,
   consumeStoredDetailReturnPathIfEligible,
+  getHomeScrollY,
   markLandingHashNavigationIntent,
+  stashHomeReturnFallbackHash,
 } from "@/components/common/return-section";
 import { mergeAytiCtaClass } from "@/lib/ayti-icon-cold";
 
@@ -64,25 +62,24 @@ function navigateToStoredHref(
   router: ReturnType<typeof useRouter>,
   navTx: NavigationTransitionContextValue | null,
 ): void {
-  if (href.includes("#")) {
-    clearHomeScrollY();
-    markLandingHashNavigationIntent(href);
+  let targetPath = href;
+  try {
+    const u = new URL(href, window.location.origin);
+    targetPath = `${u.pathname}${u.search}${u.hash}`;
+  } catch {
+    /* pakai href mentah */
+  }
+
+  if (targetPath.includes("#") && getHomeScrollY() == null) {
+    markLandingHashNavigationIntent(targetPath);
   }
 
   if (navTx) {
-    navTx.replace(href);
-    if (href.includes("#")) {
-      queueMicrotask(() =>
-        requestAnimationFrame(() => scrollToLandingNavHref(href)),
-      );
-    }
+    navTx.replace(targetPath);
     return;
   }
 
-  router.replace(href, { scroll: !href.includes("#") });
-  if (href.includes("#")) {
-    queueMicrotask(() => scrollToLandingNavHref(href));
-  }
+  router.replace(targetPath, { scroll: false });
 }
 
 export function BackButton({
@@ -134,7 +131,19 @@ export function BackButton({
     try {
       const fromStorage = consumeStoredDetailReturnPathIfEligible(currentFullPath());
       if (fromStorage) {
-        navigateToStoredHref(fromStorage, router, navTx);
+        let targetHref = fromStorage;
+        if (getHomeScrollY() != null) {
+          try {
+            const u = new URL(fromStorage, window.location.origin);
+            if (u.pathname === "/" && u.hash.length > 1) {
+              stashHomeReturnFallbackHash(u.hash);
+              targetHref = `${u.pathname}${u.search}`;
+            }
+          } catch {
+            /* pakai fromStorage */
+          }
+        }
+        navigateToStoredHref(targetHref, router, navTx);
         releaseLock();
         return;
       }
@@ -159,6 +168,7 @@ export function BackButton({
     (event: PointerEvent<HTMLButtonElement>) => {
       if (event.pointerType !== "touch" && event.pointerType !== "pen") return;
       if (event.button !== 0 && event.button !== -1) return;
+      event.preventDefault();
       navigatePrevious();
     },
     [navigatePrevious],

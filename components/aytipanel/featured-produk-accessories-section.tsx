@@ -135,9 +135,11 @@ function ProdukAccessoriesBulletsNav({
           <Link
             key={href}
             href={href}
-            scroll
+            scroll={false}
             className={lightFeaturedNavButton}
-            onPointerDownCapture={() => prepareNavigateFromListingToProductDetail("accessories")}
+            onPointerDownCapture={() =>
+              prepareNavigateFromListingToProductDetail("accessories")
+            }
             onClick={() => prepareNavigateFromListingToProductDetail("accessories")}
           >
             {label}

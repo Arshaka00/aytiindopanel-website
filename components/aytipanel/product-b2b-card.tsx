@@ -219,7 +219,7 @@ export function ProductB2BCard({
               card.slug ? (
                 <Link
                   href={detailHref}
-                  scroll
+                  scroll={false}
                   className={mergeAytiCtaClass(btnSec)}
                   onPointerDownCapture={storeReturnForDetail}
                   onClick={storeReturnForDetail}

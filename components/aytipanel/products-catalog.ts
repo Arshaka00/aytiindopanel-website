@@ -27,6 +27,8 @@ export type ProductCatalogItem = {
   description: string;
   badge?: BadgeKind;
   imageSrc: string;
+  /** Gambar hero kedua pada halaman detail. */
+  imageSrc2: string;
 };
 
 export const PRODUCTS: ProductCatalogItem[] = [
@@ -38,6 +40,7 @@ export const PRODUCTS: ProductCatalogItem[] = [
       "CamLock: sambungan presisi dan kedap udara untuk cold room.",
     badge: "Best Seller",
     imageSrc: IMG_PANEL,
+    imageSrc2: IMG_COLD_STORAGE,
   },
   {
     slug: "sandwich-panel-pu-full-knock-down",
@@ -46,6 +49,7 @@ export const PRODUCTS: ProductCatalogItem[] = [
     description:
       "Sistem panel insulasi modular knock down untuk pemasangan fleksibel, relokasi, dan performa termal stabil dengan core PU.",
     imageSrc: IMG_PANEL,
+    imageSrc2: IMG_INDUSTRIAL,
   },
   {
     slug: "sandwich-panel-eps",
@@ -54,6 +58,7 @@ export const PRODUCTS: ProductCatalogItem[] = [
     description:
       "Panel insulasi ekonomis dengan core EPS ringan untuk konstruksi industri standar — mudah dipasang dan efisien biaya.",
     imageSrc: IMG_PANEL,
+    imageSrc2: IMG_CLEAN_ROOM,
   },
   {
     slug: "cold-storage-portable",
@@ -62,6 +67,7 @@ export const PRODUCTS: ProductCatalogItem[] = [
     description:
       "Cold storage portabel plug & play: panel insulasi, unit pendingin, dan kontrol terintegrasi tanpa konstruksi permanen.",
     imageSrc: IMG_COLD_STORAGE,
+    imageSrc2: IMG_FREEZER,
   },
   {
     slug: "cold-storage-custom",
@@ -71,6 +77,7 @@ export const PRODUCTS: ProductCatalogItem[] = [
       "Cold storage custom-engineered terintegrasi: panel insulasi, refrigerasi, pintu cold room, dan kontrol suhu untuk chiller, freezer & process area.",
     badge: "Custom Project",
     imageSrc: IMG_COLD_STORAGE,
+    imageSrc2: IMG_REFRIGERATION,
   },
   {
     slug: "pembekuan-cepat-abf",
@@ -79,6 +86,7 @@ export const PRODUCTS: ProductCatalogItem[] = [
     description:
       "ABF: pembekuan cepat dengan aliran udara tinggi dan kontrol suhu presisi untuk industri makanan, seafood, dan daging.",
     imageSrc: IMG_FREEZER,
+    imageSrc2: IMG_COLD_STORAGE,
   },
   {
     slug: "clean-room",
@@ -87,6 +95,7 @@ export const PRODUCTS: ProductCatalogItem[] = [
       "Suhu dan kebersihan terkontrol untuk industri makanan & farmasi.",
     badge: "Industrial Grade",
     imageSrc: IMG_CLEAN_ROOM,
+    imageSrc2: IMG_PANEL,
   },
   {
     slug: "sistem-refrigerasi",
@@ -95,6 +104,7 @@ export const PRODUCTS: ProductCatalogItem[] = [
     description:
       "Sistem refrigerasi terintegrasi: condensing unit, compressor single/two stage, condenser, evaporator & kontrol remote untuk cold storage dan freezer.",
     imageSrc: IMG_REFRIGERATION,
+    imageSrc2: IMG_COLD_STORAGE,
   },
   {
     slug: "pintu-panel",
@@ -103,6 +113,7 @@ export const PRODUCTS: ProductCatalogItem[] = [
     description:
       "Pintu insulated tinggi untuk cold storage dan ruang bersuhu terkontrol — sealing presisi, sliding/swing, tahan suhu ekstrem.",
     imageSrc: IMG_COLD_STORAGE,
+    imageSrc2: IMG_INDUSTRIAL,
   },
   {
     slug: "loading-dock-system",
@@ -111,6 +122,7 @@ export const PRODUCTS: ProductCatalogItem[] = [
     description:
       "Dock leveler, shelter, high speed door & sectional door untuk bongkar muat efisien, aman, dan kontrol suhu di gudang serta cold storage.",
     imageSrc: IMG_INDUSTRIAL,
+    imageSrc2: IMG_COLD_STORAGE,
   },
   {
     slug: "instalasi-pemasangan",
@@ -118,6 +130,7 @@ export const PRODUCTS: ProductCatalogItem[] = [
     description:
       "Pemasangan panel, cold room, dan sistem refrigerasi sesuai standar proyek.",
     imageSrc: IMG_INDUSTRIAL,
+    imageSrc2: IMG_PANEL,
   },
   {
     slug: "maintenance-purna-jual",
@@ -125,6 +138,7 @@ export const PRODUCTS: ProductCatalogItem[] = [
     description:
       "Servis berkala, perbaikan, suku cadang, dan dukungan setelah operasi.",
     imageSrc: IMG_INDUSTRIAL,
+    imageSrc2: IMG_REFRIGERATION,
   },
   {
     slug: "maintenance-berkala",
@@ -133,6 +147,7 @@ export const PRODUCTS: ProductCatalogItem[] = [
     description:
       "Program perawatan terjadwal untuk menjaga performa sistem refrigerasi, kestabilan suhu, dan efisiensi operasional.",
     imageSrc: IMG_INDUSTRIAL,
+    imageSrc2: IMG_COLD_STORAGE,
   },
   {
     slug: "perbaikan-troubleshooting",
@@ -141,6 +156,7 @@ export const PRODUCTS: ProductCatalogItem[] = [
     description:
       "Layanan diagnosis akar masalah dan perbaikan cepat untuk memulihkan performa sistem pendingin dengan downtime minimal.",
     imageSrc: IMG_COLD_STORAGE,
+    imageSrc2: IMG_FREEZER,
   },
   {
     slug: "after-sales-support",
@@ -149,6 +165,7 @@ export const PRODUCTS: ProductCatalogItem[] = [
     description:
       "Dukungan teknis berkelanjutan setelah instalasi mencakup koordinasi teknisi, spare part, serta pendampingan operasional.",
     imageSrc: IMG_REFRIGERATION,
+    imageSrc2: IMG_INDUSTRIAL,
   },
 ];
 

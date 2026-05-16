@@ -10,7 +10,6 @@ import { HeroCrystalIceFilters } from "@/components/common/hero-crystal-ice-filt
 import { UaClassFlags } from "@/components/common/ua-class-flags";
 import { NavigationTransitionProvider } from "@/components/common/app-navigation-transition";
 import { GlobalLoader } from "@/components/common/global-loader";
-import { RouteTransitionShell } from "@/components/common/route-transition-shell";
 import { SiteCmsRoot } from "@/components/site-cms/site-cms-root";
 import { validateRuntimeEnvOrThrow } from "@/lib/env-validate";
 import { listPublishedSeoArticles } from "@/lib/seo-articles/repository";
@@ -166,7 +165,7 @@ export default async function RootLayout({
               seoArticles={seoArticles}
             />
             <div className="flex min-h-0 flex-1 flex-col pt-[var(--site-header-height,3.65rem)]">
-              <RouteTransitionShell disabled={chromeMotionDisabled}>{children}</RouteTransitionShell>
+              {children}
             </div>
           </NavigationTransitionProvider>
         </SiteCmsRoot>

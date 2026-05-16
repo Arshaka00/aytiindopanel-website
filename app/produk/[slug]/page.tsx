@@ -108,6 +108,9 @@ export default async function ProductDetailPage({ params }: Props) {
   const displaySubtitle = po?.subtitle ?? product.subtitle ?? "";
   const displayBadge = po?.badge ?? product.badge;
   const displayImageSrc = po?.imageSrc ?? product.imageSrc;
+  const displayImageSrc2 = po?.imageSrc2 ?? product.imageSrc2;
+  const heroAltBase =
+    displaySubtitle ? `${displayTitle} ${displaySubtitle}` : displayTitle;
   const refrigerationVisual =
     richDetail?.sectionsVariant === "refrigeration" || slug === "sistem-refrigerasi";
   const context = PRODUCT_SLUG_TO_WHATSAPP_CONTEXT[slug] ?? "konsultasi";
@@ -121,36 +124,29 @@ export default async function ProductDetailPage({ params }: Props) {
     <div className="flex min-h-full flex-col bg-background text-foreground">
       <ForceScrollTopOnLoad />
       <main className="flex-1">
-        <article className="border-b border-border px-4 py-5 sm:px-5 md:px-6 md:py-14 lg:py-16">
+        <article className="border-b border-border px-4 py-4 sm:px-5 md:px-6 md:py-8 lg:py-10">
           <div className="mx-auto max-w-5xl">
-            <BackButton
-              label="Kembali"
-              destination="previous"
-              fallbackHref="/#produk"
-              className="mb-3 inline-flex min-h-11 min-w-11 touch-manipulation pointer-events-auto items-center gap-1.5 self-start rounded-lg border border-border/70 bg-card/70 px-3.5 py-2 text-sm font-medium text-accent/90 opacity-95 shadow-[var(--shadow-card)] backdrop-blur-[1px] transition-[color,opacity,border-color,background-color] duration-200 hover:border-accent/35 hover:bg-muted-bg-strong hover:text-primary hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background md:mb-5"
-            />
-
             <ScrollRevealSection variant="image">
               <ProductDetailHeroCms
                 slug={slug}
                 imageSrc={displayImageSrc}
-                alt={
-                  displaySubtitle ? `${displayTitle} ${displaySubtitle}` : displayTitle
-                }
+                imageSrc2={displayImageSrc2}
+                alt={heroAltBase}
+                alt2={`${heroAltBase} — tampilan 2`}
                 frameClassName={
                   refrigerationVisual
                     ? mergeAytiCardClass(
-                        "relative mt-0 h-[170px] w-full overflow-hidden rounded-2xl bg-image-placeholder shadow-[0_10px_34px_-22px_rgba(15,23,42,0.45)] ring-2 ring-sky-500/25 ring-offset-2 ring-offset-background sm:mt-3 md:mt-5 sm:h-[300px] lg:h-[380px] dark:ring-sky-400/30",
+                        "relative mt-0 h-[7.5rem] w-full overflow-hidden rounded-xl bg-image-placeholder shadow-[0_8px_24px_-18px_rgba(15,23,42,0.4)] ring-2 ring-sky-500/25 ring-offset-1 ring-offset-background sm:h-[12.5rem] sm:rounded-2xl md:h-[15rem] lg:h-[17.5rem] dark:ring-sky-400/30",
                       )
                     : mergeAytiCardClass(
-                        "relative mt-0 h-[170px] w-full overflow-hidden rounded-2xl bg-image-placeholder shadow-[0_10px_30px_-22px_rgba(15,23,42,0.4)] ring-1 ring-border/80 sm:mt-3 md:mt-5 sm:h-[300px] lg:h-[380px]",
+                        "relative mt-0 h-[7.5rem] w-full overflow-hidden rounded-xl bg-image-placeholder shadow-[0_8px_22px_-16px_rgba(15,23,42,0.35)] ring-1 ring-border/80 sm:h-[12.5rem] sm:rounded-2xl md:h-[15rem] lg:h-[17.5rem]",
                       )
                 }
               />
             </ScrollRevealSection>
 
             <ScrollRevealSection>
-              <header className="mt-2 max-w-4xl space-y-2 md:mt-7 md:space-y-3">
+              <header className="mt-2 max-w-4xl space-y-2 md:mt-4 md:space-y-2.5">
                 <ProductDetailHeaderCms
                   slug={slug}
                   product={product}
@@ -165,18 +161,18 @@ export default async function ProductDetailPage({ params }: Props) {
               {richDetail ? (
                 <ProductDetailRichSections detail={richDetail} cmsSlug={slug} />
               ) : (
-                <div className="mt-5 max-w-3xl text-base leading-relaxed text-muted md:mt-7 md:text-[1.06rem]">
+                <div className="mt-4 max-w-3xl text-base leading-relaxed text-muted md:mt-5 md:text-[1.06rem]">
                   <p>{product.description}</p>
                 </div>
               )}
             </ScrollRevealSection>
 
-            <div className={richDetail ? "mt-8 md:mt-9" : "mt-6 md:mt-8"}>
+            <div className={richDetail ? "mt-6 md:mt-7" : "mt-5 md:mt-6"}>
               <div
                 className="h-px w-full rounded-full bg-gradient-to-r from-transparent via-accent/35 to-transparent dark:via-sky-400/40"
                 aria-hidden
               />
-              <div className="mt-5 flex flex-col items-center gap-3 text-center md:mt-6 md:gap-3.5">
+              <div className="mt-4 flex flex-col items-center gap-2.5 text-center md:mt-5 md:gap-3">
                 <p className="max-w-xl text-sm leading-relaxed text-muted md:text-base">
                   {isServiceMaintenance
                     ? "Untuk informasi lebih lanjut, silakan hubungi tim support kami."
@@ -214,15 +210,15 @@ export default async function ProductDetailPage({ params }: Props) {
                 <BackButton
                   label="Kembali"
                   destination="previous"
-                  fallbackHref="/#produk"
-                  className="mt-3 inline-flex w-full min-h-11 min-w-11 touch-manipulation pointer-events-auto items-center justify-center gap-1.5 rounded-lg border border-border/80 bg-card px-4 py-2.5 text-sm font-medium text-accent/90 shadow-[var(--shadow-card)] transition-[color,background-color,border-color,box-shadow] hover:border-accent/35 hover:bg-muted-bg-strong hover:text-primary hover:shadow-[0_12px_26px_-18px_rgba(15,23,42,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:w-auto"
+                  fallbackHref="/"
+                  className="mt-2 inline-flex w-full min-h-11 min-w-11 touch-manipulation pointer-events-auto items-center justify-center gap-1.5 rounded-lg border border-border/80 bg-card px-4 py-2.5 text-sm font-medium text-accent/90 shadow-[var(--shadow-card)] transition-[color,background-color,border-color,box-shadow] hover:border-accent/35 hover:bg-muted-bg-strong hover:text-primary hover:shadow-[0_12px_26px_-18px_rgba(15,23,42,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:w-auto"
                 />
               </div>
             </div>
 
             {richDetail?.relatedProductSlugs && richDetail.relatedProductSlugs.length > 0 ? (
               <ScrollRevealSection>
-              <section className="mt-10 border-t border-border pt-8 md:mt-11 md:pt-9" aria-labelledby="related-products-heading">
+              <section className="mt-7 border-t border-border pt-6 md:mt-8 md:pt-7" aria-labelledby="related-products-heading">
                 <h2
                   id="related-products-heading"
                   className="text-lg font-semibold tracking-tight text-foreground md:text-xl"
@@ -237,6 +233,7 @@ export default async function ProductDetailPage({ params }: Props) {
                       <li key={rs}>
                         <InternalDetailNavLink
                           href={`/produk/${rs}`}
+                          defaultHomeSectionDomId="produk"
                           className="inline-flex rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-accent transition hover:border-accent/40 hover:bg-muted-bg"
                         >
                           {rp.title}

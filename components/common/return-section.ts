@@ -8,6 +8,31 @@ export const FEATURED_PRODUK_MOBILE_OPEN_SECTION_KEY = "ayti_featuredProdukAccor
 /** Halaman untuk `router.push` jika riwayat browser tidak bisa dipercaya (iOS/WebView) */
 export const DETAIL_NAV_RETURN_PATH_KEY = "ayti_detailReturn_v1";
 export const LANDING_HASH_NAV_INTENT_KEY = "ayti_landingHashNavIntent_v1";
+/** Dicegah `HomeInitialHashScroll` scroll ulang setelah `ScrollToSectionOnLoad` menangani kembali dari detail. */
+export const HOME_RETURN_SCROLL_HANDLED_KEY = "ayti_homeReturnScrollHandled_v1";
+/** Hash cadangan jika pulihkan `homeScrollY` gagal (umum di mobile saat layout belum siap). */
+export const HOME_RETURN_FALLBACK_HASH_KEY = "ayti_homeReturnFallbackHash_v1";
+
+export function markHomeReturnScrollHandled(): void {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(HOME_RETURN_SCROLL_HANDLED_KEY, "1");
+  } catch {
+    /* ignore */
+  }
+}
+
+export function consumeHomeReturnScrollHandled(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const v = sessionStorage.getItem(HOME_RETURN_SCROLL_HANDLED_KEY);
+    if (v !== "1") return false;
+    sessionStorage.removeItem(HOME_RETURN_SCROLL_HANDLED_KEY);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export function saveHomeScrollY(): void {
   if (typeof window === "undefined") return;
@@ -37,6 +62,62 @@ export function clearHomeScrollY(): void {
     sessionStorage.removeItem(HOME_SCROLL_Y_KEY);
   } catch {
     /* ignore private mode */
+  }
+}
+
+/** Hard refresh beranda: buang snapshot kembali dari detail agar tidak scroll ke listing lama. */
+export function clearAllHomeReturnSnapshots(): void {
+  clearHomeScrollY();
+  clearStoredDetailReturnPath();
+  clearHomeReturnFallbackHash();
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.removeItem(LANDING_HASH_NAV_INTENT_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
+export function stashHomeReturnFallbackHash(hash: string): void {
+  if (typeof window === "undefined") return;
+  const hn = hash.trim();
+  if (hn.length <= 1) return;
+  try {
+    sessionStorage.setItem(HOME_RETURN_FALLBACK_HASH_KEY, hn);
+  } catch {
+    /* private mode */
+  }
+}
+
+export function peekHomeReturnFallbackHash(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(HOME_RETURN_FALLBACK_HASH_KEY);
+    if (!raw || raw.length > 64 || !raw.startsWith("#")) return null;
+    return raw;
+  } catch {
+    return null;
+  }
+}
+
+export function consumeHomeReturnFallbackHash(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(HOME_RETURN_FALLBACK_HASH_KEY);
+    sessionStorage.removeItem(HOME_RETURN_FALLBACK_HASH_KEY);
+    if (!raw || raw.length > 64 || !raw.startsWith("#")) return null;
+    return raw;
+  } catch {
+    return null;
+  }
+}
+
+export function clearHomeReturnFallbackHash(): void {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.removeItem(HOME_RETURN_FALLBACK_HASH_KEY);
+  } catch {
+    /* ignore */
   }
 }
 
@@ -99,6 +180,88 @@ export function markLandingHashNavigationIntent(href: string): void {
   }
 }
 
+const HOME_SECTION_ID_DENYLIST = /-(heading|label|card-heading)$/;
+
+/** Hash induk produk di beranda — subsection (utama/solusi/accessories) lebih spesifik. */
+const HOME_PRODUK_PARENT_SECTION_ID = "produk";
+
+const HOME_PRODUK_SUBSECTION_IDS = new Set([
+  "produk-utama",
+  "produk-solusi",
+  "accessories",
+  "produk-accessories",
+]);
+
+function isUsableHomeLocationHash(hash: string): boolean {
+  const hn = hash.trim();
+  return hn.length > 1 && hn !== "#beranda" && hn !== "#home";
+}
+
+/**
+ * Section beranda yang paling relevan dengan posisi scroll saat ini (bukan hanya hash URL).
+ * Dipakai agar Kembali dari detail tidak selalu jatuh ke `/#produk` saat pengguna ada di subsection/CTA.
+ */
+export function detectVisibleHomeLandingSectionId(): string | null {
+  if (typeof document === "undefined") return null;
+  const main = document.querySelector("main");
+  if (!main) return null;
+
+  const viewportH =
+    window.visualViewport?.height && window.visualViewport.height > 0
+      ? window.visualViewport.height
+      : window.innerHeight;
+  const viewportAnchor = window.scrollY + viewportH * 0.32;
+  let best: { id: string; top: number } | null = null;
+
+  for (const el of main.querySelectorAll<HTMLElement>("section[id], article[id], div[id]")) {
+    const id = el.id.trim();
+    if (!id || HOME_SECTION_ID_DENYLIST.test(id)) continue;
+    if (!el.className.includes("scroll-mt") && el.tagName !== "SECTION") continue;
+
+    const top = el.getBoundingClientRect().top + window.scrollY;
+    const bottom = top + el.offsetHeight;
+    if (bottom < window.scrollY + 48) continue;
+    if (top > window.scrollY + window.innerHeight + 24) continue;
+    if (top <= viewportAnchor && (!best || top > best.top)) {
+      best = { id, top };
+    }
+  }
+
+  return best?.id ?? null;
+}
+
+function resolveHomeReturnHash(defaultHomeSectionDomId: string): string {
+  const fallbackId = defaultHomeSectionDomId.replace(/^#/, "");
+  const { hash } = window.location;
+  const hn = typeof hash === "string" ? hash.trim() : "";
+  const detected = detectVisibleHomeLandingSectionId();
+
+  if (!isUsableHomeLocationHash(hn)) {
+    return detected ? `#${detected}` : `#${fallbackId}`;
+  }
+
+  const hashId = hn.replace(/^#/, "");
+  if (
+    detected &&
+    hashId === HOME_PRODUK_PARENT_SECTION_ID &&
+    detected !== HOME_PRODUK_PARENT_SECTION_ID &&
+    HOME_PRODUK_SUBSECTION_IDS.has(detected)
+  ) {
+    return `#${detected}`;
+  }
+
+  if (detected && detected !== hashId && !HOME_PRODUK_SUBSECTION_IDS.has(hashId)) {
+    return hn;
+  }
+
+  return hn;
+}
+
+/** Sebelum navigasi ke halaman detail dari konteks beranda / halaman lain. */
+export function prepareNavigateToInternalDetail(defaultHomeSectionDomId: string = "beranda"): void {
+  snapshotReturnPathForInternalDetail(defaultHomeSectionDomId);
+}
+
 export function consumeLandingHashNavigationIntent(currentHref: string): string | null {
   if (typeof window === "undefined") return null;
   try {
@@ -120,21 +283,17 @@ export function consumeLandingHashNavigationIntent(currentHref: string): string 
 
 /**
  * Simpan titik kembali sebelum buka detail (produk / proses dari beranda).
- * Di `/` tanpa hash bermakna: pakai `defaultHomeSectionDomId` (mis. `produk` → `/#produk`) agar Kembali tidak mentok di hero.
+ * Di `/`: hash dari URL + posisi scroll + deteksi section terlihat (subsection produk, kontak, dll.).
  */
 export function snapshotReturnPathForInternalDetail(defaultHomeSectionDomId: string): void {
   if (typeof window === "undefined") return;
-  const { pathname, search, hash } = window.location;
+  const { pathname, search } = window.location;
   const pn = pathname === "" ? "/" : pathname;
 
   if (pn === "/") {
     saveHomeScrollY();
     try {
-      const hn = typeof hash === "string" ? hash.trim() : "";
-      const usable =
-        hn.length > 1 && hn !== "#beranda" && hn !== "#home";
-      const id = defaultHomeSectionDomId.replace(/^#/, "");
-      const finalHash = usable ? hn : `#${id}`;
+      const finalHash = resolveHomeReturnHash(defaultHomeSectionDomId);
       const full = `/${search}${finalHash}`;
       if (!full.startsWith("/") || full.startsWith("//")) return;
       sessionStorage.setItem(DETAIL_NAV_RETURN_PATH_KEY, full);

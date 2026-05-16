@@ -1,5 +1,7 @@
 "use client";
 
+import { markLandingHashNavigationIntent } from "@/components/common/return-section";
+
 /** URL hash menuju section beranda (`/#layanan`) — digunakan SiteHeader */
 
 /** Event setelah navigasi hash beranda — dipakai pulse ringan pada section target. */
@@ -29,6 +31,42 @@ function landingScrollTarget(hash: string): HTMLElement | null {
   return document.getElementById(id);
 }
 
+/** Hero beranda: satu layar penuh dari atas dokumen (bukan offset di bawah sticky header). */
+function isHomeHeroAnchorHash(hash: string): boolean {
+  const id = decodeURIComponent(hash.replace(/^#/, "")).trim().toLowerCase();
+  return id.length === 0 || id === "beranda" || id === "home";
+}
+
+/**
+ * Lepas scroll-lock `position: fixed` pada body (mis. dari GlobalLoader) yang tertinggal
+ * setelah Fast Refresh — kalau tidak, konten hero tampil tertutup header.
+ */
+export function releaseStuckDocumentScrollLock(): void {
+  if (typeof window === "undefined") return;
+  const body = document.body;
+  const html = document.documentElement;
+  if (body.style.position !== "fixed") return;
+  body.style.position = "";
+  body.style.top = "";
+  body.style.width = "";
+  body.style.overflow = "";
+  html.style.overflow = "";
+}
+
+function scrollHomeHeroFullViewport(
+  scrollBehavior: ScrollBehavior = "auto",
+  onComplete?: () => void,
+): void {
+  cancelPremiumLandingScroll();
+  releaseStuckDocumentScrollLock();
+  window.scrollTo({ top: 0, left: 0, behavior: scrollBehavior });
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+  const root = document.scrollingElement;
+  if (root) root.scrollTop = 0;
+  onComplete?.();
+}
+
 function shouldUseInstantScroll(): boolean {
   if (typeof window === "undefined") return true;
   try {
@@ -42,7 +80,12 @@ function shouldUseInstantScroll(): boolean {
   return false;
 }
 
-function isMobileishViewport(): boolean {
+/** Mobile / touch: scroll instan — hindari rAF premium & pulse section (lebih ringan di GPU). */
+export function preferInstantHomeScroll(): boolean {
+  return shouldUseInstantScroll() || isMobileishViewport();
+}
+
+export function isMobileishViewport(): boolean {
   if (typeof window === "undefined" || typeof window.matchMedia !== "function") return false;
   try {
     if (window.matchMedia("(pointer: coarse)").matches) return true;
@@ -126,7 +169,7 @@ function scrollWindowToY(
   const y = Math.max(0, top);
   let behavior: ScrollBehavior = behaviorOverride ?? "smooth";
   if (behaviorOverride === undefined) {
-    behavior = shouldUseInstantScroll() ? "auto" : "smooth";
+    behavior = preferInstantHomeScroll() ? "auto" : "smooth";
   }
 
   const done = onComplete ?? (() => {});
@@ -138,7 +181,7 @@ function scrollWindowToY(
     return;
   }
 
-  if (shouldUseInstantScroll()) {
+  if (preferInstantHomeScroll()) {
     cancelPremiumLandingScroll();
     window.scrollTo({ left: window.scrollX, top: y, behavior: "auto" });
     done({ durationMs: 0, premium: false });
@@ -146,6 +189,53 @@ function scrollWindowToY(
   }
 
   runPremiumScrollWindowToY(y, done);
+}
+
+/**
+ * Kembali dari detail produk: native `smooth` di desktop (ringan), `auto` di mobile.
+ * Tidak memakai loop rAF premium agar tidak membebani GPU.
+ */
+function scrollWindowToYForHomeReturn(targetY: number, onSettled?: () => void): void {
+  cancelPremiumLandingScroll();
+  const y = Math.max(0, targetY);
+  const startY = window.scrollY;
+  if (Math.abs(y - startY) < 10) {
+    onSettled?.();
+    return;
+  }
+  if (preferInstantHomeScroll()) {
+    window.scrollTo({ left: window.scrollX, top: y, behavior: "auto" });
+    onSettled?.();
+    return;
+  }
+  window.scrollTo({ left: window.scrollX, top: y, behavior: "smooth" });
+  const ms = Math.min(480, Math.max(200, Math.round(Math.abs(y - startY) * 0.4)));
+  window.setTimeout(() => onSettled?.(), ms);
+}
+
+/** Pulihkan posisi scroll beranda setelah kembali dari detail (halus di desktop, instan di mobile). */
+export function restoreHomeScrollPosition(savedY: number, onSettled?: () => void): void {
+  if (typeof window === "undefined") return;
+  const maxY = Math.max(
+    0,
+    (document.documentElement.scrollHeight || document.body.scrollHeight) - window.innerHeight,
+  );
+  const target = Math.min(savedY, maxY);
+  scrollWindowToYForHomeReturn(target, onSettled);
+}
+
+/** Setelah refresh dokumen di `/`: URL `/#beranda` + scroll ke atas (hero memenuhi 1 layar). */
+export function scrollHomeToHeroSection(): void {
+  if (typeof window === "undefined") return;
+  const heroHref = `${window.location.pathname}${window.location.search}#beranda`;
+  try {
+    if (window.location.hash !== "#beranda") {
+      window.history.replaceState(null, "", heroHref);
+    }
+  } catch {
+    /* ignore */
+  }
+  scrollHomeHeroFullViewport("auto");
 }
 
 /** Scroll ke atas beranda (logo) — sama-sama memakai kurva premium bila halus diizinkan. */
@@ -215,26 +305,43 @@ export function scrollToLandingNavHref(
   }
 
   const effectiveHash = url.hash.length <= 1 ? "#beranda" : url.hash;
+  const instant =
+    options?.scrollBehavior === "auto" ||
+    (options?.scrollBehavior === undefined && preferInstantHomeScroll());
+  const resolvedBehavior: ScrollBehavior | undefined = instant
+    ? "auto"
+    : options?.scrollBehavior;
+  const maxAttempts = instant ? 10 : 36;
+  const retryMs = instant ? 64 : 42;
   let attempts = 0;
 
   const run = (): void => {
     attempts += 1;
+
+    if (isHomeHeroAnchorHash(effectiveHash)) {
+      scrollHomeHeroFullViewport(resolvedBehavior ?? "auto", () => {
+        if (instant) return;
+        dispatchLandingSectionEnter(effectiveHash, 96);
+      });
+      return;
+    }
+
     const el = landingScrollTarget(effectiveHash);
     if (el) {
-      scrollTargetBelowStickyHeader(el, options?.scrollBehavior, (info) => {
-        const reduce = shouldUseInstantScroll();
+      scrollTargetBelowStickyHeader(el, resolvedBehavior, (info) => {
+        if (instant) return;
         let motionDelay = 96;
-        if (!reduce && info.premium && info.durationMs > 0) {
+        if (info.premium && info.durationMs > 0) {
           motionDelay = Math.round(info.durationMs + 64 + Math.random() * 72);
-        } else if (!reduce) {
+        } else {
           motionDelay = 140;
         }
         dispatchLandingSectionEnter(effectiveHash, motionDelay);
       });
       return;
     }
-    if (attempts <= 36) window.setTimeout(run, 42);
-    else scrollWindowToY(0, "auto");
+    if (attempts <= maxAttempts) window.setTimeout(run, retryMs);
+    else scrollHomeHeroFullViewport("auto");
   };
 
   queueMicrotask(() => requestAnimationFrame(run));
@@ -281,14 +388,10 @@ export function navigateLandingHashFromNav(
 
   const homeDest = `${url.pathname}${url.search}${url.hash}`;
   if (options?.spaNavigate) {
-    options.spaNavigate(homeDest);
     if (url.hash.length > 1) {
-      queueMicrotask(() =>
-        requestAnimationFrame(() =>
-          requestAnimationFrame(() => scrollToLandingNavHref(href)),
-        ),
-      );
+      markLandingHashNavigationIntent(homeDest);
     }
+    options.spaNavigate(homeDest);
     return;
   }
 

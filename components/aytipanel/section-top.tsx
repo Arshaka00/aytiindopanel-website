@@ -20,10 +20,10 @@ const heroProsesEyebrowVisualCoreClass = [
 /** Inti intro: warna + kilau es tipis di globals (`.hero-intro-body-ice`). */
 const heroIntroVisualCoreClass = ["antialiased [text-rendering:geometricPrecision]"].join(" ");
 
-/** Badge strip proses (mis. PRODUCTS OF): medium uppercase. */
+/** Badge strip proses (mis. PRODUCTS OF): medium uppercase + garis bawah. */
 const heroProsesEyebrowTypographyClass = [
   heroProsesEyebrowVisualCoreClass,
-  "font-medium uppercase leading-tight tracking-[0.2em]",
+  "hero-proses-eyebrow-text font-medium uppercase leading-tight tracking-[0.2em]",
   "text-[clamp(10px,2.6vw,11px)] md:text-[12px] md:tracking-[0.24em]",
 ].join(" ");
 
@@ -67,7 +67,7 @@ export function SectionTop({
       {/* Hero: padding Android dikunci globals. `ua-android`: shift-up + CTA. `ua-iphone`: shift-up (teks + alur kerja) + CTA + skala tombol */}
       <section
         id="beranda"
-        className="hero hero-section-fixed-dark relative flex h-auto min-h-0 scroll-mt-[max(env(safe-area-inset-top,0px),0.75rem)] flex-col items-center justify-start overflow-x-clip overflow-y-visible border-b border-white/[0.06] bg-[#050B18] py-8 pb-[max(7.25rem,calc(env(safe-area-inset-bottom,0px)+1.875rem))] pt-[max(3.25rem,calc(env(safe-area-inset-top,0px)+2.25rem))] text-white [-webkit-font-smoothing:antialiased] sm:pt-[3.75rem] md:min-h-[min(88svh,920px)] md:overflow-hidden md:py-0 lg:min-h-[min(90svh,920px)]"
+        className="hero hero-section-fixed-dark relative flex min-h-[calc(100dvh-var(--site-header-height,3.65rem))] scroll-mt-[max(env(safe-area-inset-top,0px),0.75rem)] flex-col items-center justify-start overflow-x-clip overflow-y-visible border-b border-white/[0.06] bg-[#050B18] py-8 pb-[max(7.25rem,calc(env(safe-area-inset-bottom,0px)+1.875rem))] pt-[max(3.25rem,calc(env(safe-area-inset-top,0px)+2.25rem))] text-white [-webkit-font-smoothing:antialiased] sm:pt-[3.75rem] md:overflow-hidden md:py-0"
         aria-labelledby="hero-heading"
       >
         <HeroSectionBackground
@@ -276,18 +276,14 @@ export function SectionTop({
                             className="size-1 shrink-0 rounded-full bg-white/55 shadow-[0_0_6px_rgba(255,255,255,0.22)]"
                             aria-hidden
                           />
-                          <span className="inline-flex shrink-0 flex-col items-center gap-0">
+                          <span className="hero-proses-eyebrow-wrap inline-flex shrink-0 flex-col items-center gap-1">
                             <CmsText
                               path="hero.prosesBadge"
                               text={hero.prosesBadge}
                               as="span"
                               className={`shrink-0 text-center ${heroProsesEyebrowTypographyClass}`}
                             />
-                            <span className="relative h-[2px] w-[min(100%,11rem)] max-w-[85vw] shrink-0" aria-hidden>
-                              <span className="absolute -inset-x-0.5 -inset-y-0.5 rounded-full bg-gradient-to-r from-transparent via-white/22 to-transparent opacity-90 blur-[3px]" />
-                              <span className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/28 via-white/42 to-transparent shadow-[0_0_10px_rgba(255,255,255,0.14)]" />
-                              <span className="absolute inset-x-[8%] inset-y-0 rounded-full bg-gradient-to-r from-white/0 via-white/70 to-white/0" />
-                            </span>
+                            <span className="hero-proses-eyebrow-rule" aria-hidden />
                           </span>
                           <span
                             className="size-1 shrink-0 rounded-full bg-white/55 shadow-[0_0_6px_rgba(255,255,255,0.22)]"

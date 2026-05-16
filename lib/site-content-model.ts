@@ -298,6 +298,8 @@ export type SiteContent = {
       name: string;
       location: string;
       workType: string;
+      /** Spesifikasi teknis singkat — `Kapasitas penyimpanan` dalam ton (bukan TR). */
+      technicalSpecs?: { label: string; value: string }[];
       /** Video hero (path `/...` atau URL embed). */
       videoSrc?: string;
       videoPosterSrc?: string;
@@ -466,6 +468,8 @@ export type SiteContent = {
       subtitle?: string;
       badge?: string;
       imageSrc?: string;
+      /** Gambar hero kedua pada halaman detail produk. */
+      imageSrc2?: string;
       description?: string;
     }
   >;

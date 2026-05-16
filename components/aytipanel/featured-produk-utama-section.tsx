@@ -144,9 +144,11 @@ function ProdukUtamaBulletsNav() {
           <Link
             key={href}
             href={href}
-            scroll
+            scroll={false}
             className={lightFeaturedNavButton}
-            onPointerDownCapture={() => prepareNavigateFromListingToProductDetail("produk-utama")}
+            onPointerDownCapture={() =>
+              prepareNavigateFromListingToProductDetail("produk-utama")
+            }
             onClick={() => prepareNavigateFromListingToProductDetail("produk-utama")}
           >
             {label}

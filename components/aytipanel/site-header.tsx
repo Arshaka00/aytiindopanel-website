@@ -16,6 +16,12 @@ import {
 } from "react";
 import { useNavigationTransition } from "@/components/common/app-navigation-transition";
 import { navigateLandingHashFromNav, scrollLandingHomeTop } from "@/components/common/home-nav-scroll";
+import {
+  detectVisibleHomeLandingSectionId,
+  prepareNavigateFromListingToProductDetail,
+  prepareNavigateToInternalDetail,
+  saveInternalReturnPath,
+} from "@/components/common/return-section";
 import { HeaderSiteSearchDialog } from "@/components/aytipanel/header-site-search-dialog";
 import { IconSearch } from "@/components/aytipanel/icons";
 import { buildHeaderSiteSearchTargets } from "@/lib/header-site-search-targets";
@@ -344,6 +350,29 @@ export function SiteHeader({
 
   const onSiteSearchPick = useCallback(
     (href: string) => {
+      let targetPath = href;
+      try {
+        targetPath = new URL(href, window.location.origin).pathname;
+      } catch {
+        /* pakai href mentah */
+      }
+      if (targetPath.startsWith("/produk/")) {
+        if (pathname === "/") {
+          prepareNavigateFromListingToProductDetail(
+            detectVisibleHomeLandingSectionId() ?? "beranda",
+          );
+        } else {
+          saveInternalReturnPath();
+        }
+      } else if (
+        targetPath.startsWith("/artikel/") ||
+        targetPath.startsWith("/gallery-project") ||
+        targetPath === "/gallery-project"
+      ) {
+        prepareNavigateToInternalDetail(
+          pathname === "/" ? detectVisibleHomeLandingSectionId() ?? "beranda" : "beranda",
+        );
+      }
       onSyncHashFromHref(href);
       navigateLandingHashFromNav(pathname, href, { spaNavigate });
     },
@@ -536,6 +565,12 @@ export function SiteHeader({
       raf = 0;
       if (Date.now() < spyLockUntilRef.current) return;
 
+      /** Di atas fold: selalu Beranda — hindari false-positive "Kontak" saat layout belum tinggi. */
+      if (window.scrollY < 96) {
+        setActiveHash((prev) => (prev === "#beranda" ? prev : "#beranda"));
+        return;
+      }
+
       const headerBottom =
         toolbarRef.current?.getBoundingClientRect().bottom ?? 64;
       const probeY = headerBottom + 8;
@@ -561,7 +596,8 @@ export function SiteHeader({
 
       const doc = document.documentElement;
       const atBottom =
-        window.innerHeight + window.scrollY >= doc.scrollHeight - 4;
+        window.scrollY >= 120 &&
+        window.innerHeight + window.scrollY >= doc.scrollHeight - 8;
       if (atBottom && lastId) bestId = lastId;
 
       if (bestId) {

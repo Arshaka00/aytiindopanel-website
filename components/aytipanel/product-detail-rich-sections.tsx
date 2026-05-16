@@ -23,7 +23,7 @@ type IconComponent = ComponentType<SVGProps<SVGSVGElement> & { className?: strin
 const sectionTitle =
   "text-lg font-semibold leading-snug tracking-tight text-foreground md:text-xl md:leading-snug";
 
-const sectionDivider = "border-t border-border pt-8 md:pt-9";
+const sectionDivider = "border-t border-border pt-6 md:pt-7";
 
 /** Kotak ikon section ≈ 55% tinggi baris judul (text-lg/md:text-xl), rasio 1:1 */
 const sectionIconOuter =
@@ -175,7 +175,7 @@ export function ProductDetailRichSections({
     : "rounded-2xl border border-border bg-muted-bg/55 px-4 py-5 md:px-6 md:py-6 dark:bg-muted-bg-strong/30";
 
   return (
-    <div className="mt-8 space-y-8 md:mt-9 md:space-y-9">
+    <div className="mt-5 space-y-6 md:mt-6 md:space-y-7">
       <section aria-labelledby="deskripsi-produk-heading">
         <SectionHeading
           id="deskripsi-produk-heading"
