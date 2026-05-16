@@ -23,6 +23,10 @@ const USER_SCROLL_YIELDS_RELOAD_LOCK_PX = 56;
 
 const DEV_HMR_HOME_RESET_FLAG = "__aytiDevHmrHomeReset";
 
+type WindowWithDevHmrFlag = Window & {
+  [DEV_HMR_HOME_RESET_FLAG]?: boolean;
+};
+
 const HERO_VIEWPORT_RESET_TIMEOUTS_MS = [0, 40, 120, 280, 520, 900, 1400];
 /** Kunjungan pertama tanpa hash: sinkron singkat saja — hindari tarik-balik saat user scroll di mobile. */
 const FIRST_VISIT_HERO_SYNC_MS = [0, 80, 220] as const;
@@ -37,7 +41,7 @@ function armDevHmrHomeScrollReset(): void {
     if (!hot) return;
     hot.dispose(() => {
       if (typeof window !== "undefined") {
-        (window as Window & Record<string, boolean>)[DEV_HMR_HOME_RESET_FLAG] = true;
+        (window as WindowWithDevHmrFlag)[DEV_HMR_HOME_RESET_FLAG] = true;
       }
     });
   } catch {
@@ -47,7 +51,7 @@ function armDevHmrHomeScrollReset(): void {
 
 function consumeDevHmrHomeScrollReset(): boolean {
   if (process.env.NODE_ENV !== "development" || typeof window === "undefined") return false;
-  const w = window as Window & Record<string, boolean | undefined>;
+  const w = window as WindowWithDevHmrFlag;
   if (!w[DEV_HMR_HOME_RESET_FLAG]) return false;
   w[DEV_HMR_HOME_RESET_FLAG] = false;
   return true;

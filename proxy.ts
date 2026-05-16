@@ -41,7 +41,7 @@ function shouldBypass(pathname: string): boolean {
   return false;
 }
 
-export default async function middleware(req: NextRequest) {
+export default async function proxy(req: NextRequest) {
   const hostname = requestHostname(req);
   if (blockVercelDeploymentHost(hostname)) {
     return new NextResponse(
@@ -130,8 +130,6 @@ export const config = {
   matcher: ["/((?!_next/static|_next/image|.*\\..*).*)"],
 };
 
-export const runtime = "nodejs";
-
 type StatusCache = {
   value: boolean;
   expiresAt: number;
@@ -154,9 +152,9 @@ async function getCachedSiteStatus(req: NextRequest): Promise<boolean> {
     | null;
   const value = json?.maintenanceActive === true;
   if (value) {
-    console.debug("[middleware] redirect reason: maintenance active");
+    console.debug("[proxy] redirect reason: maintenance active");
   } else {
-    console.debug("[middleware] allow reason: site live");
+    console.debug("[proxy] allow reason: site live");
   }
   statusCache = { value, expiresAt: now + STATUS_TTL_MS };
   return value;
