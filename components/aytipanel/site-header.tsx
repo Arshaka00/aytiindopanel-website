@@ -18,6 +18,7 @@ import { useNavigationTransition } from "@/components/common/app-navigation-tran
 import { navigateLandingHashFromNav, scrollLandingHomeTop } from "@/components/common/home-nav-scroll";
 import {
   detectVisibleHomeLandingSectionId,
+  prepareNavigateFromHomeToGalleryProject,
   prepareNavigateFromListingToProductDetail,
   prepareNavigateToInternalDetail,
   saveInternalReturnPath,
@@ -359,16 +360,21 @@ export function SiteHeader({
       if (targetPath.startsWith("/produk/")) {
         if (pathname === "/") {
           prepareNavigateFromListingToProductDetail(
-            detectVisibleHomeLandingSectionId() ?? "beranda",
+            detectVisibleHomeLandingSectionId() ?? "produk",
           );
         } else {
           saveInternalReturnPath();
         }
       } else if (
-        targetPath.startsWith("/artikel/") ||
         targetPath.startsWith("/gallery-project") ||
         targetPath === "/gallery-project"
       ) {
+        if (pathname === "/") {
+          prepareNavigateFromHomeToGalleryProject();
+        } else {
+          saveInternalReturnPath();
+        }
+      } else if (targetPath.startsWith("/artikel/")) {
         prepareNavigateToInternalDetail(
           pathname === "/" ? detectVisibleHomeLandingSectionId() ?? "beranda" : "beranda",
         );

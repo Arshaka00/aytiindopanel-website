@@ -1,11 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { snapshotReturnPathForInternalDetail } from "@/components/common/return-section";
+import {
+  prepareNavigateFromListingToProductDetail,
+  snapshotReturnPathForInternalDetail,
+} from "@/components/common/return-section";
 import type { ComponentProps } from "react";
 
 type Props = ComponentProps<typeof Link> & {
   defaultHomeSectionDomId?: string;
+  /**
+   * Dari beranda: simpan `/#{id}` tanpa snapshot scroll Y (portofolio, featured produk).
+   * Mengabaikan `defaultHomeSectionDomId`.
+   */
+  listingReturnSectionId?: string;
 };
 
 /**
@@ -14,16 +22,25 @@ type Props = ComponentProps<typeof Link> & {
  */
 export function InternalDetailNavLink({
   defaultHomeSectionDomId = "proses",
+  listingReturnSectionId,
   onClick,
   onPointerDownCapture,
   ...props
 }: Props) {
-  const capture: Props["onPointerDownCapture"] = (e) => {
+  const storeReturn = (): void => {
+    if (listingReturnSectionId) {
+      prepareNavigateFromListingToProductDetail(listingReturnSectionId);
+      return;
+    }
     snapshotReturnPathForInternalDetail(defaultHomeSectionDomId);
+  };
+
+  const capture: Props["onPointerDownCapture"] = (e) => {
+    storeReturn();
     onPointerDownCapture?.(e);
   };
   const handleClick: Props["onClick"] = (e) => {
-    snapshotReturnPathForInternalDetail(defaultHomeSectionDomId);
+    storeReturn();
     onClick?.(e);
   };
   return <Link {...props} onPointerDownCapture={capture} onClick={handleClick} />;

@@ -1,6 +1,7 @@
 "use client";
 
 import { markLandingHashNavigationIntent } from "@/components/common/return-section";
+import { isPortfolioReturnHash, isProductListingReturnHash } from "@/lib/product-listing-sections";
 
 /** URL hash menuju section beranda (`/#layanan`) — digunakan SiteHeader */
 
@@ -341,7 +342,12 @@ export function scrollToLandingNavHref(
       return;
     }
     if (attempts <= maxAttempts) window.setTimeout(run, retryMs);
-    else scrollHomeHeroFullViewport("auto");
+    else if (
+      !isProductListingReturnHash(effectiveHash) &&
+      !isPortfolioReturnHash(effectiveHash)
+    ) {
+      scrollHomeHeroFullViewport("auto");
+    }
   };
 
   queueMicrotask(() => requestAnimationFrame(run));

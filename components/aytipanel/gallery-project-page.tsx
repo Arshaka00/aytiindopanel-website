@@ -204,14 +204,27 @@ export function GalleryProjectPage({
           aria-labelledby="gallery-project-heading"
         >
           <div className={`${lightSectionMax} space-y-4 md:space-y-3.5`}>
-            <BackButton
-              label="Kembali ke Portofolio"
-              destination="previous"
-              forceNavigateHref="/#proyek"
-              className={mergeAytiCardClass(
-                "inline-flex min-h-10 touch-manipulation items-center justify-center gap-1.5 rounded-lg border border-border/75 bg-card/80 px-3.5 py-2 text-sm font-semibold text-accent shadow-[var(--shadow-card)] transition-[border-color,background-color,color] [-webkit-tap-highlight-color:transparent] hover:border-sky-400/40 hover:bg-muted-bg hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-              )}
-            />
+            <nav
+              className="flex flex-col items-start gap-2"
+              aria-label="Navigasi kembali"
+            >
+              <BackButton
+                label="Kembali ke beranda"
+                destination="previous"
+                forceNavigateHref="/#beranda"
+                className={mergeAytiCardClass(
+                  "inline-flex min-h-10 w-full touch-manipulation items-center justify-center gap-1.5 rounded-lg border border-border/75 bg-card/80 px-3.5 py-2 text-sm font-semibold text-accent shadow-[var(--shadow-card)] transition-[border-color,background-color,color] [-webkit-tap-highlight-color:transparent] hover:border-sky-400/40 hover:bg-muted-bg hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:w-auto",
+                )}
+              />
+              <BackButton
+                label="Kembali ke Portofolio"
+                destination="previous"
+                forceNavigateHref="/#proyek"
+                className={mergeAytiCardClass(
+                  "inline-flex min-h-10 w-full touch-manipulation items-center justify-center gap-1.5 rounded-lg border border-border/75 bg-card/80 px-3.5 py-2 text-sm font-semibold text-accent shadow-[var(--shadow-card)] transition-[border-color,background-color,color] [-webkit-tap-highlight-color:transparent] hover:border-sky-400/40 hover:bg-muted-bg hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/35 focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:w-auto",
+                )}
+              />
+            </nav>
             <header className="mx-auto max-w-4xl space-y-0.5 pb-2 text-center md:space-y-1.5 md:pb-1.5">
               <div
                 className="mx-auto h-px w-14 shrink-0 rounded-full bg-gradient-to-r from-transparent via-sky-500/35 to-transparent md:w-16 dark:via-sky-400/45"

@@ -82,7 +82,7 @@ export function PortfolioSection({ portfolio }: { portfolio: SiteContent["portfo
           />
           <InternalDetailNavLink
             href="/gallery-project"
-            defaultHomeSectionDomId="proyek"
+            listingReturnSectionId="proyek"
             className={mergeAytiCardClass(
               "inline-flex min-h-12 w-full items-center justify-center rounded-[11px] border border-sky-500/35 bg-gradient-to-r from-sky-500/18 via-blue-600/18 to-sky-500/18 px-5 py-3 text-sm font-semibold text-foreground shadow-[var(--shadow-card)] backdrop-blur-sm transition-[transform,box-shadow,border-color,background-color] duration-300 ease-out hover:border-sky-500/55 hover:from-sky-500/26 hover:via-blue-600/24 hover:to-sky-500/26 hover:shadow-[var(--shadow-card-hover)] motion-safe:hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/55 focus-visible:ring-offset-2 focus-visible:ring-offset-background md:w-auto md:min-w-[220px]",
             )}

@@ -17,6 +17,7 @@ import { ProductDetailHeaderCms } from "@/components/aytipanel/product-detail-he
 import { ProductDetailRichSections } from "@/components/aytipanel/product-detail-rich-sections";
 import { ScrollRevealSection } from "@/components/aytipanel/scroll-reveal-section";
 import { BackButton } from "@/components/common/BackButton";
+import { ProductDetailDeviceBack } from "@/components/common/product-detail-device-back";
 import { ForceScrollTopOnLoad } from "@/components/common/force-scroll-top-on-load";
 import { InternalDetailNavLink } from "@/components/common/internal-detail-nav-link";
 import { SiteFooter } from "@/components/aytipanel/site-footer";
@@ -122,6 +123,7 @@ export default async function ProductDetailPage({ params }: Props) {
   return (
     <WhatsAppPhoneProvider phoneDigits={waDigits}>
     <div className="flex min-h-full flex-col bg-background text-foreground">
+      <ProductDetailDeviceBack />
       <ForceScrollTopOnLoad />
       <main className="flex-1">
         <article className="border-b border-border px-4 py-4 sm:px-5 md:px-6 md:py-8 lg:py-10">

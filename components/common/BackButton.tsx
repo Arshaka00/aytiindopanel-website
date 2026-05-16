@@ -10,6 +10,19 @@ import {
   useNavigationTransitionOptional,
 } from "@/components/common/app-navigation-transition";
 import {
+  isGalleryProjectPathname,
+  isPortfolioReturnPath,
+  isProductDetailPathname,
+} from "@/lib/product-listing-sections";
+import {
+  prepareGalleryProjectReturnNavigation,
+  resolveGalleryProjectBackTarget,
+} from "@/components/common/gallery-project-return-nav";
+import {
+  prepareProductDetailReturnNavigation,
+  resolveProductDetailBackTarget,
+} from "@/components/common/product-detail-return-nav";
+import {
   clearStoredDetailReturnPath,
   consumeStoredDetailReturnPathIfEligible,
   getHomeScrollY,
@@ -70,17 +83,17 @@ function navigateToStoredHref(
     /* pakai href mentah */
   }
 
-  if (targetPath.includes("#") && getHomeScrollY() == null) {
+  if (targetPath.includes("#")) {
     markLandingHashNavigationIntent(targetPath);
   }
 
   if (navTx) {
     navTx.replace(targetPath);
-    return;
+  } else {
+    router.replace(targetPath, { scroll: false });
   }
-
-  router.replace(targetPath, { scroll: false });
 }
+
 
 export function BackButton({
   label = "Kembali",
@@ -107,7 +120,12 @@ export function BackButton({
 
     if (forceNavigateHref) {
       try {
-        clearStoredDetailReturnPath();
+        if (isPortfolioReturnPath(forceNavigateHref)) {
+          prepareGalleryProjectReturnNavigation(forceNavigateHref);
+        } else {
+          clearStoredDetailReturnPath();
+          prepareProductDetailReturnNavigation(forceNavigateHref);
+        }
         navigateToStoredHref(forceNavigateHref, router, navTx);
       } catch {
         /* fallback */
@@ -129,6 +147,26 @@ export function BackButton({
     }
 
     try {
+      if (isGalleryProjectPathname(window.location.pathname)) {
+        const galleryBackHref = resolveGalleryProjectBackTarget();
+        if (galleryBackHref) {
+          prepareGalleryProjectReturnNavigation(galleryBackHref);
+          navigateToStoredHref(galleryBackHref, router, navTx);
+          releaseLock();
+          return;
+        }
+      }
+
+      if (isProductDetailPathname(window.location.pathname)) {
+        const productBackHref = resolveProductDetailBackTarget();
+        if (productBackHref) {
+          prepareProductDetailReturnNavigation(productBackHref);
+          navigateToStoredHref(productBackHref, router, navTx);
+          releaseLock();
+          return;
+        }
+      }
+
       const fromStorage = consumeStoredDetailReturnPathIfEligible(currentFullPath());
       if (fromStorage) {
         let targetHref = fromStorage;

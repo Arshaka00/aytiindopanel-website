@@ -147,6 +147,15 @@ export default async function RootLayout({
       data-dark-mode-enabled={DARK_MODE_ENABLED ? "1" : "0"}
       className={`${geistSans.variable} ${geistMono.variable} ${sora.variable} h-full scroll-smooth bg-background antialiased`}
     >
+      <head>
+        <link
+          rel="preload"
+          as="image"
+          href="/images/global-home-loader-mark-mobile.webp"
+          type="image/webp"
+          media="(max-width: 767px), (hover: none) and (pointer: coarse)"
+        />
+      </head>
       <body className="ayti-title-cold-scope flex min-h-[100dvh] flex-col overflow-x-clip bg-background text-foreground">
         <GlobalLoader disabled={chromeMotionDisabled} />
         <HeroCrystalIceFilters />

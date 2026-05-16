@@ -16,6 +16,14 @@ import {
   getHomeScrollY,
   markHomeReturnScrollHandled,
 } from "@/components/common/return-section";
+import { isFeaturedProductListingSectionHash } from "@/lib/product-listing-sections";
+import {
+  INSTANT_PRODUCT_RETURN_SCROLL,
+  shouldSuppressHomeHeroSync,
+  tryApplyProductListingReturnOnHome,
+} from "@/components/common/product-detail-return-nav";
+
+const INSTANT_HASH_SCROLL = INSTANT_PRODUCT_RETURN_SCROLL;
 
 const ANDROID_RELOAD_SCROLL_TOP_TIMEOUTS_MS = [0, 40, 120, 260, 520, 900, 1400, 2000];
 
@@ -167,6 +175,10 @@ export function ScrollToSectionOnLoad() {
 
     const isReload = isHomeDocumentReload();
 
+    if (!isReload && tryApplyProductListingReturnOnHome()) {
+      return;
+    }
+
     /** Reload beranda (mis. dari `/#kontak`) — reset hero segera, tanpa `<script>` di React. */
     if (isReload) {
       clearAllHomeReturnSnapshots();
@@ -188,6 +200,7 @@ export function ScrollToSectionOnLoad() {
 
     const scrollHeroFullScreen = (): void => {
       if (cancelled || reloadScrollLockDone || firstVisitHeroSyncYielded) return;
+      if (shouldSuppressHomeHeroSync()) return;
       scrollHomeToHeroSection();
     };
 
@@ -314,22 +327,25 @@ export function ScrollToSectionOnLoad() {
         return;
       }
 
+      if (tryApplyProductListingReturnOnHome()) {
+        return;
+      }
+
       const hashIntent = consumeLandingHashNavigationIntent(currentHref);
       if (hashIntent) {
         markHomeReturnScrollHandled();
-        scrollToLandingNavHref(
-          hashIntent,
-          isMobileishViewport() ? { scrollBehavior: "auto" } : undefined,
-        );
+        scrollToLandingNavHref(hashIntent, INSTANT_HASH_SCROLL);
         return;
       }
 
       if (window.location.hash && window.location.hash.length > 1) {
         markHomeReturnScrollHandled();
-        scrollToLandingNavHref(
-          currentHref,
-          isMobileishViewport() ? { scrollBehavior: "auto" } : undefined,
-        );
+        const scrollOpts = isFeaturedProductListingSectionHash(window.location.hash)
+          ? INSTANT_HASH_SCROLL
+          : isMobileishViewport()
+            ? INSTANT_HASH_SCROLL
+            : undefined;
+        scrollToLandingNavHref(currentHref, scrollOpts);
         return;
       }
 
