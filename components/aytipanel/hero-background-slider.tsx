@@ -154,8 +154,6 @@ function HeroSlideImage({
   const useNext = isHeroSlideNextImageOptimizable(slide.src);
   const isPrimary = index === 0;
   const preloadSoon = layout === "crossfade" && index === 1;
-  const primaryQ = isMobile ? 74 : 78;
-  const secondaryQ = isMobile ? 68 : 72;
 
   const frameClass =
     layout === "marquee"
@@ -181,7 +179,7 @@ function HeroSlideImage({
           sizes={HERO_SLIDE_SIZES}
           draggable={false}
             priority={isPrimary || preloadSoon}
-            quality={isPrimary ? primaryQ : secondaryQ}
+            quality={75}
             className="hero-bg-media cms-media-fit-anchor touch-manipulation select-none [-webkit-touch-callout:none] [-webkit-user-drag:none]"
             style={imgStyle}
             decoding={isPrimary || preloadSoon ? "sync" : "async"}

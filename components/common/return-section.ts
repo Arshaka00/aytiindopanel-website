@@ -2,23 +2,97 @@
 
 import {
   buildHomeSectionReturnPath,
+  HERO_HOME_SECTION_ID,
+  isGalleryHomeReturnPath,
+  isGalleryInSiteReturnPath,
+  isGalleryProjectPathname,
+  isProductHomeReturnPath,
+  isProductInSiteReturnPath,
+  getPinnedHomeReturnSectionForProductSlug,
+  normalizeProductHomeReturnSectionId,
+  normalizeProductListingReturnSectionId,
   PORTFOLIO_HOME_SECTION_ID,
-  isPortfolioReturnPath,
-  isProductListingReturnPath,
+  sanitizeProductHomeReturnHref,
 } from "@/lib/product-listing-sections";
-
-export const HOME_SCROLL_Y_KEY = "homeScrollY";
 
 /** Legacy sessionStorage key — dihapus oleh `clearFeaturedProdukMobileAccordionSnapshot` untuk sesi lama. */
 export const FEATURED_PRODUK_MOBILE_OPEN_SECTION_KEY = "ayti_featuredProdukAccordion_v1";
 
-/** Halaman untuk `router.push` jika riwayat browser tidak bisa dipercaya (iOS/WebView) */
-export const DETAIL_NAV_RETURN_PATH_KEY = "ayti_detailReturn_v1";
+/** Kembali dari `/produk/…`, artikel, dll. */
+export const PRODUCT_NAV_RETURN_PATH_KEY = "ayti_detailReturn_v1";
+/** @deprecated gunakan `PRODUCT_NAV_RETURN_PATH_KEY` */
+export const DETAIL_NAV_RETURN_PATH_KEY = PRODUCT_NAV_RETURN_PATH_KEY;
+
+/**
+ * Kembali dari `/gallery-project` — hanya dua nilai sah:
+ * `/#beranda` (navbar) atau `/#proyek` (CTA Portfolio).
+ */
+export const GALLERY_NAV_RETURN_PATH_KEY = "ayti_galleryReturn_v1";
+
 export const LANDING_HASH_NAV_INTENT_KEY = "ayti_landingHashNavIntent_v1";
-/** Dicegah `HomeInitialHashScroll` scroll ulang setelah `ScrollToSectionOnLoad` menangani kembali dari detail. */
+
+function isGalleryReturnPathForStorage(href: string): boolean {
+  return isGalleryInSiteReturnPath(href);
+}
+
+function readStoredReturnPath(storageKey: string): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(storageKey);
+    if (!raw || raw.length > 2048) return null;
+    if (!raw.startsWith("/") || raw.startsWith("//")) return null;
+    const u = new URL(raw, window.location.origin);
+    if (u.origin !== window.location.origin) return null;
+    return raw;
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredReturnPath(storageKey: string, full: string): void {
+  if (typeof window === "undefined") return;
+  if (!full.startsWith("/") || full.startsWith("//")) return;
+  try {
+    sessionStorage.setItem(storageKey, full);
+  } catch {
+    /* private mode */
+  }
+}
+
+function clearStoredReturnPathByKey(storageKey: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.removeItem(storageKey);
+  } catch {
+    /* ignore */
+  }
+}
+
+/** Selaraskan key lama: gallery ↔ produk tidak boleh campur di storage. */
+function migrateLegacyReturnPathsBetweenDomains(): void {
+  if (typeof window === "undefined") return;
+  try {
+    const productRaw = sessionStorage.getItem(PRODUCT_NAV_RETURN_PATH_KEY);
+    if (productRaw && isGalleryReturnPathForStorage(productRaw)) {
+      if (!sessionStorage.getItem(GALLERY_NAV_RETURN_PATH_KEY)) {
+        sessionStorage.setItem(GALLERY_NAV_RETURN_PATH_KEY, productRaw);
+      }
+      sessionStorage.removeItem(PRODUCT_NAV_RETURN_PATH_KEY);
+    }
+
+    const galleryRaw = sessionStorage.getItem(GALLERY_NAV_RETURN_PATH_KEY);
+    if (galleryRaw && isProductInSiteReturnPath(galleryRaw) && !isGalleryReturnPathForStorage(galleryRaw)) {
+      if (!sessionStorage.getItem(PRODUCT_NAV_RETURN_PATH_KEY)) {
+        sessionStorage.setItem(PRODUCT_NAV_RETURN_PATH_KEY, galleryRaw);
+      }
+      sessionStorage.removeItem(GALLERY_NAV_RETURN_PATH_KEY);
+    }
+  } catch {
+    /* ignore */
+  }
+}
+/** Dicegah scroll ganda setelah `ScrollToSectionOnLoad` menangani kembali dari detail. */
 export const HOME_RETURN_SCROLL_HANDLED_KEY = "ayti_homeReturnScrollHandled_v1";
-/** Hash cadangan jika pulihkan `homeScrollY` gagal (umum di mobile saat layout belum siap). */
-export const HOME_RETURN_FALLBACK_HASH_KEY = "ayti_homeReturnFallbackHash_v1";
 
 export function markHomeReturnScrollHandled(): void {
   if (typeof window === "undefined") return;
@@ -50,37 +124,6 @@ export function consumeHomeReturnScrollHandled(): boolean {
   }
 }
 
-export function saveHomeScrollY(): void {
-  if (typeof window === "undefined") return;
-  try {
-    sessionStorage.setItem(HOME_SCROLL_Y_KEY, String(window.scrollY));
-  } catch {
-    /* ignore private mode */
-  }
-}
-
-export function getHomeScrollY(): number | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = sessionStorage.getItem(HOME_SCROLL_Y_KEY);
-    if (!raw) return null;
-    const parsed = Number(raw);
-    if (Number.isFinite(parsed)) return parsed;
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-export function clearHomeScrollY(): void {
-  if (typeof window === "undefined") return;
-  try {
-    sessionStorage.removeItem(HOME_SCROLL_Y_KEY);
-  } catch {
-    /* ignore private mode */
-  }
-}
-
 /** Hard refresh beranda: buang snapshot kembali dari detail agar tidak scroll ke listing lama. */
 /** Bersihkan kunci navigasi produk lama (sesi sebelumnya). */
 export function clearLegacyProductNavStorage(): void {
@@ -90,6 +133,8 @@ export function clearLegacyProductNavStorage(): void {
     localStorage.removeItem("productScrollY");
     sessionStorage.removeItem("ayti_productReturnScrollLock_v1");
     sessionStorage.removeItem("ayti_productReturnPending_v1");
+    sessionStorage.removeItem("homeScrollY");
+    sessionStorage.removeItem("ayti_homeReturnFallbackHash_v1");
     document.documentElement.removeAttribute("data-home-scroll-authority");
   } catch {
     /* ignore */
@@ -97,10 +142,9 @@ export function clearLegacyProductNavStorage(): void {
 }
 
 export function clearAllHomeReturnSnapshots(): void {
-  clearHomeScrollY();
   clearLegacyProductNavStorage();
-  clearStoredDetailReturnPath();
-  clearHomeReturnFallbackHash();
+  clearStoredProductReturnPath();
+  clearStoredGalleryReturnPath();
   if (typeof window === "undefined") return;
   try {
     sessionStorage.removeItem(LANDING_HASH_NAV_INTENT_KEY);
@@ -109,91 +153,110 @@ export function clearAllHomeReturnSnapshots(): void {
   }
 }
 
-export function stashHomeReturnFallbackHash(hash: string): void {
+function saveInternalReturnPathToKey(storageKey: string): void {
   if (typeof window === "undefined") return;
-  const hn = hash.trim();
-  if (hn.length <= 1) return;
-  try {
-    sessionStorage.setItem(HOME_RETURN_FALLBACK_HASH_KEY, hn);
-  } catch {
-    /* private mode */
-  }
+  const { pathname, search, hash } = window.location;
+  const full = `${pathname}${search}${hash}`;
+  writeStoredReturnPath(storageKey, full);
 }
 
-export function peekHomeReturnFallbackHash(): string | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = sessionStorage.getItem(HOME_RETURN_FALLBACK_HASH_KEY);
-    if (!raw || raw.length > 64 || !raw.startsWith("#")) return null;
-    return raw;
-  } catch {
-    return null;
-  }
-}
-
-export function consumeHomeReturnFallbackHash(): string | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = sessionStorage.getItem(HOME_RETURN_FALLBACK_HASH_KEY);
-    sessionStorage.removeItem(HOME_RETURN_FALLBACK_HASH_KEY);
-    if (!raw || raw.length > 64 || !raw.startsWith("#")) return null;
-    return raw;
-  } catch {
-    return null;
-  }
-}
-
-export function clearHomeReturnFallbackHash(): void {
-  if (typeof window === "undefined") return;
-  try {
-    sessionStorage.removeItem(HOME_RETURN_FALLBACK_HASH_KEY);
-  } catch {
-    /* ignore */
-  }
-}
-
-/** Simpan URL saat ini (path + hash) sebelum buka `/produk/…`, `/artikel/…`, dsb. */
+/** Simpan URL saat ini sebelum navigasi internal (routing otomatis ke key produk atau gallery). */
 export function saveInternalReturnPath(): void {
-  if (typeof window === "undefined") return;
-  try {
-    const { pathname, search, hash } = window.location;
-    const full = `${pathname}${search}${hash}`;
-    if (!full.startsWith("/") || full.startsWith("//")) return;
-    sessionStorage.setItem(DETAIL_NAV_RETURN_PATH_KEY, full);
-  } catch {
-    /* private mode */
+  if (isGalleryProjectPathname(window.location.pathname)) {
+    saveInternalGalleryReturnPath();
+    return;
   }
+  saveInternalProductReturnPath();
 }
 
-export function peekStoredDetailReturnPath(): string | null {
-  if (typeof window === "undefined") return null;
+export function saveInternalProductReturnPath(): void {
+  saveInternalReturnPathToKey(PRODUCT_NAV_RETURN_PATH_KEY);
+}
+
+export function saveInternalGalleryReturnPath(): void {
+  saveInternalReturnPathToKey(GALLERY_NAV_RETURN_PATH_KEY);
+}
+
+export function peekStoredProductReturnPath(): string | null {
+  migrateLegacyReturnPathsBetweenDomains();
+  const raw = readStoredReturnPath(PRODUCT_NAV_RETURN_PATH_KEY);
+  if (!raw || !isProductInSiteReturnPath(raw)) return null;
   try {
-    const raw = sessionStorage.getItem(DETAIL_NAV_RETURN_PATH_KEY);
-    if (!raw || raw.length > 2048) return null;
-    if (!raw.startsWith("/") || raw.startsWith("//")) return null;
     const u = new URL(raw, window.location.origin);
-    if (u.origin !== window.location.origin) return null;
-    return raw;
+    if (u.pathname === "/" || u.pathname === "") {
+      return sanitizeProductHomeReturnHref(raw);
+    }
   } catch {
-    return null;
+    /* pakai raw in-site non-home */
   }
+  return raw;
 }
 
-/** Tarik jalur yang tersimpan (hapus dari storage jika digunakan). */
-export function consumeStoredDetailReturnPathIfEligible(currentFullPath: string): string | null {
-  const candidate = peekStoredDetailReturnPath();
+export function peekStoredGalleryReturnPath(): string | null {
+  migrateLegacyReturnPathsBetweenDomains();
+  const raw = readStoredReturnPath(GALLERY_NAV_RETURN_PATH_KEY);
+  if (!raw) return null;
+  if (isGalleryHomeReturnPath(raw)) return raw;
+  if (typeof window !== "undefined" && isGalleryProjectPathname(window.location.pathname)) {
+    try {
+      const u = new URL(raw, window.location.origin);
+      if (isGalleryProjectPathname(u.pathname)) return raw;
+    } catch {
+      /* ignore */
+    }
+  }
+  return null;
+}
+
+/** Alias produk — jangan dipakai untuk gallery. */
+export function peekStoredDetailReturnPath(): string | null {
+  return peekStoredProductReturnPath();
+}
+
+export function consumeStoredProductReturnPathIfEligible(
+  currentFullPath: string,
+): string | null {
+  const candidate = peekStoredProductReturnPath();
   if (!candidate || candidate === currentFullPath) return null;
-  clearStoredDetailReturnPath();
+  clearStoredProductReturnPath();
   return candidate;
 }
 
+export function consumeStoredGalleryReturnPathIfEligible(
+  currentFullPath: string,
+): string | null {
+  const candidate = peekStoredGalleryReturnPath();
+  if (!candidate || candidate === currentFullPath) return null;
+  clearStoredGalleryReturnPath();
+  return candidate;
+}
+
+/** @deprecated gunakan `consumeStoredProductReturnPathIfEligible` */
+export function consumeStoredDetailReturnPathIfEligible(
+  currentFullPath: string,
+): string | null {
+  return consumeStoredProductReturnPathIfEligible(currentFullPath);
+}
+
+export function clearStoredProductReturnPath(): void {
+  clearStoredReturnPathByKey(PRODUCT_NAV_RETURN_PATH_KEY);
+}
+
+export function clearStoredGalleryReturnPath(): void {
+  clearStoredReturnPathByKey(GALLERY_NAV_RETURN_PATH_KEY);
+}
+
+/** @deprecated gunakan `clearStoredProductReturnPath` */
 export function clearStoredDetailReturnPath(): void {
-  if (typeof window === "undefined") return;
-  try {
-    sessionStorage.removeItem(DETAIL_NAV_RETURN_PATH_KEY);
-  } catch {
-    /* ignore */
-  }
+  clearStoredProductReturnPath();
+}
+
+export function isBackForwardNavigation(): boolean {
+  if (typeof window === "undefined") return false;
+  const nav = performance.getEntriesByType("navigation")[0] as
+    | PerformanceNavigationTiming
+    | undefined;
+  return nav?.type === "back_forward";
 }
 
 export function markLandingHashNavigationIntent(href: string): void {
@@ -213,25 +276,12 @@ export function markLandingHashNavigationIntent(href: string): void {
 
 const HOME_SECTION_ID_DENYLIST = /-(heading|label|card-heading)$/;
 
-/** Hash induk produk di beranda — subsection (utama/solusi/accessories) lebih spesifik. */
-const HOME_PRODUK_PARENT_SECTION_ID = "produk";
-
-const HOME_PRODUK_SUBSECTION_IDS = new Set([
-  "produk-utama",
-  "produk-solusi",
-  "accessories",
-  "produk-accessories",
-]);
-
 function isUsableHomeLocationHash(hash: string): boolean {
   const hn = hash.trim();
   return hn.length > 1 && hn !== "#beranda" && hn !== "#home";
 }
 
-/**
- * Section beranda yang paling relevan dengan posisi scroll saat ini (bukan hanya hash URL).
- * Dipakai agar Kembali dari detail tidak selalu jatuh ke `/#produk` saat pengguna ada di subsection/CTA.
- */
+/** Section beranda yang terlihat di viewport — hanya untuk navigasi artikel dari header. */
 export function detectVisibleHomeLandingSectionId(): string | null {
   if (typeof document === "undefined") return null;
   const main = document.querySelector("main");
@@ -261,31 +311,17 @@ export function detectVisibleHomeLandingSectionId(): string | null {
   return best?.id ?? null;
 }
 
+/** Hash URL beranda saat ini, atau fallback — tanpa deteksi scroll (cegah return ke section salah). */
 function resolveHomeReturnHash(defaultHomeSectionDomId: string): string {
   const fallbackId = defaultHomeSectionDomId.replace(/^#/, "");
   const { hash } = window.location;
   const hn = typeof hash === "string" ? hash.trim() : "";
-  const detected = detectVisibleHomeLandingSectionId();
 
   if (!isUsableHomeLocationHash(hn)) {
-    return detected ? `#${detected}` : `#${fallbackId}`;
+    return `#${normalizeProductHomeReturnSectionId(fallbackId)}`;
   }
 
-  const hashId = hn.replace(/^#/, "");
-  if (
-    detected &&
-    hashId === HOME_PRODUK_PARENT_SECTION_ID &&
-    detected !== HOME_PRODUK_PARENT_SECTION_ID &&
-    HOME_PRODUK_SUBSECTION_IDS.has(detected)
-  ) {
-    return `#${detected}`;
-  }
-
-  if (detected && detected !== hashId && !HOME_PRODUK_SUBSECTION_IDS.has(hashId)) {
-    return hn;
-  }
-
-  return hn;
+  return `#${normalizeProductHomeReturnSectionId(hn.replace(/^#/, ""))}`;
 }
 
 /** Sebelum navigasi ke halaman detail dari konteks beranda / halaman lain. */
@@ -293,14 +329,24 @@ export function prepareNavigateToInternalDetail(defaultHomeSectionDomId: string 
   snapshotReturnPathForInternalDetail(defaultHomeSectionDomId);
 }
 
-export function consumeLandingHashNavigationIntent(currentHref: string): string | null {
-  const resolved = resolveLandingHashNavigationIntentForHome(currentHref);
-  if (!resolved) return null;
+export function peekLandingHashNavigationIntent(currentHref: string): string | null {
+  return resolveLandingHashNavigationIntentForHome(currentHref);
+}
+
+export function clearLandingHashNavigationIntent(): void {
+  if (typeof window === "undefined") return;
   try {
     sessionStorage.removeItem(LANDING_HASH_NAV_INTENT_KEY);
   } catch {
     /* ignore */
   }
+}
+
+/** Hapus intent dari storage lalu kembalikan nilainya (semua jenis section). */
+export function consumeLandingHashNavigationIntent(currentHref: string): string | null {
+  const resolved = peekLandingHashNavigationIntent(currentHref);
+  if (!resolved) return null;
+  clearLandingHashNavigationIntent();
   return resolved;
 }
 
@@ -326,74 +372,110 @@ export function resolveLandingHashNavigationIntentForHome(
       return `${current.pathname}${current.search}${current.hash}`;
     }
 
-    if (isProductListingReturnPath(raw) || isPortfolioReturnPath(raw)) {
-      return `${intended.pathname}${intended.search}${intended.hash}`;
-    }
+    return `${intended.pathname}${intended.search}${intended.hash}`;
   } catch {
     return null;
   }
-  return null;
 }
 
 /**
- * Simpan titik kembali sebelum buka detail (produk / proses dari beranda).
- * Di `/`: hash dari URL + posisi scroll + deteksi section terlihat (subsection produk, kontak, dll.).
+ * Simpan `/#section` sebelum buka detail (produk / proses dari beranda).
+ * Satu-satunya mekanisme restore: hash section, bukan pixel scroll Y.
  */
 export function snapshotReturnPathForInternalDetail(defaultHomeSectionDomId: string): void {
   if (typeof window === "undefined") return;
+  clearStoredGalleryReturnPath();
   const { pathname, search } = window.location;
   const pn = pathname === "" ? "/" : pathname;
 
   if (pn === "/") {
-    saveHomeScrollY();
     try {
       const finalHash = resolveHomeReturnHash(defaultHomeSectionDomId);
       const full = `/${search}${finalHash}`;
       if (!full.startsWith("/") || full.startsWith("//")) return;
-      sessionStorage.setItem(DETAIL_NAV_RETURN_PATH_KEY, full);
+      writeStoredReturnPath(PRODUCT_NAV_RETURN_PATH_KEY, full);
     } catch {
       /* private mode */
     }
     return;
   }
 
-  saveInternalReturnPath();
+  saveInternalProductReturnPath();
   clearFeaturedProdukMobileAccordionSnapshot();
 }
 
 /**
- * Sebelum membuka `/produk/[slug]` dari beranda.
- * Simpan `/#{sectionId}` — mis. `produk-utama`, `produk-solusi`, `accessories`.
+ * Sebelum buka `/produk/[slug]` — section dari map slug, atau `fallbackHomeSectionDomId`.
  */
+export function prepareNavigateToProductDetail(
+  productSlug: string,
+  fallbackHomeSectionDomId: string = "produk",
+): void {
+  const section =
+    getPinnedHomeReturnSectionForProductSlug(productSlug) ??
+    normalizeProductHomeReturnSectionId(
+      normalizeProductListingReturnSectionId(fallbackHomeSectionDomId),
+    );
+  prepareNavigateFromListingToProductDetail(section);
+}
+
 export function prepareNavigateFromListingToProductDetail(
   homeSectionDomId: string = "produk",
 ): void {
   if (typeof window === "undefined") return;
+  clearStoredGalleryReturnPath();
   const { pathname, search } = window.location;
   const pn = pathname === "" ? "/" : pathname;
 
   if (pn === "/") {
-    try {
-      clearHomeScrollY();
-      const full = buildHomeSectionReturnPath(homeSectionDomId, search);
-      sessionStorage.setItem(DETAIL_NAV_RETURN_PATH_KEY, full);
-    } catch {
-      /* private mode */
-    }
+    writeStoredReturnPath(
+      PRODUCT_NAV_RETURN_PATH_KEY,
+      buildHomeSectionReturnPath(
+        normalizeProductHomeReturnSectionId(
+          normalizeProductListingReturnSectionId(homeSectionDomId),
+        ),
+        search,
+      ),
+    );
     return;
   }
 
-  saveInternalReturnPath();
+  saveInternalProductReturnPath();
   clearFeaturedProdukMobileAccordionSnapshot();
 }
 
-/** Sebelum buka `/gallery-project` dari beranda — simpan `/#proyek` tanpa snapshot scroll Y. */
-export function prepareNavigateFromHomeToGalleryProject(): void {
-  prepareNavigateFromListingToProductDetail(PORTFOLIO_HOME_SECTION_ID);
+/** Sumber 1: masuk gallery lewat CTA di section Portfolio proyek → kembali ke `/#proyek`. */
+export function setGalleryProjectReturnFromPortfolioCta(): void {
+  if (typeof window === "undefined") return;
+  clearStoredProductReturnPath();
+  writeStoredReturnPath(
+    GALLERY_NAV_RETURN_PATH_KEY,
+    buildHomeSectionReturnPath(PORTFOLIO_HOME_SECTION_ID),
+  );
+  clearFeaturedProdukMobileAccordionSnapshot();
 }
 
-/** Sebelum `router.push` ke halaman dalam situs lain (gallery admin); tanpa menyimpan scroll beranda. */
+/** Sumber 2: masuk gallery lewat item navbar Gallery proyek → kembali ke `/#beranda`. */
+export function setGalleryProjectReturnFromNavbar(): void {
+  if (typeof window === "undefined") return;
+  clearStoredProductReturnPath();
+  writeStoredReturnPath(
+    GALLERY_NAV_RETURN_PATH_KEY,
+    buildHomeSectionReturnPath(HERO_HOME_SECTION_ID),
+  );
+  clearFeaturedProdukMobileAccordionSnapshot();
+}
+
+/** Navigasi admin dalam gallery (edit/tambah) — jangan timpa `/#beranda` / `/#proyek`. */
 export function prepareProgrammaticNavigateToInternalDetail(): void {
+  if (typeof window === "undefined") return;
+  if (isGalleryProjectPathname(window.location.pathname)) {
+    const existing = peekStoredGalleryReturnPath();
+    if (existing && isGalleryHomeReturnPath(existing)) {
+      clearFeaturedProdukMobileAccordionSnapshot();
+      return;
+    }
+  }
   saveInternalReturnPath();
   clearFeaturedProdukMobileAccordionSnapshot();
 }

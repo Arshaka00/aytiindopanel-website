@@ -107,7 +107,7 @@ export default async function ArtikelIndexPage() {
                           src={imgSrc}
                           alt=""
                           fill
-                          quality={86}
+                          quality={75}
                           className="object-cover object-center transition duration-700 ease-out group-hover:scale-[1.03]"
                           sizes="(max-width: 640px) 100vw, (max-width: 1152px) calc(50vw - 2.5rem), 480px"
                         />

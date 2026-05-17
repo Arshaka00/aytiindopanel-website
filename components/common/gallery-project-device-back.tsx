@@ -3,11 +3,11 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
-import { tryApplyProductListingReturnOnHome } from "@/components/common/product-detail-return-nav";
+import { tryApplyGalleryReturnOnHome } from "@/components/common/gallery-project-return-nav";
 import { isGalleryProjectPathname } from "@/lib/product-listing-sections";
 
 /**
- * Back perangkat dari `/gallery-project`: pulihkan `/#proyek` di beranda (instan).
+ * Back perangkat dari `/gallery-project`: pulihkan `/#beranda` atau `/#proyek` di beranda.
  */
 export function GalleryProjectDeviceBack() {
   const pathname = usePathname();
@@ -15,17 +15,20 @@ export function GalleryProjectDeviceBack() {
   useEffect(() => {
     if (!isGalleryProjectPathname(pathname)) return;
 
-    const onPopState = (): void => {
+    const applyHomeReturn = (): void => {
       queueMicrotask(() => {
-        if (window.location.pathname === "/") {
-          tryApplyProductListingReturnOnHome();
-        }
+        if (window.location.pathname !== "/") return;
+        tryApplyGalleryReturnOnHome();
       });
+    };
+
+    const onPopState = (): void => {
+      applyHomeReturn();
     };
 
     const onPageShow = (event: PageTransitionEvent): void => {
       if (!event.persisted || window.location.pathname !== "/") return;
-      queueMicrotask(() => tryApplyProductListingReturnOnHome());
+      applyHomeReturn();
     };
 
     window.addEventListener("popstate", onPopState);

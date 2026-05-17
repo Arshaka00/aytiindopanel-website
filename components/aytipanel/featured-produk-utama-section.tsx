@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 
-import { prepareNavigateFromListingToProductDetail } from "@/components/common/return-section";
+import { prepareNavigateToProductDetail } from "@/components/common/return-section";
 import type { ProductB2BCategoryData } from "@/components/aytipanel/products-b2b-data";
 import type { FeaturedImagePair } from "@/lib/site-content-model";
-import { buildProductDetailHref } from "@/components/aytipanel/product-navigation";
+import { buildProductHomeReturnNavLinks } from "@/lib/product-home-return-nav-links";
 import { CmsImage } from "@/components/site-cms/cms-image";
 import {
   featuredDualImageHalfFrame,
@@ -51,21 +51,6 @@ const HERO_BULLETS = [
   "Material standar industri",
 ] as const;
 
-const HERO_PRODUCT_LINKS = [
-  {
-    href: buildProductDetailHref("sandwich-panel-pu-camelock"),
-    label: "Sandwich Panel PU Camelock",
-  },
-  {
-    href: buildProductDetailHref("sandwich-panel-pu-full-knock-down"),
-    label: "Sandwich Panel PU Full knock down system",
-  },
-  {
-    href: buildProductDetailHref("sandwich-panel-eps"),
-    label: "Sandwich Panel EPS",
-  },
-] as const;
-
 function BulletIcon({ className }: { className?: string }) {
   return (
     <svg className={mergeAytiIconClass(className)} viewBox="0 0 20 20" fill="none" aria-hidden>
@@ -109,7 +94,11 @@ function ProdukUtamaLead({
   );
 }
 
-function ProdukUtamaBulletsNav() {
+function ProdukUtamaBulletsNav({
+  productLinks,
+}: {
+  productLinks: ReturnType<typeof buildProductHomeReturnNavLinks>;
+}) {
   return (
     <>
       <ul
@@ -140,16 +129,14 @@ function ProdukUtamaBulletsNav() {
         className="mt-1 flex max-w-xl flex-col gap-3 md:mt-0 md:-mt-3 lg:-mt-3.5"
         aria-label="Produk sandwich panel"
       >
-        {HERO_PRODUCT_LINKS.map(({ href, label }) => (
+        {productLinks.map(({ slug, href, label }) => (
           <Link
             key={href}
             href={href}
             scroll={false}
             className={lightFeaturedNavButton}
-            onPointerDownCapture={() =>
-              prepareNavigateFromListingToProductDetail("produk-utama")
-            }
-            onClick={() => prepareNavigateFromListingToProductDetail("produk-utama")}
+            onPointerDownCapture={() => prepareNavigateToProductDetail(slug)}
+            onClick={() => prepareNavigateToProductDetail(slug)}
           >
             {label}
           </Link>
@@ -162,14 +149,16 @@ function ProdukUtamaBulletsNav() {
 function ProdukUtamaDetailBlocks({
   category,
   categoryIndex,
+  productLinks,
 }: {
   category: ProductB2BCategoryData;
   categoryIndex: number;
+  productLinks: ReturnType<typeof buildProductHomeReturnNavLinks>;
 }) {
   return (
     <>
       <ProdukUtamaLead category={category} categoryIndex={categoryIndex} />
-      <ProdukUtamaBulletsNav />
+      <ProdukUtamaBulletsNav productLinks={productLinks} />
     </>
   );
 }
@@ -178,8 +167,9 @@ const SCROLL_SECTION_ID = "produk-utama" satisfies FeaturedProdukScrollSectionId
 
 export function FeaturedProdukUtamaSection({ category, categoryIndex, tone, featuredImages }: Props) {
   const band = tone === "muted" ? lightSurfaceBandWarm : lightSurfaceBandWhite;
+  const productLinks = buildProductHomeReturnNavLinks("produk-utama", category.cards);
   const mobile = useFeaturedMobilePanelState(SCROLL_SECTION_ID);
-  const scrollContentVersion = `${category.description}\0${HERO_BULLETS.join("\0")}\0${HERO_PRODUCT_LINKS.map((l) => l.href).join("\0")}`;
+  const scrollContentVersion = `${category.description}\0${HERO_BULLETS.join("\0")}\0${productLinks.map((l) => l.href).join("\0")}`;
 
   return (
     <section
@@ -281,19 +271,23 @@ export function FeaturedProdukUtamaSection({ category, categoryIndex, tone, feat
                 panelId="featured-produk-utama-details"
                 contentVersion={scrollContentVersion}
               >
-                <ProdukUtamaBulletsNav />
+                <ProdukUtamaBulletsNav productLinks={productLinks} />
               </FeaturedProdukMobileScrollPanel>
             </div>
           ) : (
             <div className="order-4 min-w-0 md:hidden">
               <div className="space-y-3 border-t border-border pt-2 pb-0 dark:border-white/12">
-                <ProdukUtamaBulletsNav />
+                <ProdukUtamaBulletsNav productLinks={productLinks} />
               </div>
             </div>
           )}
 
           <div className="order-5 hidden min-w-0 flex-col space-y-4 md:flex md:space-y-5 lg:space-y-6 lg:col-start-1 lg:row-start-2 lg:pr-3">
-            <ProdukUtamaDetailBlocks category={category} categoryIndex={categoryIndex} />
+            <ProdukUtamaDetailBlocks
+              category={category}
+              categoryIndex={categoryIndex}
+              productLinks={productLinks}
+            />
           </div>
         </div>
       </div>

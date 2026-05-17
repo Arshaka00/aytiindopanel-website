@@ -129,7 +129,7 @@ export function SeoArticleView({
               src={hero}
               alt=""
               fill
-              quality={86}
+              quality={75}
               className="object-cover object-center"
               sizes="(max-width: 640px) 100vw, (max-width: 768px) min(100vw, 36rem), 48rem"
               priority
@@ -206,7 +206,7 @@ export function SeoArticleView({
                                 src={relSrc}
                                 alt=""
                                 fill
-                                quality={82}
+                                quality={75}
                                 className="object-cover object-center transition duration-500 group-hover:scale-[1.04]"
                                 sizes="(max-width: 640px) 68px, 72px"
                               />

@@ -105,7 +105,7 @@ export function ProsesStepIconMedia({
           alt={alt}
           fill
           sizes={imageSizes}
-          quality={imageFit === "contain" ? 96 : 82}
+          quality={75}
           className={`${imageClassName} ${imageFit === "contain" ? "object-contain object-center p-0" : "object-cover"}`.trim()}
           aria-hidden
         />

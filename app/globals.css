@@ -2670,6 +2670,13 @@ html {
     will-change: auto;
   }
 
+  /* Section sudah tampil & animasi selesai — skip paint saat di luar viewport. */
+  main .scroll-reveal-section.is-revealed[data-reveal-complete="1"]:not(:has(#beranda)) {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 520px;
+    contain: layout style;
+  }
+
   /*
    * Section beranda + `sectionKey`: variasi masuk (translate3d + opacity) — ringan di GPU,
    * specificity lebih tinggi dari aturan `.scroll-reveal-section` di atas.

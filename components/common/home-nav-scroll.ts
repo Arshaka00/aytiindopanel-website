@@ -1,7 +1,6 @@
 "use client";
 
 import { markLandingHashNavigationIntent } from "@/components/common/return-section";
-import { isPortfolioReturnHash, isProductListingReturnHash } from "@/lib/product-listing-sections";
 
 /** URL hash menuju section beranda (`/#layanan`) — digunakan SiteHeader */
 
@@ -192,39 +191,6 @@ function scrollWindowToY(
   runPremiumScrollWindowToY(y, done);
 }
 
-/**
- * Kembali dari detail produk: native `smooth` di desktop (ringan), `auto` di mobile.
- * Tidak memakai loop rAF premium agar tidak membebani GPU.
- */
-function scrollWindowToYForHomeReturn(targetY: number, onSettled?: () => void): void {
-  cancelPremiumLandingScroll();
-  const y = Math.max(0, targetY);
-  const startY = window.scrollY;
-  if (Math.abs(y - startY) < 10) {
-    onSettled?.();
-    return;
-  }
-  if (preferInstantHomeScroll()) {
-    window.scrollTo({ left: window.scrollX, top: y, behavior: "auto" });
-    onSettled?.();
-    return;
-  }
-  window.scrollTo({ left: window.scrollX, top: y, behavior: "smooth" });
-  const ms = Math.min(480, Math.max(200, Math.round(Math.abs(y - startY) * 0.4)));
-  window.setTimeout(() => onSettled?.(), ms);
-}
-
-/** Pulihkan posisi scroll beranda setelah kembali dari detail (halus di desktop, instan di mobile). */
-export function restoreHomeScrollPosition(savedY: number, onSettled?: () => void): void {
-  if (typeof window === "undefined") return;
-  const maxY = Math.max(
-    0,
-    (document.documentElement.scrollHeight || document.body.scrollHeight) - window.innerHeight,
-  );
-  const target = Math.min(savedY, maxY);
-  scrollWindowToYForHomeReturn(target, onSettled);
-}
-
 /** Setelah refresh dokumen di `/`: URL `/#beranda` + scroll ke atas (hero memenuhi 1 layar). */
 export function scrollHomeToHeroSection(): void {
   if (typeof window === "undefined") return;
@@ -312,7 +278,7 @@ export function scrollToLandingNavHref(
   const resolvedBehavior: ScrollBehavior | undefined = instant
     ? "auto"
     : options?.scrollBehavior;
-  const maxAttempts = instant ? 10 : 36;
+  const maxAttempts = instant ? 28 : 36;
   const retryMs = instant ? 64 : 42;
   let attempts = 0;
 
@@ -342,12 +308,6 @@ export function scrollToLandingNavHref(
       return;
     }
     if (attempts <= maxAttempts) window.setTimeout(run, retryMs);
-    else if (
-      !isProductListingReturnHash(effectiveHash) &&
-      !isPortfolioReturnHash(effectiveHash)
-    ) {
-      scrollHomeHeroFullViewport("auto");
-    }
   };
 
   queueMicrotask(() => requestAnimationFrame(run));

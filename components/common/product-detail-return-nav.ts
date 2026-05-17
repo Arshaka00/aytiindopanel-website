@@ -2,19 +2,28 @@
 
 import { scrollToLandingNavHref } from "@/components/common/home-nav-scroll";
 import {
-  consumeLandingHashNavigationIntent,
+  clearLandingHashNavigationIntent,
+  isBackForwardNavigation,
   markHomeReturnScrollHandled,
   markLandingHashNavigationIntent,
   peekHomeReturnScrollHandled,
-  peekStoredDetailReturnPath,
+  peekLandingHashNavigationIntent,
+  peekStoredProductReturnPath,
 } from "@/components/common/return-section";
 import {
+  hasPendingGalleryHeroReturn,
+  hasPendingGalleryReturn,
+} from "@/components/common/gallery-project-return-nav";
+import {
   buildHomeSectionReturnPath,
-  isFeaturedProductListingSectionHash,
-  isPortfolioReturnHash,
-  isPortfolioReturnPath,
+  getPinnedHomeReturnSectionForProductSlug,
+  isGalleryHomeReturnPath,
+  isGalleryInSiteReturnPath,
   isProductDetailPathname,
-  isProductListingReturnPath,
+  isProductHomeReturnPath,
+  isProductInSiteReturnPath,
+  parseProductDetailSlug,
+  sanitizeProductHomeReturnHref,
 } from "@/lib/product-listing-sections";
 
 export const INSTANT_PRODUCT_RETURN_SCROLL = { scrollBehavior: "auto" as const };
@@ -23,13 +32,24 @@ export const INSTANT_PRODUCT_RETURN_SCROLL = { scrollBehavior: "auto" as const }
 export function resolveProductDetailBackTarget(): string | null {
   if (typeof window === "undefined") return null;
 
-  const stored = peekStoredDetailReturnPath();
-  if (stored && isProductListingReturnPath(stored)) {
-    try {
-      const u = new URL(stored, window.location.origin);
-      return `${u.pathname || "/"}${u.search}${u.hash}`;
-    } catch {
-      /* fallback */
+  const slug = parseProductDetailSlug(window.location.pathname);
+  const pinnedSection = slug ? getPinnedHomeReturnSectionForProductSlug(slug) : null;
+  if (pinnedSection) {
+    return buildHomeSectionReturnPath(pinnedSection);
+  }
+
+  const stored = peekStoredProductReturnPath();
+  if (stored && !isGalleryInSiteReturnPath(stored)) {
+    if (isProductHomeReturnPath(stored)) {
+      const safe = sanitizeProductHomeReturnHref(stored);
+      if (safe) return safe;
+    } else if (isProductInSiteReturnPath(stored)) {
+      try {
+        const u = new URL(stored, window.location.origin);
+        return `${u.pathname || "/"}${u.search}${u.hash}`;
+      } catch {
+        /* fallback */
+      }
     }
   }
 
@@ -41,20 +61,8 @@ export function resolveProductDetailBackTarget(): string | null {
 }
 
 export function hasPendingProductListingReturn(): boolean {
-  const stored = peekStoredDetailReturnPath();
-  return stored != null && isProductListingReturnPath(stored);
-}
-
-export function hasPendingPortfolioReturn(): boolean {
-  const stored = peekStoredDetailReturnPath();
-  return stored != null && isPortfolioReturnPath(stored);
-}
-
-export function isBackForwardNavigation(): boolean {
-  const nav = performance.getEntriesByType("navigation")[0] as
-    | PerformanceNavigationTiming
-    | undefined;
-  return nav?.type === "back_forward";
+  const stored = peekStoredProductReturnPath();
+  return stored != null && isProductHomeReturnPath(stored);
 }
 
 function currentHomeHref(): string {
@@ -66,7 +74,9 @@ export function syncHomeToProductDetailReturnTarget(): boolean {
   if (typeof window === "undefined" || window.location.pathname !== "/") return false;
 
   const target = resolveProductDetailBackTarget();
-  if (!target || !isProductListingReturnPath(target)) return false;
+  if (!target || !isProductHomeReturnPath(target)) {
+    return false;
+  }
 
   const current = currentHomeHref();
   if (current !== target) {
@@ -91,8 +101,9 @@ export function tryApplyProductListingReturnOnHome(): boolean {
 
   const currentHref = currentHomeHref();
 
-  const intentHref = consumeLandingHashNavigationIntent(currentHref);
-  if (intentHref) {
+  const intentHref = peekLandingHashNavigationIntent(currentHref);
+  if (intentHref && isProductHomeReturnPath(intentHref)) {
+    clearLandingHashNavigationIntent();
     if (currentHref !== intentHref) {
       try {
         window.history.replaceState(null, "", intentHref);
@@ -105,22 +116,18 @@ export function tryApplyProductListingReturnOnHome(): boolean {
     return true;
   }
 
-  if (
-    peekHomeReturnScrollHandled() ||
-    isBackForwardNavigation() ||
-    hasPendingProductListingReturn()
-  ) {
+  if (peekHomeReturnScrollHandled() || hasPendingProductListingReturn()) {
     if (syncHomeToProductDetailReturnTarget()) return true;
   }
 
   const h = window.location.hash;
-  if (
-    h.length > 1 &&
-    (isFeaturedProductListingSectionHash(h) || isPortfolioReturnHash(h))
-  ) {
-    markHomeReturnScrollHandled();
-    scrollToLandingNavHref(currentHref, INSTANT_PRODUCT_RETURN_SCROLL);
-    return true;
+  if (h.length > 1) {
+    const safeHome = sanitizeProductHomeReturnHref(`/${h}`);
+    if (safeHome) {
+      markHomeReturnScrollHandled();
+      scrollToLandingNavHref(safeHome, INSTANT_PRODUCT_RETURN_SCROLL);
+      return true;
+    }
   }
 
   return false;
@@ -130,7 +137,8 @@ export function shouldSuppressHomeHeroSync(): boolean {
   return (
     peekHomeReturnScrollHandled() ||
     hasPendingProductListingReturn() ||
-    hasPendingPortfolioReturn() ||
+    hasPendingGalleryReturn() ||
+    hasPendingGalleryHeroReturn() ||
     isBackForwardNavigation()
   );
 }

@@ -10,9 +10,10 @@ import {
   useNavigationTransitionOptional,
 } from "@/components/common/app-navigation-transition";
 import {
+  isGalleryInSiteReturnPath,
   isGalleryProjectPathname,
-  isPortfolioReturnPath,
   isProductDetailPathname,
+  isProductHomeReturnPath,
 } from "@/lib/product-listing-sections";
 import {
   prepareGalleryProjectReturnNavigation,
@@ -23,11 +24,10 @@ import {
   resolveProductDetailBackTarget,
 } from "@/components/common/product-detail-return-nav";
 import {
-  clearStoredDetailReturnPath,
-  consumeStoredDetailReturnPathIfEligible,
-  getHomeScrollY,
+  clearStoredGalleryReturnPath,
+  clearStoredProductReturnPath,
+  consumeStoredProductReturnPathIfEligible,
   markLandingHashNavigationIntent,
-  stashHomeReturnFallbackHash,
 } from "@/components/common/return-section";
 import { mergeAytiCtaClass } from "@/lib/ayti-icon-cold";
 
@@ -60,14 +60,6 @@ const backButtonBaseClass =
 function currentFullPath(): string {
   const { pathname, search, hash } = window.location;
   return `${pathname}${search}${hash}`;
-}
-
-function canLikelyUseHistoryBack(): boolean {
-  try {
-    return typeof window.history.length === "number" && window.history.length > 1;
-  } catch {
-    return false;
-  }
 }
 
 function navigateToStoredHref(
@@ -120,11 +112,15 @@ export function BackButton({
 
     if (forceNavigateHref) {
       try {
-        if (isPortfolioReturnPath(forceNavigateHref)) {
+        if (isGalleryInSiteReturnPath(forceNavigateHref)) {
+          clearStoredProductReturnPath();
           prepareGalleryProjectReturnNavigation(forceNavigateHref);
-        } else {
-          clearStoredDetailReturnPath();
+        } else if (isProductHomeReturnPath(forceNavigateHref)) {
+          clearStoredGalleryReturnPath();
           prepareProductDetailReturnNavigation(forceNavigateHref);
+        } else {
+          clearStoredGalleryReturnPath();
+          clearStoredProductReturnPath();
         }
         navigateToStoredHref(forceNavigateHref, router, navTx);
       } catch {
@@ -137,7 +133,8 @@ export function BackButton({
     const isMobileViewport = window.matchMedia("(max-width: 767px)").matches;
     if (isMobileViewport && mobileForceHref) {
       try {
-        clearStoredDetailReturnPath();
+        clearStoredGalleryReturnPath();
+        clearStoredProductReturnPath();
         navigateToStoredHref(mobileForceHref, router, navTx);
       } catch {
         /* fallback */
@@ -150,6 +147,7 @@ export function BackButton({
       if (isGalleryProjectPathname(window.location.pathname)) {
         const galleryBackHref = resolveGalleryProjectBackTarget();
         if (galleryBackHref) {
+          clearStoredGalleryReturnPath();
           prepareGalleryProjectReturnNavigation(galleryBackHref);
           navigateToStoredHref(galleryBackHref, router, navTx);
           releaseLock();
@@ -160,6 +158,7 @@ export function BackButton({
       if (isProductDetailPathname(window.location.pathname)) {
         const productBackHref = resolveProductDetailBackTarget();
         if (productBackHref) {
+          clearStoredProductReturnPath();
           prepareProductDetailReturnNavigation(productBackHref);
           navigateToStoredHref(productBackHref, router, navTx);
           releaseLock();
@@ -167,28 +166,12 @@ export function BackButton({
         }
       }
 
-      const fromStorage = consumeStoredDetailReturnPathIfEligible(currentFullPath());
-      if (fromStorage) {
-        let targetHref = fromStorage;
-        if (getHomeScrollY() != null) {
-          try {
-            const u = new URL(fromStorage, window.location.origin);
-            if (u.pathname === "/" && u.hash.length > 1) {
-              stashHomeReturnFallbackHash(u.hash);
-              targetHref = `${u.pathname}${u.search}`;
-            }
-          } catch {
-            /* pakai fromStorage */
-          }
-        }
-        navigateToStoredHref(targetHref, router, navTx);
-        releaseLock();
-        return;
-      }
-
-      if (canLikelyUseHistoryBack()) {
-        if (navTx) navTx.back();
-        else router.back();
+      const fromProductStorage = consumeStoredProductReturnPathIfEligible(
+        currentFullPath(),
+      );
+      if (fromProductStorage) {
+        prepareProductDetailReturnNavigation(fromProductStorage);
+        navigateToStoredHref(fromProductStorage, router, navTx);
         releaseLock();
         return;
       }
@@ -196,7 +179,8 @@ export function BackButton({
       /* jalur fallback di bawah */
     }
 
-    clearStoredDetailReturnPath();
+    clearStoredGalleryReturnPath();
+    clearStoredProductReturnPath();
     navigateToStoredHref(fallbackHref, router, navTx);
     releaseLock();
   }, [router, fallbackHref, mobileForceHref, forceNavigateHref, navTx]);

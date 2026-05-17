@@ -38,6 +38,21 @@ export function LandingScrollPageVeil() {
     const mqReduce = window.matchMedia("(prefers-reduced-motion: reduce)");
     const scrollYRef = { current: window.scrollY };
     let raf: number | null = null;
+    let willChangeIdleTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const releaseWillChange = () => {
+      if (willChangeIdleTimer !== undefined) {
+        clearTimeout(willChangeIdleTimer);
+        willChangeIdleTimer = undefined;
+      }
+      el.style.willChange = "auto";
+    };
+
+    const armWillChange = () => {
+      el.style.willChange = "opacity";
+      if (willChangeIdleTimer !== undefined) clearTimeout(willChangeIdleTimer);
+      willChangeIdleTimer = setTimeout(releaseWillChange, 180);
+    };
 
     const applyFrame = () => {
       raf = null;
@@ -48,6 +63,7 @@ export function LandingScrollPageVeil() {
         root.dataset.performanceLightweight === "1"
       ) {
         el.style.opacity = "0";
+        releaseWillChange();
         return;
       }
 
@@ -71,6 +87,7 @@ export function LandingScrollPageVeil() {
     };
 
     const schedule = () => {
+      armWillChange();
       if (raf !== null) return;
       raf = window.requestAnimationFrame(applyFrame);
     };
@@ -102,13 +119,14 @@ export function LandingScrollPageVeil() {
       mqReduce.removeEventListener("change", applyFrame);
       mqDark.removeEventListener("change", onScheme);
       if (raf !== null) window.cancelAnimationFrame(raf);
+      releaseWillChange();
     };
   }, []);
 
   return (
     <div
       ref={veilRef}
-      className="landing-scroll-page-veil pointer-events-none fixed inset-0 z-[40] bg-black [will-change:opacity]"
+      className="landing-scroll-page-veil pointer-events-none fixed inset-0 z-[40] bg-black"
       aria-hidden
       style={{ opacity: 0 }}
     />

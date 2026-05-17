@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-import { prepareNavigateFromListingToProductDetail } from "@/components/common/return-section";
+import { prepareNavigateToProductDetail } from "@/components/common/return-section";
 import {
   featuredDualImageHalfFrame,
   featuredDualImageViewportHeights,
@@ -23,7 +23,7 @@ import {
 import type { ProductB2BCategoryData } from "@/components/aytipanel/products-b2b-data";
 import type { FeaturedImagePair } from "@/lib/site-content-model";
 import { CmsText } from "@/components/site-cms/cms-text";
-import { buildProductDetailHref } from "@/components/aytipanel/product-navigation";
+import { buildProductHomeReturnNavLinks } from "@/lib/product-home-return-nav-links";
 import { CmsImage } from "@/components/site-cms/cms-image";
 import { mergeAytiIconClass } from "@/lib/ayti-icon-cold";
 import {
@@ -72,7 +72,9 @@ type Props = {
   featuredImages: FeaturedImagePair;
 };
 
-type ProductLinkItem = { href: string; label: string };
+import type { ProductHomeReturnNavLink } from "@/lib/product-home-return-nav-links";
+
+type ProductLinkItem = ProductHomeReturnNavLink;
 
 function ProdukAccessoriesLead({
   category,
@@ -131,16 +133,14 @@ function ProdukAccessoriesBulletsNav({
         className="mt-1 flex max-w-xl flex-col gap-3 md:mt-0 md:-mt-3 lg:-mt-3.5"
         aria-label="Produk accessories cold room"
       >
-        {productLinks.map(({ href, label }) => (
+        {productLinks.map(({ slug, href, label }) => (
           <Link
             key={href}
             href={href}
             scroll={false}
             className={lightFeaturedNavButton}
-            onPointerDownCapture={() =>
-              prepareNavigateFromListingToProductDetail("accessories")
-            }
-            onClick={() => prepareNavigateFromListingToProductDetail("accessories")}
+            onPointerDownCapture={() => prepareNavigateToProductDetail(slug)}
+            onClick={() => prepareNavigateToProductDetail(slug)}
           >
             {label}
           </Link>
@@ -172,9 +172,7 @@ const SCROLL_SECTION_ID = "accessories" satisfies FeaturedProdukScrollSectionId;
 export function FeaturedProdukAccessoriesSection({ category, categoryIndex, tone, featuredImages }: Props) {
   const band = tone === "muted" ? lightSurfaceBandWarm : lightSurfaceBandWhite;
 
-  const productLinks = category.cards
-    .filter((c): c is (typeof c & { slug: string }) => Boolean(c.slug))
-    .map((c) => ({ href: buildProductDetailHref(c.slug), label: c.title }));
+  const productLinks = buildProductHomeReturnNavLinks("accessories", category.cards);
 
   const mobile = useFeaturedMobilePanelState(SCROLL_SECTION_ID);
   const scrollContentVersion = `${category.description}\0${HERO_BULLETS.join("\0")}\0${productLinks.map((l) => l.href).join("\0")}`;

@@ -17,15 +17,20 @@ import {
 import { useNavigationTransition } from "@/components/common/app-navigation-transition";
 import { navigateLandingHashFromNav, scrollLandingHomeTop } from "@/components/common/home-nav-scroll";
 import {
+  parseProductDetailSlug,
+} from "@/lib/product-listing-sections";
+import {
   detectVisibleHomeLandingSectionId,
-  prepareNavigateFromHomeToGalleryProject,
   prepareNavigateFromListingToProductDetail,
   prepareNavigateToInternalDetail,
-  saveInternalReturnPath,
+  prepareNavigateToProductDetail,
+  saveInternalProductReturnPath,
+  setGalleryProjectReturnFromNavbar,
 } from "@/components/common/return-section";
 import { HeaderSiteSearchDialog } from "@/components/aytipanel/header-site-search-dialog";
 import { IconSearch } from "@/components/aytipanel/icons";
 import { buildHeaderSiteSearchTargets } from "@/lib/header-site-search-targets";
+import { useBandedScrollY } from "@/lib/use-banded-scroll-y";
 import { CmsImage } from "@/components/site-cms/cms-image";
 import { CmsText } from "@/components/site-cms/cms-text";
 import { useSiteCmsOptional } from "@/components/site-cms/site-cms-provider";
@@ -307,7 +312,7 @@ export function SiteHeader({
   const [siteSearchOpen, setSiteSearchOpen] = useState(false);
   const [navHash, setNavHash] = useState("");
   const [activeHash, setActiveHash] = useState("");
-  const [scrollY, setScrollY] = useState(0);
+  const scrollBand = useBandedScrollY();
   const spyLockUntilRef = useRef(0);
 
   const closeMenu = useCallback(() => {
@@ -332,21 +337,41 @@ export function SiteHeader({
     setMenuOpen((open) => !open);
   }, []);
 
+  const prepareReturnBeforeGalleryNav = useCallback(
+    (href: string) => {
+      let targetPath = href;
+      try {
+        targetPath = new URL(href, window.location.origin).pathname;
+      } catch {
+        /* pakai href mentah */
+      }
+      if (
+        targetPath.startsWith("/gallery-project") ||
+        targetPath === "/gallery-project"
+      ) {
+        setGalleryProjectReturnFromNavbar();
+      }
+    },
+    [pathname],
+  );
+
   const onMobileNavPick = useCallback(
     (href: string) => {
       closeMenu();
+      prepareReturnBeforeGalleryNav(href);
       onSyncHashFromHref(href);
       navigateLandingHashFromNav(pathname, href, { spaNavigate });
     },
-    [closeMenu, onSyncHashFromHref, pathname, spaNavigate],
+    [closeMenu, onSyncHashFromHref, pathname, prepareReturnBeforeGalleryNav, spaNavigate],
   );
 
   const onDesktopNavNavigate = useCallback(
     (href: string) => {
+      prepareReturnBeforeGalleryNav(href);
       onSyncHashFromHref(href);
       navigateLandingHashFromNav(pathname, href, { spaNavigate });
     },
-    [onSyncHashFromHref, pathname, spaNavigate],
+    [onSyncHashFromHref, pathname, prepareReturnBeforeGalleryNav, spaNavigate],
   );
 
   const onSiteSearchPick = useCallback(
@@ -358,22 +383,21 @@ export function SiteHeader({
         /* pakai href mentah */
       }
       if (targetPath.startsWith("/produk/")) {
+        const productSlug = parseProductDetailSlug(targetPath);
         if (pathname === "/") {
-          prepareNavigateFromListingToProductDetail(
-            detectVisibleHomeLandingSectionId() ?? "produk",
-          );
+          if (productSlug) {
+            prepareNavigateToProductDetail(productSlug);
+          } else {
+            prepareNavigateFromListingToProductDetail("produk");
+          }
         } else {
-          saveInternalReturnPath();
+          saveInternalProductReturnPath();
         }
       } else if (
         targetPath.startsWith("/gallery-project") ||
         targetPath === "/gallery-project"
       ) {
-        if (pathname === "/") {
-          prepareNavigateFromHomeToGalleryProject();
-        } else {
-          saveInternalReturnPath();
-        }
+        prepareReturnBeforeGalleryNav(href);
       } else if (targetPath.startsWith("/artikel/")) {
         prepareNavigateToInternalDetail(
           pathname === "/" ? detectVisibleHomeLandingSectionId() ?? "beranda" : "beranda",
@@ -382,7 +406,7 @@ export function SiteHeader({
       onSyncHashFromHref(href);
       navigateLandingHashFromNav(pathname, href, { spaNavigate });
     },
-    [onSyncHashFromHref, pathname, spaNavigate],
+    [onSyncHashFromHref, pathname, prepareReturnBeforeGalleryNav, spaNavigate],
   );
 
   const openSiteSearch = useCallback(() => {
@@ -464,23 +488,8 @@ export function SiteHeader({
     return () => mq.removeEventListener("change", onWide);
   }, [closeMenu]);
 
-  useLayoutEffect(() => {
-    const onLayout = () => {
-      setScrollY(window.scrollY);
-    };
-    onLayout();
-    window.addEventListener("resize", onLayout);
-    window.addEventListener("scroll", onLayout, { passive: true });
-    window.addEventListener("orientationchange", onLayout);
-    return () => {
-      window.removeEventListener("resize", onLayout);
-      window.removeEventListener("scroll", onLayout);
-      window.removeEventListener("orientationchange", onLayout);
-    };
-  }, []);
-
-  const scrolled = scrollY > 12;
-  const scrollCompact = scrollY > 48;
+  const scrolled = scrollBand >= 1;
+  const scrollCompact = scrollBand >= 2;
 
   /**
    * Header `fixed` — ukur **baris toolbar** (bawah logo/nav), bukan sheet menu terbuka,

@@ -130,17 +130,14 @@ export function useHeroViewportPerformance() {
     onDesktopChange();
     desktopMq.addEventListener("change", onDesktopChange);
 
+    // Hanya `scroll` pasif — `touchmove`/`wheel` global memicu handler tiap frame geser.
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("wheel", onScroll, { passive: true });
-    window.addEventListener("touchmove", onScroll, { passive: true });
     window.addEventListener("resize", syncHeroBgActive, { passive: true });
 
     return () => {
       io?.disconnect();
       desktopMq.removeEventListener("change", onDesktopChange);
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("wheel", onScroll);
-      window.removeEventListener("touchmove", onScroll);
       window.removeEventListener("resize", syncHeroBgActive);
       if (scrollIdleTimer !== undefined) {
         clearTimeout(scrollIdleTimer);

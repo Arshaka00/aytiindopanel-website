@@ -16,8 +16,7 @@ import { ProductDetailHeroCms } from "@/components/aytipanel/product-detail-hero
 import { ProductDetailHeaderCms } from "@/components/aytipanel/product-detail-header-cms";
 import { ProductDetailRichSections } from "@/components/aytipanel/product-detail-rich-sections";
 import { ScrollRevealSection } from "@/components/aytipanel/scroll-reveal-section";
-import { BackButton } from "@/components/common/BackButton";
-import { ProductDetailDeviceBack } from "@/components/common/product-detail-device-back";
+import { ProductDetailBackNavPinned } from "@/components/aytipanel/product-detail-back-nav";
 import { ForceScrollTopOnLoad } from "@/components/common/force-scroll-top-on-load";
 import { InternalDetailNavLink } from "@/components/common/internal-detail-nav-link";
 import { SiteFooter } from "@/components/aytipanel/site-footer";
@@ -123,11 +122,11 @@ export default async function ProductDetailPage({ params }: Props) {
   return (
     <WhatsAppPhoneProvider phoneDigits={waDigits}>
     <div className="flex min-h-full flex-col bg-background text-foreground">
-      <ProductDetailDeviceBack />
       <ForceScrollTopOnLoad />
       <main className="flex-1">
         <article className="border-b border-border px-4 py-4 sm:px-5 md:px-6 md:py-8 lg:py-10">
           <div className="mx-auto max-w-5xl">
+            <ProductDetailBackNavPinned />
             <ScrollRevealSection variant="image">
               <ProductDetailHeroCms
                 slug={slug}
@@ -209,12 +208,6 @@ export default async function ProductDetailPage({ params }: Props) {
                     </span>
                   </WhatsAppCTAButton>
                 </div>
-                <BackButton
-                  label="Kembali"
-                  destination="previous"
-                  fallbackHref="/"
-                  className="mt-2 inline-flex w-full min-h-11 min-w-11 touch-manipulation pointer-events-auto items-center justify-center gap-1.5 rounded-lg border border-border/80 bg-card px-4 py-2.5 text-sm font-medium text-accent/90 shadow-[var(--shadow-card)] transition-[color,background-color,border-color,box-shadow] hover:border-accent/35 hover:bg-muted-bg-strong hover:text-primary hover:shadow-[0_12px_26px_-18px_rgba(15,23,42,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:w-auto"
-                />
               </div>
             </div>
 

@@ -3,17 +3,25 @@
 import Link from "next/link";
 import {
   prepareNavigateFromListingToProductDetail,
+  prepareNavigateToProductDetail,
+  setGalleryProjectReturnFromPortfolioCta,
   snapshotReturnPathForInternalDetail,
 } from "@/components/common/return-section";
+import {
+  normalizeProductListingReturnSectionId,
+  parseProductDetailSlug,
+} from "@/lib/product-listing-sections";
 import type { ComponentProps } from "react";
 
 type Props = ComponentProps<typeof Link> & {
   defaultHomeSectionDomId?: string;
   /**
-   * Dari beranda: simpan `/#{id}` tanpa snapshot scroll Y (portofolio, featured produk).
+   * Dari beranda ke produk: simpan `/#{id}` di storage produk (featured produk, dll.).
    * Mengabaikan `defaultHomeSectionDomId`.
    */
   listingReturnSectionId?: string;
+  /** CTA Gallery di section Portfolio — set return `/#proyek` (abaikan prop lain). */
+  galleryFromPortfolioCta?: boolean;
 };
 
 /**
@@ -23,13 +31,29 @@ type Props = ComponentProps<typeof Link> & {
 export function InternalDetailNavLink({
   defaultHomeSectionDomId = "proses",
   listingReturnSectionId,
+  galleryFromPortfolioCta,
   onClick,
   onPointerDownCapture,
   ...props
 }: Props) {
   const storeReturn = (): void => {
+    if (galleryFromPortfolioCta) {
+      setGalleryProjectReturnFromPortfolioCta();
+      return;
+    }
+    const slug =
+      typeof props.href === "string" ? parseProductDetailSlug(props.href) : null;
+    if (slug) {
+      prepareNavigateToProductDetail(
+        slug,
+        listingReturnSectionId ?? defaultHomeSectionDomId,
+      );
+      return;
+    }
     if (listingReturnSectionId) {
-      prepareNavigateFromListingToProductDetail(listingReturnSectionId);
+      prepareNavigateFromListingToProductDetail(
+        normalizeProductListingReturnSectionId(listingReturnSectionId),
+      );
       return;
     }
     snapshotReturnPathForInternalDetail(defaultHomeSectionDomId);

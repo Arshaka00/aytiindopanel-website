@@ -7,7 +7,11 @@ import { WhatsAppCTAButton } from "@/components/aytipanel/whatsapp-cta-button";
 import { mergeAytiCardClass, mergeAytiCtaClass } from "@/lib/ayti-icon-cold";
 import { generateWhatsAppMessage } from "@/utils/whatsapp";
 import { buildProductDetailHref } from "@/components/aytipanel/product-navigation";
-import { prepareNavigateFromListingToProductDetail } from "@/components/common/return-section";
+import {
+  prepareNavigateFromListingToProductDetail,
+  prepareNavigateToProductDetail,
+} from "@/components/common/return-section";
+import { normalizeProductListingReturnSectionId } from "@/lib/product-listing-sections";
 
 type Props = {
   card: ProductB2BCardData;
@@ -76,8 +80,18 @@ export function ProductB2BCard({
   const shell = compact ? productCardShellCompact : productCardShellDefault;
   const btnPri = compact ? btnPrimaryProductCompact : btnPrimaryProductDefault;
   const btnSec = compact ? btnSecondaryProductCompact : btnSecondaryProductDefault;
-  const storeReturnForDetail = (): void =>
-    prepareNavigateFromListingToProductDetail(listingReturnAnchor);
+  const storeReturnForDetail = (): void => {
+    if (card.slug) {
+      prepareNavigateToProductDetail(
+        card.slug,
+        normalizeProductListingReturnSectionId(listingReturnAnchor),
+      );
+      return;
+    }
+    prepareNavigateFromListingToProductDetail(
+      normalizeProductListingReturnSectionId(listingReturnAnchor),
+    );
+  };
   const defaultAspectClass = compact ? "aspect-[5/3]" : "aspect-[16/10]";
   const cardClassName = hideImage
     ? `${shell} border-slate-200/85 bg-[linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(248,250,252,0.98)_100%)] ring-slate-200/75 shadow-[0_14px_34px_-20px_rgba(15,23,42,0.5)] dark:border-white/12 dark:bg-[linear-gradient(180deg,rgba(15,23,42,0.96)_0%,rgba(15,23,42,0.9)_100%)] dark:ring-white/[0.07]`
