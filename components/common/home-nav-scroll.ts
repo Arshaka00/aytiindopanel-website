@@ -17,6 +17,11 @@ const FALLBACK_ABOVE_TARGET_PX = 96;
 
 let premiumScrollRafId = 0;
 
+/** Cegah scroll restore ganda (popstate + ScrollToSectionOnLoad) dalam satu navigasi balik. */
+let landingInstantScrollLockUntil = 0;
+const LANDING_INSTANT_SCROLL_LOCK_MS = 520;
+const MOBILE_ANCHOR_STABILIZE_THRESHOLD_PX = 6;
+
 function cancelPremiumLandingScroll(): void {
   if (premiumScrollRafId) {
     cancelAnimationFrame(premiumScrollRafId);
@@ -219,12 +224,8 @@ function dispatchLandingSectionEnter(hash: string, delayMs: number): void {
   }, delayMs);
 }
 
-/** Posisikan tepi atas `el` tepat di bawah bilah sticky (tinggi aktual dari layout). */
-function scrollTargetBelowStickyHeader(
-  el: HTMLElement,
-  scrollBehavior: ScrollBehavior | undefined,
-  onScrollFinish?: (info: { durationMs: number; premium: boolean }) => void,
-): void {
+/** Hitung `scrollY` agar tepi atas `el` berada tepat di bawah sticky header. */
+function measureLandingAnchorScrollY(el: HTMLElement): number | null {
   const sticky = document.querySelector<HTMLElement>(HEADER_STICKY_SELECTOR);
   let headerBottomVp: number | null = null;
 
@@ -232,24 +233,77 @@ function scrollTargetBelowStickyHeader(
     headerBottomVp = sticky.getBoundingClientRect().bottom;
   }
 
-  const finish = onScrollFinish ?? (() => {});
-
   if (headerBottomVp == null || Number.isNaN(headerBottomVp)) {
-    scrollWindowToY(
+    return (
       el.getBoundingClientRect().top +
-        window.scrollY -
-        FALLBACK_ABOVE_TARGET_PX -
-        ANCHOR_BELOW_HEADER_GAP_PX,
-      scrollBehavior,
-      finish,
+      window.scrollY -
+      FALLBACK_ABOVE_TARGET_PX -
+      ANCHOR_BELOW_HEADER_GAP_PX
     );
-    return;
   }
 
-  /** Perbedaan yang harus ditambahkan ke scrollY supaya atas `el` = bawah header + gap */
   const elTopVp = el.getBoundingClientRect().top;
   const delta = elTopVp - headerBottomVp - ANCHOR_BELOW_HEADER_GAP_PX;
-  scrollWindowToY(window.scrollY + delta, scrollBehavior, finish);
+  return Math.max(0, window.scrollY + delta);
+}
+
+function tryAcquireLandingInstantScrollLock(): boolean {
+  const now = Date.now();
+  if (now < landingInstantScrollLockUntil) return false;
+  landingInstantScrollLockUntil = now + LANDING_INSTANT_SCROLL_LOCK_MS;
+  return true;
+}
+
+/**
+ * Mobile back dari detail: koreksi halus setelah header RO / visualViewport / paint section.
+ * Hanya jika drift > ambang — hindari “loncat” berulang yang terlihat.
+ */
+function stabilizeMobileInstantLandingAnchor(el: HTMLElement): void {
+  if (!isMobileishViewport()) return;
+
+  const applyIfNeeded = (): void => {
+    const targetY = measureLandingAnchorScrollY(el);
+    if (targetY == null) return;
+    if (Math.abs(window.scrollY - targetY) > MOBILE_ANCHOR_STABILIZE_THRESHOLD_PX) {
+      scrollWindowToY(targetY, "auto");
+    }
+  };
+
+  requestAnimationFrame(() => requestAnimationFrame(applyIfNeeded));
+  window.setTimeout(applyIfNeeded, 90);
+  window.setTimeout(applyIfNeeded, 200);
+
+  const vv = window.visualViewport;
+  if (!vv) return;
+
+  let vvTimer: number | undefined;
+  const onVvResize = (): void => {
+    if (vvTimer !== undefined) window.clearTimeout(vvTimer);
+    vvTimer = window.setTimeout(() => {
+      applyIfNeeded();
+      vv.removeEventListener("resize", onVvResize);
+    }, 48);
+  };
+  vv.addEventListener("resize", onVvResize, { passive: true });
+  window.setTimeout(() => {
+    if (vvTimer !== undefined) window.clearTimeout(vvTimer);
+    vv.removeEventListener("resize", onVvResize);
+  }, 420);
+}
+
+/** Posisikan tepi atas `el` tepat di bawah bilah sticky (tinggi aktual dari layout). */
+function scrollTargetBelowStickyHeader(
+  el: HTMLElement,
+  scrollBehavior: ScrollBehavior | undefined,
+  onScrollFinish?: (info: { durationMs: number; premium: boolean }) => void,
+): void {
+  const finish = onScrollFinish ?? (() => {});
+  const targetY = measureLandingAnchorScrollY(el);
+  if (targetY == null) {
+    finish({ durationMs: 0, premium: false });
+    return;
+  }
+  scrollWindowToY(targetY, scrollBehavior, finish);
 }
 
 /**
@@ -278,6 +332,12 @@ export function scrollToLandingNavHref(
   const resolvedBehavior: ScrollBehavior | undefined = instant
     ? "auto"
     : options?.scrollBehavior;
+  const mobileInstant = instant && isMobileishViewport();
+
+  if (instant && !tryAcquireLandingInstantScrollLock()) {
+    return;
+  }
+
   const maxAttempts = instant ? 28 : 36;
   const retryMs = instant ? 64 : 42;
   let attempts = 0;
@@ -295,6 +355,11 @@ export function scrollToLandingNavHref(
 
     const el = landingScrollTarget(effectiveHash);
     if (el) {
+      if (mobileInstant) {
+        scrollTargetBelowStickyHeader(el, "auto");
+        stabilizeMobileInstantLandingAnchor(el);
+        return;
+      }
       scrollTargetBelowStickyHeader(el, resolvedBehavior, (info) => {
         if (instant) return;
         let motionDelay = 96;
@@ -310,7 +375,11 @@ export function scrollToLandingNavHref(
     if (attempts <= maxAttempts) window.setTimeout(run, retryMs);
   };
 
-  queueMicrotask(() => requestAnimationFrame(run));
+  if (mobileInstant) {
+    requestAnimationFrame(() => requestAnimationFrame(run));
+  } else {
+    queueMicrotask(() => requestAnimationFrame(run));
+  }
 }
 
 export type NavigateLandingHashOptions = {
