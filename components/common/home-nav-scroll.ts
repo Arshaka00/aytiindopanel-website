@@ -8,12 +8,24 @@ import { markLandingHashNavigationIntent } from "@/components/common/return-sect
 export const LANDING_SECTION_ENTER_EVENT = "landing-section-enter";
 
 /** Jarak udara antara bawah sticky header dan tepi atas section target (px). */
-const ANCHOR_BELOW_HEADER_GAP_PX = 12;
+export const ANCHOR_BELOW_HEADER_GAP_PX = 12;
+
+/** Toleransi subpixel: section dianggap "lewat" garis probe (selaras offset scroll). */
+const SPY_PASSED_PROBE_EPSILON_PX = 8;
+
+/** URL hash vs probe — section layanan punya blok dekorasi; toleransi lebih longgar. */
+const URL_HASH_PROBE_ALIGN_TOLERANCE_PX = 108;
+
+/** URL hash dianggap “aktif” bila area section terlihat di bawah header (bukan hanya probe tepat). */
+const URL_HASH_VISIBLE_MIN_PX = 72;
+
+/** Setelah koreksi anchor selesai — SiteHeader refresh scroll-spy. */
+export const LANDING_ANCHOR_SETTLED_EVENT = "landing-anchor-settled";
 
 const HEADER_STICKY_SELECTOR = "[data-site-header-sticky]";
 
-/** Fallback jika `#id` salah / header tidak ada: ~bilah + safe-area atas + gap */
-const FALLBACK_ABOVE_TARGET_PX = 96;
+/** Fallback jika `#id` salah / header belum diukur (≈ toolbar + safe-area + gap). */
+const FALLBACK_HEADER_CLEARANCE_PX = 96;
 
 let premiumScrollRafId = 0;
 
@@ -201,7 +213,7 @@ function scrollWindowToY(
   runPremiumScrollWindowToY(y, done);
 }
 
-/** Setelah refresh dokumen di `/`: URL `/#beranda` + scroll ke atas (hero memenuhi 1 layar). */
+/** URL `/#beranda` + scroll ke atas (hero memenuhi 1 layar) — kembali dari gallery / navigasi eksplisit. */
 export function scrollHomeToHeroSection(): void {
   if (typeof window === "undefined") return;
   const heroHref = `${window.location.pathname}${window.location.search}#beranda`;
@@ -229,24 +241,155 @@ function dispatchLandingSectionEnter(hash: string, delayMs: number): void {
   }, delayMs);
 }
 
+/** Tinggi bilah header dari CSS runtime (SiteHeader) atau pengukuran DOM. */
+export function readSiteHeaderBottomVp(): number {
+  const root = document.documentElement;
+  const raw = getComputedStyle(root).getPropertyValue("--site-header-height").trim();
+  const parsed = parseFloat(raw);
+  if (Number.isFinite(parsed) && parsed > 0) {
+    return parsed;
+  }
+
+  const sticky = document.querySelector<HTMLElement>(HEADER_STICKY_SELECTOR);
+  if (sticky && document.body.contains(sticky)) {
+    const bottom = sticky.getBoundingClientRect().bottom;
+    if (Number.isFinite(bottom) && bottom > 0) return bottom;
+  }
+
+  return FALLBACK_HEADER_CLEARANCE_PX - ANCHOR_BELOW_HEADER_GAP_PX;
+}
+
+/** Garis baca scroll-spy navbar — sama dengan offset `scrollToLandingNavHref`. */
+export function getLandingNavSpyProbeY(): number {
+  return readSiteHeaderBottomVp() + ANCHOR_BELOW_HEADER_GAP_PX;
+}
+
+/** Tepi atas `#id` selaras dengan garis probe navbar (setelah scroll anchor). */
+/** Lepas transform scroll-reveal sebelum ukur anchor (reload `/#layanan`). */
+export function prepareLandingScrollRevealAnchor(el: HTMLElement): void {
+  if (!el.classList.contains("scroll-reveal-section")) return;
+  el.classList.add("is-revealed");
+  el.setAttribute("data-reveal-complete", "1");
+}
+
+function isLandingNavSectionVisibleBelowHeader(
+  el: HTMLElement,
+  probeY: number,
+): boolean {
+  const rect = el.getBoundingClientRect();
+  const vh = window.innerHeight;
+  if (rect.bottom <= probeY + 8) return false;
+  if (rect.top >= vh - 24) return false;
+  const visibleBelowHeader =
+    Math.min(rect.bottom, vh) - Math.max(rect.top, probeY);
+  return visibleBelowHeader >= URL_HASH_VISIBLE_MIN_PX;
+}
+
+export function isLandingNavAnchorAligned(
+  hash: string,
+  tolerancePx = URL_HASH_PROBE_ALIGN_TOLERANCE_PX,
+): boolean {
+  if (typeof window === "undefined") return false;
+  const normalized = normalizeLandingNavHash(hash);
+  if (normalized.length <= 1) return false;
+  const el = document.getElementById(normalized.replace(/^#/, ""));
+  if (!el) return false;
+  const probeY = getLandingNavSpyProbeY();
+  return Math.abs(el.getBoundingClientRect().top - probeY) <= tolerancePx;
+}
+
+export function normalizeLandingNavHash(hash: string): string {
+  const raw = hash.replace(/^#/, "").trim();
+  if (!raw || raw.toLowerCase() === "home") return "#beranda";
+  try {
+    return `#${decodeURIComponent(raw).trim().toLowerCase()}`;
+  } catch {
+    return `#${raw.toLowerCase()}`;
+  }
+}
+
+/**
+ * Section aktif dari posisi viewport (urutan hash mengikuti menu navbar).
+ * Dipakai SiteHeader agar highlight menu = section yang terlihat di bawah header.
+ */
+export function resolveLandingNavActiveHashFromViewport(
+  sectionHashes: readonly string[],
+): string {
+  if (typeof window === "undefined" || sectionHashes.length === 0) return "#beranda";
+
+  const probeY = getLandingNavSpyProbeY();
+  const passedLimit = probeY + SPY_PASSED_PROBE_EPSILON_PX;
+
+  const urlHash = normalizeLandingNavHash(window.location.hash);
+  if (urlHash.length > 1) {
+    const urlId = urlHash.replace(/^#/, "");
+    const urlEl = document.getElementById(urlId);
+    const hashAllowed = sectionHashes.some(
+      (h) => normalizeLandingNavHash(h) === urlHash,
+    );
+    if (urlEl && hashAllowed) {
+      const top = urlEl.getBoundingClientRect().top;
+      if (Math.abs(top - probeY) <= URL_HASH_PROBE_ALIGN_TOLERANCE_PX) {
+        return urlHash;
+      }
+      if (isLandingNavSectionVisibleBelowHeader(urlEl, probeY)) {
+        return urlHash;
+      }
+    }
+  }
+
+  type SectionHit = { id: string; top: number; docTop: number };
+  const hits: SectionHit[] = [];
+
+  for (const hash of sectionHashes) {
+    const normalized = normalizeLandingNavHash(hash);
+    const raw = normalized.replace(/^#/, "");
+    const el = document.getElementById(raw);
+    if (!el) continue;
+    const rect = el.getBoundingClientRect();
+    hits.push({
+      id: el.id,
+      top: rect.top,
+      docTop: rect.top + window.scrollY,
+    });
+  }
+
+  if (hits.length === 0) return "#beranda";
+
+  hits.sort((a, b) => a.docTop - b.docTop);
+
+  let bestId: string | null = null;
+  let bestTop = -Infinity;
+
+  for (const hit of hits) {
+    if (hit.top <= passedLimit && hit.top > bestTop) {
+      bestId = hit.id;
+      bestTop = hit.top;
+    }
+  }
+
+  if (!bestId) {
+    const hero = document.getElementById("beranda");
+    if (hero && hero.getBoundingClientRect().bottom > probeY) {
+      return "#beranda";
+    }
+    return `#${hits[0]!.id}`;
+  }
+
+  const doc = document.documentElement;
+  const atBottom =
+    window.scrollY >= 120 &&
+    window.innerHeight + window.scrollY >= doc.scrollHeight - 8;
+  if (atBottom) {
+    return `#${hits[hits.length - 1]!.id}`;
+  }
+
+  return `#${bestId}`;
+}
+
 /** Hitung `scrollY` agar tepi atas `el` berada tepat di bawah sticky header. */
 function measureLandingAnchorScrollY(el: HTMLElement): number | null {
-  const sticky = document.querySelector<HTMLElement>(HEADER_STICKY_SELECTOR);
-  let headerBottomVp: number | null = null;
-
-  if (sticky && document.body.contains(sticky)) {
-    headerBottomVp = sticky.getBoundingClientRect().bottom;
-  }
-
-  if (headerBottomVp == null || Number.isNaN(headerBottomVp)) {
-    return (
-      el.getBoundingClientRect().top +
-      window.scrollY -
-      FALLBACK_ABOVE_TARGET_PX -
-      ANCHOR_BELOW_HEADER_GAP_PX
-    );
-  }
-
+  const headerBottomVp = readSiteHeaderBottomVp();
   const elTopVp = el.getBoundingClientRect().top;
   const delta = elTopVp - headerBottomVp - ANCHOR_BELOW_HEADER_GAP_PX;
   return Math.max(0, window.scrollY + delta);
@@ -277,36 +420,38 @@ function armLandingInstantRestoreViewport(): void {
   }, LANDING_INSTANT_RESTORE_CHROME_MS);
 }
 
+const LANDING_ANCHOR_STABILIZE_DELAYS_MS = [0, 80, 200, 420] as const;
+
 /**
- * Satu koreksi opsional setelah visualViewport/header settle (toolbar Safari).
- * Bukan retry loop — maksimal satu `scrollTo` tambahan jika drift nyata.
+ * Koreksi ringan setelah scroll nav / header settle (mobile toolbar Safari, menu tutup, dll.).
  */
-function stabilizeMobileInstantLandingAnchor(el: HTMLElement): void {
-  if (!isMobileishViewport()) return;
-
+function stabilizeLandingAnchorBelowHeader(el: HTMLElement): void {
   const generation = ++mobileAnchorRestoreGeneration;
-  let corrected = false;
 
-  const maybeCorrectOnce = (): void => {
-    if (corrected || generation !== mobileAnchorRestoreGeneration) return;
+  const maybeCorrect = (): void => {
+    if (generation !== mobileAnchorRestoreGeneration) return;
     const targetY = measureLandingAnchorScrollY(el);
     if (targetY == null) return;
     if (Math.abs(window.scrollY - targetY) <= MOBILE_ANCHOR_STABILIZE_THRESHOLD_PX) return;
-    corrected = true;
     scrollWindowToY(targetY, "auto");
   };
 
-  const vv = window.visualViewport;
-  if (!vv) {
-    window.setTimeout(maybeCorrectOnce, 120);
-    return;
+  if (isMobileishViewport()) {
+    armLandingInstantRestoreViewport();
   }
+
+  LANDING_ANCHOR_STABILIZE_DELAYS_MS.forEach((ms) => {
+    window.setTimeout(maybeCorrect, ms);
+  });
+
+  const vv = window.visualViewport;
+  if (!vv) return;
 
   let idleTimer: number | undefined;
   const onVvResize = (): void => {
     if (generation !== mobileAnchorRestoreGeneration) return;
     if (idleTimer !== undefined) window.clearTimeout(idleTimer);
-    idleTimer = window.setTimeout(maybeCorrectOnce, 120);
+    idleTimer = window.setTimeout(maybeCorrect, 100);
   };
 
   vv.addEventListener("resize", onVvResize, { passive: true });
@@ -314,8 +459,9 @@ function stabilizeMobileInstantLandingAnchor(el: HTMLElement): void {
     if (generation !== mobileAnchorRestoreGeneration) return;
     if (idleTimer !== undefined) window.clearTimeout(idleTimer);
     vv.removeEventListener("resize", onVvResize);
-    maybeCorrectOnce();
-  }, 360);
+    maybeCorrect();
+    window.dispatchEvent(new CustomEvent(LANDING_ANCHOR_SETTLED_EVENT));
+  }, 480);
 }
 
 /** Posisikan tepi atas `el` tepat di bawah bilah sticky (tinggi aktual dari layout). */
@@ -325,12 +471,16 @@ function scrollTargetBelowStickyHeader(
   onScrollFinish?: (info: { durationMs: number; premium: boolean }) => void,
 ): void {
   const finish = onScrollFinish ?? (() => {});
+  prepareLandingScrollRevealAnchor(el);
   const targetY = measureLandingAnchorScrollY(el);
   if (targetY == null) {
     finish({ durationMs: 0, premium: false });
     return;
   }
-  scrollWindowToY(targetY, scrollBehavior, finish);
+  scrollWindowToY(targetY, scrollBehavior, (info) => {
+    stabilizeLandingAnchorBelowHeader(el);
+    finish(info);
+  });
 }
 
 /**
@@ -339,9 +489,15 @@ function scrollTargetBelowStickyHeader(
  *
  * `scrollBehavior: "auto"` — untuk koreksi setelah layout (mis. `load`) tanpa ganda animasi smooth.
  */
+export type LandingNavScrollOptions = {
+  scrollBehavior?: ScrollBehavior;
+  /** Navigasi menu / hash eksplisit — jangan dibatalkan debounce `landingInstantScrollLock`. */
+  bypassInstantScrollLock?: boolean;
+};
+
 export function scrollToLandingNavHref(
   href: string,
-  options?: { scrollBehavior?: ScrollBehavior },
+  options?: LandingNavScrollOptions,
 ): void {
   if (typeof window === "undefined") return;
 
@@ -361,7 +517,7 @@ export function scrollToLandingNavHref(
     : options?.scrollBehavior;
   const mobileInstant = instant && isMobileishViewport();
 
-  if (instant && !tryAcquireLandingInstantScrollLock()) {
+  if (instant && !options?.bypassInstantScrollLock && !tryAcquireLandingInstantScrollLock()) {
     return;
   }
 
@@ -378,21 +534,35 @@ export function scrollToLandingNavHref(
 
     if (isHomeHeroAnchorHash(effectiveHash)) {
       scrollHomeHeroFullViewport(resolvedBehavior ?? "auto", () => {
-        if (instant) return;
-        dispatchLandingSectionEnter(effectiveHash, 96);
+        dispatchLandingSectionEnter(effectiveHash, instant ? 48 : 96);
       });
       return;
     }
 
     const el = landingScrollTarget(effectiveHash);
     if (el) {
+      const afterScroll = (): void => {
+        if (instant) {
+          dispatchLandingSectionEnter(effectiveHash, 48);
+          return;
+        }
+        dispatchLandingSectionEnter(effectiveHash, 140);
+      };
       if (mobileInstant) {
-        scrollTargetBelowStickyHeader(el, "auto");
-        stabilizeMobileInstantLandingAnchor(el);
+        scrollTargetBelowStickyHeader(el, "auto", (info) => {
+          if (info.premium && info.durationMs > 0) {
+            window.setTimeout(afterScroll, Math.round(info.durationMs + 48));
+          } else {
+            afterScroll();
+          }
+        });
         return;
       }
       scrollTargetBelowStickyHeader(el, resolvedBehavior, (info) => {
-        if (instant) return;
+        if (instant) {
+          afterScroll();
+          return;
+        }
         let motionDelay = 96;
         if (info.premium && info.durationMs > 0) {
           motionDelay = Math.round(info.durationMs + 64 + Math.random() * 72);
@@ -448,7 +618,7 @@ export function navigateLandingHashFromNav(
 
   if (pathname === "/") {
     window.history.replaceState(null, "", `${url.pathname}${url.hash}`);
-    scrollToLandingNavHref(href);
+    scrollToLandingNavHref(href, { bypassInstantScrollLock: true });
     return;
   }
 

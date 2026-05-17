@@ -19,10 +19,14 @@ import {
   isGalleryProjectPathname,
   isHeroReturnPath,
 } from "@/lib/product-listing-sections";
+import { isDocumentReloadNavigation } from "@/lib/global-loader-session";
 
 export { isGalleryHomeReturnPath, isGalleryInSiteReturnPath } from "@/lib/product-listing-sections";
 
-const INSTANT_GALLERY_RETURN_SCROLL = { scrollBehavior: "auto" as const };
+const INSTANT_GALLERY_RETURN_SCROLL = {
+  scrollBehavior: "auto" as const,
+  bypassInstantScrollLock: true,
+} as const;
 
 function normalizeReturnHref(href: string): string | null {
   try {
@@ -101,6 +105,7 @@ export function syncHomeToGalleryReturnTarget(): boolean {
  */
 export function tryApplyGalleryReturnOnHome(): boolean {
   if (typeof window === "undefined" || window.location.pathname !== "/") return false;
+  if (isDocumentReloadNavigation()) return false;
 
   const currentHref = currentHomeHref();
 

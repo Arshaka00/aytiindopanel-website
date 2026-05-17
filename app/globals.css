@@ -57,10 +57,10 @@
   --cta-mid-from: #0f172a;
   --cta-mid-to: #1e40af;
   /*
-   * Navigasi menu → hash section: jarak di atas tepi section sehingga konten tidak
-   * bertumpang dengan area header sticky atau ujung section di atasnya.
+   * Navigasi menu → hash section: selaras dengan tinggi toolbar (--site-header-height)
+   * + jarak udara (ANCHOR_BELOW_HEADER_GAP_PX di home-nav-scroll.ts).
    */
-  --section-nav-pass: max(8rem, calc(env(safe-area-inset-top, 0px) + 6.75rem));
+  --section-nav-pass: calc(var(--site-header-height, 3.65rem) + 12px);
   /* Micro-interaction: cinematic / enterprise (scroll & hover konsisten komponen) */
   --ease-premium-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-premium-soft: cubic-bezier(0.33, 1, 0.68, 1);

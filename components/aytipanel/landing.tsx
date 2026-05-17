@@ -27,13 +27,14 @@ export function AytiIndoPanelLanding({
       <div className="relative flex w-full flex-col bg-background text-foreground">
         <LandingScrollPageVeil />
         <main className="min-w-0">
-          <ScrollToSectionOnLoad />
           <LandingSectionHashFlash />
           <HomeMainSections
             content={content}
             waPhoneDigits={waPhoneDigits}
             initialViewportIsMobile={initialViewportIsMobile}
           />
+          {/* Setelah section DOM ada — restore hash/reload tidak scroll ke target yang belum mount */}
+          <ScrollToSectionOnLoad />
         </main>
         <SiteFooter footer={content.footer} />
       </div>

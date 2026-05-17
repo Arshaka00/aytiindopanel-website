@@ -15,7 +15,17 @@ import {
   useState,
 } from "react";
 import { useNavigationTransition } from "@/components/common/app-navigation-transition";
-import { navigateLandingHashFromNav, scrollLandingHomeTop } from "@/components/common/home-nav-scroll";
+import {
+  LANDING_ANCHOR_SETTLED_EVENT,
+  LANDING_SECTION_ENTER_EVENT,
+  getLandingNavSpyProbeY,
+  isLandingNavAnchorAligned,
+  navigateLandingHashFromNav,
+  normalizeLandingNavHash,
+  resolveLandingNavActiveHashFromViewport,
+  scrollLandingHomeTop,
+} from "@/components/common/home-nav-scroll";
+import { isDocumentReloadNavigation } from "@/lib/global-loader-session";
 import {
   parseProductDetailSlug,
 } from "@/lib/product-listing-sections";
@@ -207,9 +217,11 @@ function isNavItemActive(
 
   if (pathname !== "/") return false;
   const frag = hashFromHref(itemHref);
-  if (itemHref === HOME_NAV_HREF)
-    return activeHash === "" || activeHash === "#beranda";
-  return frag != null && activeHash === frag;
+  const active = normalizeLandingNavHash(activeHash);
+  if (itemHref === HOME_NAV_HREF) {
+    return active === "#beranda";
+  }
+  return frag != null && active === normalizeLandingNavHash(frag);
 }
 
 function shouldSkipMobileNavInteraction(e: React.PointerEvent | React.MouseEvent) {
@@ -287,15 +299,16 @@ export function SiteHeader({
     [headerForNav.mobileNavIds, navItems],
   );
   const visibleMobileNavItems = mobileNavItems;
+  /** Semua anchor menu (desktop + mobile) — urutan DOM untuk scroll-spy. */
   const navSectionHashes: readonly string[] = useMemo(
     () =>
-      visibleNavItems
+      navItems
         .map((item) => {
           const i = item.href.indexOf("#");
           return i >= 0 ? item.href.slice(i) : "";
         })
         .filter((h) => h.length > 1),
-    [visibleNavItems],
+    [navItems],
   );
 
   const pathname = usePathname();
@@ -314,6 +327,7 @@ export function SiteHeader({
   const [activeHash, setActiveHash] = useState("");
   const scrollBand = useBandedScrollY();
   const spyLockUntilRef = useRef(0);
+  const reloadSpyLockUntilRef = useRef(0);
 
   const closeMenu = useCallback(() => {
     setMenuOpen(false);
@@ -322,7 +336,14 @@ export function SiteHeader({
 
   const syncNavHashFromWindow = useCallback(() => {
     if (typeof window === "undefined") return;
-    setNavHash(window.location.hash);
+    const h = normalizeLandingNavHash(window.location.hash || "#beranda");
+    setNavHash(h);
+    if (Date.now() < spyLockUntilRef.current) return;
+    if (Date.now() < reloadSpyLockUntilRef.current) {
+      if (h !== "#beranda") setActiveHash(h);
+      return;
+    }
+    setActiveHash(h);
   }, []);
 
   const onSyncHashFromHref = useCallback((href: string) => {
@@ -330,7 +351,7 @@ export function SiteHeader({
     if (h === null) return;
     setNavHash(h);
     setActiveHash(h);
-    spyLockUntilRef.current = Date.now() + 1050;
+    spyLockUntilRef.current = Date.now() + 1600;
   }, []);
 
   const toggleMenu = useCallback(() => {
@@ -360,7 +381,12 @@ export function SiteHeader({
       closeMenu();
       prepareReturnBeforeGalleryNav(href);
       onSyncHashFromHref(href);
-      navigateLandingHashFromNav(pathname, href, { spaNavigate });
+      /** Scroll setelah sheet menu tertutup & `--site-header-height` stabil. */
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          navigateLandingHashFromNav(pathname, href, { spaNavigate });
+        });
+      });
     },
     [closeMenu, onSyncHashFromHref, pathname, prepareReturnBeforeGalleryNav, spaNavigate],
   );
@@ -439,7 +465,9 @@ export function SiteHeader({
             window.location.pathname + window.location.search,
           );
           setNavHash("");
-          setActiveHash("");
+          setActiveHash("#beranda");
+        } else {
+          setActiveHash("#beranda");
         }
         spyLockUntilRef.current = Date.now() + 1100;
         scrollLandingHomeTop("smooth");
@@ -471,6 +499,31 @@ export function SiteHeader({
       window.removeEventListener("popstate", onHashOrPopState);
     };
   }, [syncNavHashFromWindow, closeMenu]);
+
+  /** Setelah scroll programmatic ke section — samakan active nav dengan hash target. */
+  useEffect(() => {
+    if (pathname !== "/") return;
+
+    const applyActiveFromHash = (hash: string): void => {
+      const h = normalizeLandingNavHash(hash);
+      setNavHash(h);
+      setActiveHash(h);
+    };
+
+    const onSectionEnter = (ev: Event) => {
+      const ce = ev as CustomEvent<{ hash?: string }>;
+      const h = ce.detail?.hash;
+      if (typeof h !== "string" || h.length <= 1) return;
+      applyActiveFromHash(h);
+      // Reload: jangan lepas kunci spy terlalu awal — scroll anchor masih distabilkan.
+      if (!isDocumentReloadNavigation()) {
+        reloadSpyLockUntilRef.current = 0;
+      }
+    };
+
+    window.addEventListener(LANDING_SECTION_ENTER_EVENT, onSectionEnter);
+    return () => window.removeEventListener(LANDING_SECTION_ENTER_EVENT, onSectionEnter);
+  }, [pathname]);
 
   useLayoutEffect(() => {
     if (pathnameOnNavRef.current === pathname) return;
@@ -575,50 +628,41 @@ export function SiteHeader({
       return;
     }
 
+    const isReload = isDocumentReloadNavigation();
+    const initialHash = window.location.hash;
+    const normalizedInitial =
+      initialHash.length > 1 ? normalizeLandingNavHash(initialHash) : "#beranda";
+
+    if (isReload && initialHash.length > 1) {
+      setNavHash(normalizedInitial);
+      setActiveHash(normalizedInitial);
+      reloadSpyLockUntilRef.current = Date.now() + 5500;
+    } else if (initialHash.length > 1) {
+      setNavHash(normalizedInitial);
+      setActiveHash(normalizedInitial);
+    }
+
     let raf = 0;
+    const reloadLockTimeouts: number[] = [];
+
     const compute = () => {
       raf = 0;
-      if (Date.now() < spyLockUntilRef.current) return;
+      const now = Date.now();
+      if (now < spyLockUntilRef.current) return;
 
-      /** Di atas fold: selalu Beranda — hindari false-positive "Kontak" saat layout belum tinggi. */
-      if (window.scrollY < 96) {
-        setActiveHash((prev) => (prev === "#beranda" ? prev : "#beranda"));
+      if (now < reloadSpyLockUntilRef.current) {
+        const locked =
+          window.location.hash.length > 1
+            ? normalizeLandingNavHash(window.location.hash)
+            : normalizedInitial;
+        if (locked.length > 1) {
+          setActiveHash((prev) => (prev === locked ? prev : locked));
+        }
         return;
       }
 
-      const headerBottom =
-        toolbarRef.current?.getBoundingClientRect().bottom ?? 64;
-      const probeY = headerBottom + 8;
-
-      let bestId: string | null = null;
-      let bestTop = -Infinity;
-      let firstId: string | null = null;
-      let lastId: string | null = null;
-
-      for (const hash of navSectionHashes) {
-        const el = document.getElementById(hash.slice(1));
-        if (!el) continue;
-        firstId ??= el.id;
-        lastId = el.id;
-        const r = el.getBoundingClientRect();
-        if (r.top <= probeY && r.top > bestTop) {
-          bestId = el.id;
-          bestTop = r.top;
-        }
-      }
-
-      if (!bestId) bestId = firstId;
-
-      const doc = document.documentElement;
-      const atBottom =
-        window.scrollY >= 120 &&
-        window.innerHeight + window.scrollY >= doc.scrollHeight - 8;
-      if (atBottom && lastId) bestId = lastId;
-
-      if (bestId) {
-        const next = `#${bestId}`;
-        setActiveHash((prev) => (prev === next ? prev : next));
-      }
+      const next = resolveLandingNavActiveHashFromViewport(navSectionHashes);
+      setActiveHash((prev) => (prev === next ? prev : next));
     };
 
     const scheduleCompute = () => {
@@ -626,15 +670,45 @@ export function SiteHeader({
       raf = window.requestAnimationFrame(compute);
     };
 
-    compute();
+    const reobserveSections = (): void => {
+      setupObserver();
+      scheduleCompute();
+    };
+
+    if (isReload && initialHash.length > 1) {
+      for (const ms of [0, 120, 400, 900, 1600, 2600, 3600, 4800, 5600]) {
+        reloadLockTimeouts.push(window.setTimeout(reobserveSections, ms));
+      }
+    } else {
+      compute();
+      requestAnimationFrame(() => requestAnimationFrame(compute));
+    }
+
+    const onLoad = (): void => scheduleCompute();
+    if (document.readyState === "complete") {
+      scheduleCompute();
+    } else {
+      window.addEventListener("load", onLoad, { once: true });
+    }
+
+    const onPageShow = (): void => {
+      if (window.location.hash.length > 1) {
+        const h = normalizeLandingNavHash(window.location.hash);
+        setNavHash(h);
+        setActiveHash(h);
+        if (isDocumentReloadNavigation()) {
+          reloadSpyLockUntilRef.current = Date.now() + 2800;
+        }
+      }
+      scheduleCompute();
+    };
+    window.addEventListener("pageshow", onPageShow);
 
     // 1) IntersectionObserver — pemicu utama (akurat & ringan di mobile).
     let observer: IntersectionObserver | null = null;
     const setupObserver = () => {
       observer?.disconnect();
-      const headerBottom =
-        toolbarRef.current?.getBoundingClientRect().bottom ?? 64;
-      const top = Math.max(0, Math.round(headerBottom + 8));
+      const top = Math.max(0, Math.round(getLandingNavSpyProbeY()));
       observer = new IntersectionObserver(scheduleCompute, {
         // Geser viewport observasi: tepi atas tepat di bawah toolbar,
         // tepi bawah hampir sama → trigger ketika section "menyeberang" garis itu.
@@ -674,19 +748,43 @@ export function SiteHeader({
     vv?.addEventListener("scroll", scheduleCompute);
     vv?.addEventListener("resize", onResizeOrOrient);
 
+    const onAnchorSettled = (): void => {
+      if (Date.now() < spyLockUntilRef.current) return;
+      if (window.location.hash.length > 1) {
+        const h = normalizeLandingNavHash(window.location.hash);
+        if (isLandingNavAnchorAligned(h)) {
+          setNavHash(h);
+          setActiveHash(h);
+          if (isDocumentReloadNavigation()) {
+            reloadSpyLockUntilRef.current = Date.now() + 900;
+          }
+        }
+      }
+      if (Date.now() < reloadSpyLockUntilRef.current) return;
+      scheduleCompute();
+    };
+    window.addEventListener(LANDING_ANCHOR_SETTLED_EVENT, onAnchorSettled);
+
     return () => {
       if (raf) window.cancelAnimationFrame(raf);
+      reloadLockTimeouts.forEach((id) => window.clearTimeout(id));
       observer?.disconnect();
       window.removeEventListener("scroll", scheduleCompute);
       window.removeEventListener("resize", onResizeOrOrient);
       window.removeEventListener("orientationchange", onResizeOrOrient);
       window.removeEventListener("scrollend", onScrollEnd as EventListener);
+      window.removeEventListener("load", onLoad);
+      window.removeEventListener("pageshow", onPageShow);
       vv?.removeEventListener("scroll", scheduleCompute);
       vv?.removeEventListener("resize", onResizeOrOrient);
+      window.removeEventListener(LANDING_ANCHOR_SETTLED_EVENT, onAnchorSettled);
     };
   }, [pathname, navSectionHashes]);
 
-  const active = activeHash || navHash;
+  const active = normalizeLandingNavHash(
+    activeHash ||
+      (navHash.length > 1 ? navHash : pathname === "/" ? "#beranda" : navHash),
+  );
 
   const toolbarPad = scrollCompact
     ? "px-3 py-1.5 sm:px-3.5 sm:py-1.5 md:px-5 md:pt-1.5 md:pb-2"

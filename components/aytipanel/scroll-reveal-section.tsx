@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 
 import { pickScrollRevealPreset } from "@/lib/scroll-reveal-preset";
 
@@ -74,16 +74,26 @@ export function ScrollRevealSection({
 }: ScrollRevealSectionProps) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [revealed, setRevealed] = useState(initialRevealed);
+  const [revealComplete, setRevealComplete] = useState(false);
 
   const preset =
     variant === "section" && sectionKey?.trim()
       ? pickScrollRevealPreset(sectionKey.trim())
       : undefined;
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
     if (typeof window === "undefined") return;
+
+    if (id?.trim()) {
+      const hashId = window.location.hash.replace(/^#/, "").trim().toLowerCase();
+      if (hashId && hashId !== "home" && hashId === id.trim().toLowerCase()) {
+        setRevealed(true);
+        setRevealComplete(true);
+        return;
+      }
+    }
 
     // Hormati preferensi pengguna & toggle CMS performance-mode.
     const prefersReduce =
@@ -142,9 +152,7 @@ export function ScrollRevealSection({
       cancelled = true;
       io.disconnect();
     };
-  }, [variant, rootMargin, amount, sectionKey, initialRevealed]);
-
-  const [revealComplete, setRevealComplete] = useState(false);
+  }, [variant, rootMargin, amount, sectionKey, initialRevealed, id]);
 
   // Saat user mount halaman dengan elemen sudah terlihat, kita langsung set
   // revealed=true tanpa transisi. Pada kasus tersebut tidak akan ada

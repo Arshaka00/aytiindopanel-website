@@ -18,12 +18,14 @@ export function isDocumentReloadNavigation(): boolean {
 }
 
 /**
- * Tampilkan intro hanya: kunjungan pertama tab, atau hard refresh.
+ * Tampilkan intro hanya pada kunjungan pertama tab (belum `GLOBAL_LOADER_DONE_KEY`).
+ * Reload tidak memicu intro — scroll lock loader menangkap `scrollY` 0 dan memulihkan ke hero,
+ * termasuk saat URL `/#layanan` atau `/#tentang`.
  * Navigasi klien yang remount layout tidak memicu ulang.
  */
 export function shouldRunGlobalLoaderIntro(): boolean {
   if (typeof window === "undefined") return false;
-  if (isDocumentReloadNavigation()) return true;
+  if (isDocumentReloadNavigation()) return false;
   try {
     return sessionStorage.getItem(GLOBAL_LOADER_DONE_KEY) !== "1";
   } catch {

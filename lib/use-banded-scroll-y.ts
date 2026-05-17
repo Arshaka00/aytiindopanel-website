@@ -19,9 +19,8 @@ export function scrollYToBand(y: number): ScrollYBand {
  * Menghindari `setState` tiap frame scroll (sumber jank di navbar fixed).
  */
 export function useBandedScrollY(): ScrollYBand {
-  const [band, setBand] = useState<ScrollYBand>(() =>
-    typeof window !== "undefined" ? scrollYToBand(window.scrollY) : 0,
-  );
+  /** Selalu 0 pada render pertama (SSR + hidrasi) — hindari mismatch saat browser restore scrollY > 0. */
+  const [band, setBand] = useState<ScrollYBand>(0);
   useLayoutEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -38,6 +37,7 @@ export function useBandedScrollY(): ScrollYBand {
       raf = requestAnimationFrame(apply);
     };
 
+    apply();
     schedule();
 
     window.addEventListener("scroll", schedule, { passive: true });

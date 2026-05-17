@@ -11,8 +11,13 @@ import {
   type MouseEvent,
 } from "react";
 
+import {
+  normalizeLandingNavHash,
+  scrollToLandingNavHref,
+} from "@/components/common/home-nav-scroll";
 import { MobileMeasuredReveal } from "@/components/common/mobile-measured-reveal";
 import { usePrefersReducedMotion } from "@/components/common/use-prefers-reduced-motion";
+import { isDocumentReloadNavigation } from "@/lib/global-loader-session";
 
 import { LayananIconStrip } from "@/components/aytipanel/layanan-card-icons";
 import { CmsText } from "@/components/site-cms/cms-text";
@@ -365,9 +370,17 @@ export function LayananRingkasSection({ layanan }: { layanan: SiteContent["layan
 
   const layananCarouselRef = useRef<HTMLUListElement | null>(null);
   const layananCarouselItemRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const layananCarouselUserScrolledRef = useRef(false);
   const [layananCarouselActive, setLayananCarouselActive] = useState(0);
   const layananCarouselActiveRef = useRef(0);
   layananCarouselActiveRef.current = layananCarouselActive;
+
+  const shouldBlockCarouselAutoScrollToProduk = useCallback((): boolean => {
+    if (typeof window === "undefined") return true;
+    if (isDocumentReloadNavigation()) return true;
+    const hash = normalizeLandingNavHash(window.location.hash);
+    return hash === "#layanan" || hash === "#tentang";
+  }, []);
 
   useLayoutEffect(() => {
     const root = layananCarouselRef.current;
@@ -433,6 +446,11 @@ export function LayananRingkasSection({ layanan }: { layanan: SiteContent["layan
 
     const scheduleScrollToProduk = () => {
       if (!mq.matches) return;
+      if (!layananCarouselUserScrolledRef.current) return;
+      if (shouldBlockCarouselAutoScrollToProduk()) {
+        clearToProduk();
+        return;
+      }
       if (layananCarouselActiveRef.current !== cards.length - 1 || !atHorizontalEnd()) {
         clearToProduk();
         return;
@@ -442,16 +460,19 @@ export function LayananRingkasSection({ layanan }: { layanan: SiteContent["layan
         toProdukTimer = null;
         if (!mq.matches) return;
         if (layananCarouselActiveRef.current !== cards.length - 1 || !atHorizontalEnd()) return;
-        const produk = document.getElementById("produk");
-        if (!produk) return;
-        produk.scrollIntoView({
-          behavior: prefersReducedMotion ? "auto" : "smooth",
-          block: "start",
-        });
+        if (!document.getElementById("produk")) return;
+        scrollToLandingNavHref(
+          `${window.location.pathname}${window.location.search}#produk`,
+          {
+            scrollBehavior: prefersReducedMotion ? "auto" : "smooth",
+            bypassInstantScrollLock: true,
+          },
+        );
       }, LAYANAN_CAROUSEL_TO_PRODUK_DELAY_MS);
     };
 
     const onScrollMove = () => {
+      layananCarouselUserScrolledRef.current = true;
       clearToProduk();
       if (settleTimer !== null) clearTimeout(settleTimer);
       settleTimer = setTimeout(() => {
@@ -471,7 +492,7 @@ export function LayananRingkasSection({ layanan }: { layanan: SiteContent["layan
       root.removeEventListener("scroll", onScrollMove);
       root.removeEventListener("scrollend", onScrollEnd);
     };
-  }, [edit, cards.length, prefersReducedMotion]);
+  }, [edit, cards.length, prefersReducedMotion, shouldBlockCarouselAutoScrollToProduk]);
 
   return (
     <div
@@ -484,8 +505,7 @@ export function LayananRingkasSection({ layanan }: { layanan: SiteContent["layan
 
       <div className={`relative z-10 ${sectionMax} ${sectionInsetXMdLg}`}>
         <section
-          id="layanan"
-          className="w-full scroll-mt-[var(--section-nav-pass)] space-y-4 md:space-y-5"
+          className="w-full space-y-4 md:space-y-5"
           aria-labelledby="layanan-heading"
         >
           <div className="mx-auto max-w-4xl space-y-2 text-center md:space-y-2.5">
@@ -543,7 +563,7 @@ export function LayananRingkasSection({ layanan }: { layanan: SiteContent["layan
           </div>
 
           <div className="relative mx-auto w-full max-w-[76rem]">
-                        <div className="layanan-grid-shell rounded-[1.125rem] border-2 border-border/90 p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_1px_0_rgba(15,23,42,0.04)] backdrop-blur-[14px] sm:p-4 md:rounded-[1.375rem] md:p-5 lg:p-6 dark:border-white/15 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_1px_0_rgba(0,0,0,0.28)]">
+            <div className="layanan-grid-shell rounded-[1.125rem] border-2 border-border/90 p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.72),0_1px_0_rgba(15,23,42,0.04)] backdrop-blur-[14px] sm:p-4 md:rounded-[1.375rem] md:p-5 lg:p-6 dark:border-white/15 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_1px_0_rgba(0,0,0,0.28)]">
               {edit && cms ? (
                 <div className="space-y-2">
                   <p className="mx-auto max-w-lg text-center text-[11px] leading-snug text-muted-foreground">

@@ -124,7 +124,6 @@ export function consumeHomeReturnScrollHandled(): boolean {
   }
 }
 
-/** Hard refresh beranda: buang snapshot kembali dari detail agar tidak scroll ke listing lama. */
 /** Bersihkan kunci navigasi produk lama (sesi sebelumnya). */
 export function clearLegacyProductNavStorage(): void {
   if (typeof window === "undefined") return;

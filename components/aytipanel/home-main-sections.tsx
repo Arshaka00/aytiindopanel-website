@@ -89,7 +89,11 @@ export function HomeMainSections({
       </ScrollRevealSection>
     ),
     layanan: (
-      <ScrollRevealSection sectionKey="layanan">
+      <ScrollRevealSection
+        sectionKey="layanan"
+        id="layanan"
+        className="scroll-mt-[var(--section-nav-pass)]"
+      >
         <LayananRingkasSection layanan={content.layanan} />
       </ScrollRevealSection>
     ),

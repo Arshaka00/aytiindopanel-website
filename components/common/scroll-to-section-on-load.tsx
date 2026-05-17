@@ -3,13 +3,14 @@
 import { useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
 import {
+  LANDING_ANCHOR_SETTLED_EVENT,
+  isLandingNavAnchorAligned,
   isMobileishViewport,
+  normalizeLandingNavHash,
   scrollHomeToHeroSection,
   scrollToLandingNavHref,
 } from "@/components/common/home-nav-scroll";
 import {
-  clearAllHomeReturnSnapshots,
-  consumeLandingHashNavigationIntent,
   markHomeReturnScrollHandled,
 } from "@/components/common/return-section";
 import { isFeaturedProductListingSectionHash } from "@/lib/product-listing-sections";
@@ -19,6 +20,7 @@ import {
   peekLandingHashNavigationIntent,
 } from "@/components/common/return-section";
 import {
+  isAllowedProductListingReturnSectionId,
   isGalleryHomeReturnPath,
   isProductHomeReturnPath,
 } from "@/lib/product-listing-sections";
@@ -27,12 +29,11 @@ import {
   shouldSuppressHomeHeroSync,
   tryApplyProductListingReturnOnHome,
 } from "@/components/common/product-detail-return-nav";
+import { isDocumentReloadNavigation } from "@/lib/global-loader-session";
 
 const INSTANT_HASH_SCROLL = INSTANT_PRODUCT_RETURN_SCROLL;
 
-const ANDROID_RELOAD_SCROLL_TOP_TIMEOUTS_MS = [0, 40, 120, 260, 520, 900, 1400, 2000];
-
-const USER_SCROLL_YIELDS_RELOAD_LOCK_PX = 56;
+const USER_SCROLL_YIELDS_HERO_SYNC_PX = 56;
 
 const DEV_HMR_HOME_RESET_FLAG = "__aytiDevHmrHomeReset";
 
@@ -44,8 +45,6 @@ const HERO_VIEWPORT_RESET_TIMEOUTS_MS = [0, 40, 120, 280, 520, 900, 1400];
 /** Kunjungan pertama tanpa hash: sinkron singkat saja — hindari tarik-balik saat user scroll di mobile. */
 const FIRST_VISIT_HERO_SYNC_MS = [0, 80, 220] as const;
 const FIRST_VISIT_HERO_SYNC_MS_DESKTOP = [0, 40] as const;
-const RELOAD_HERO_LOCK_MS = 2200;
-const RELOAD_HERO_LOCK_MS_DESKTOP = 1400;
 
 function armDevHmrHomeScrollReset(): void {
   if (process.env.NODE_ENV !== "development") return;
@@ -72,31 +71,10 @@ function consumeDevHmrHomeScrollReset(): boolean {
 
 armDevHmrHomeScrollReset();
 
-function isAndroidMobileBrowser(): boolean {
-  try {
-    const ua = navigator.userAgent;
-    return /Android/i.test(ua) && /Mobile/i.test(ua);
-  } catch {
-    return false;
-  }
-}
-
-/** Hard refresh / reload dokumen (bukan navigasi SPA). */
-export function isHomeDocumentReload(): boolean {
-  const navEntry = performance.getEntriesByType("navigation")[0] as
-    | PerformanceNavigationTiming
-    | undefined;
-  return (
-    navEntry?.type === "reload" ||
-    (typeof performance !== "undefined" &&
-      "navigation" in performance &&
-      ((performance as Performance & { navigation?: { type?: number } }).navigation?.type === 1))
-  );
-}
-
 /**
  * Satu orchestrator restore beranda: hash section via `scrollToLandingNavHref`.
- * Hero hanya untuk reload, HMR dev, atau kunjungan pertama tanpa hash.
+ * Hero sinkron hanya untuk HMR dev atau kunjungan pertama tanpa hash di atas dokumen.
+ * Reload mengikuti restore scroll bawaan browser (tidak dipaksa ke hero).
  */
 export function ScrollToSectionOnLoad() {
   const pathname = usePathname();
@@ -104,25 +82,21 @@ export function ScrollToSectionOnLoad() {
   useLayoutEffect(() => {
     if (pathname !== "/") return;
 
-    const isReload = isHomeDocumentReload();
     let cancelled = false;
     const timeoutIds: number[] = [];
     const cleanupFns: Array<() => void> = [];
-    const isAndroidMobileReload = isReload && isAndroidMobileBrowser();
-    let reloadScrollLockDone = false;
     let firstVisitHeroSyncYielded = false;
 
     const scrollHeroFullScreen = (): void => {
-      if (cancelled || reloadScrollLockDone || firstVisitHeroSyncYielded) return;
+      if (cancelled || firstVisitHeroSyncYielded) return;
       if (shouldSuppressHomeHeroSync()) return;
       scrollHomeToHeroSection();
     };
 
-    const armYieldHeroResetOnUserScroll = (onYield?: () => void): void => {
+    const armYieldHeroResetOnUserScroll = (): void => {
       const onUserScroll = (): void => {
-        if (window.scrollY < USER_SCROLL_YIELDS_RELOAD_LOCK_PX) return;
+        if (window.scrollY < USER_SCROLL_YIELDS_HERO_SYNC_PX) return;
         firstVisitHeroSyncYielded = true;
-        onYield?.();
       };
       window.addEventListener("scroll", onUserScroll, { passive: true });
       cleanupFns.push(() => {
@@ -163,6 +137,22 @@ export function ScrollToSectionOnLoad() {
       });
     };
 
+    const applyUrlHashScrollOnHome = (forceInstant = false): boolean => {
+      if (!window.location.hash || window.location.hash.length <= 1) return false;
+      const currentHref = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+      markHomeReturnScrollHandled();
+      const scrollOpts =
+        forceInstant ||
+        isDocumentReloadNavigation() ||
+        isFeaturedProductListingSectionHash(window.location.hash)
+          ? INSTANT_HASH_SCROLL
+          : isMobileishViewport()
+            ? INSTANT_HASH_SCROLL
+            : undefined;
+      scrollToLandingNavHref(currentHref, { ...scrollOpts, bypassInstantScrollLock: true });
+      return true;
+    };
+
     const applyHashSectionRestore = (): boolean => {
       const currentHref = `${window.location.pathname}${window.location.search}${window.location.hash}`;
 
@@ -176,27 +166,33 @@ export function ScrollToSectionOnLoad() {
 
       const hashIntent = peekLandingHashNavigationIntent(currentHref);
       if (hashIntent) {
-        if (isGalleryHomeReturnPath(hashIntent) || isProductHomeReturnPath(hashIntent)) {
+        if (isGalleryHomeReturnPath(hashIntent)) {
           return false;
+        }
+        if (isProductHomeReturnPath(hashIntent)) {
+          try {
+            const id = decodeURIComponent(
+              new URL(hashIntent, window.location.origin).hash.replace(/^#/, ""),
+            )
+              .trim()
+              .toLowerCase();
+            if (isAllowedProductListingReturnSectionId(id)) {
+              return false;
+            }
+          } catch {
+            /* scroll intent generik di bawah */
+          }
         }
         clearLandingHashNavigationIntent();
         markHomeReturnScrollHandled();
-        scrollToLandingNavHref(hashIntent, INSTANT_HASH_SCROLL);
+        scrollToLandingNavHref(hashIntent, {
+          ...INSTANT_HASH_SCROLL,
+          bypassInstantScrollLock: true,
+        });
         return true;
       }
 
-      if (window.location.hash && window.location.hash.length > 1) {
-        markHomeReturnScrollHandled();
-        const scrollOpts = isFeaturedProductListingSectionHash(window.location.hash)
-          ? INSTANT_HASH_SCROLL
-          : isMobileishViewport()
-            ? INSTANT_HASH_SCROLL
-            : undefined;
-        scrollToLandingNavHref(currentHref, scrollOpts);
-        return true;
-      }
-
-      return false;
+      return applyUrlHashScrollOnHome();
     };
 
     const run = (): void => {
@@ -222,44 +218,58 @@ export function ScrollToSectionOnLoad() {
         return;
       }
 
-      if (isReload) {
-        clearAllHomeReturnSnapshots();
-        markHomeReturnScrollHandled();
-
-        const prevRestoration = window.history.scrollRestoration;
-        try {
-          window.history.scrollRestoration = "manual";
-        } catch {
-          /* ignore */
-        }
-
-        const finishReloadScrollLock = (): void => {
-          if (reloadScrollLockDone || cancelled) return;
-          reloadScrollLockDone = true;
+      /**
+       * Reload + hash: section beranda sering belum ter-hydrate saat browser scroll fragment.
+       * Sinkronkan scroll + active nav setelah DOM siap (tanpa hero sync / session return).
+       */
+      if (isDocumentReloadNavigation()) {
+        const fragment = window.location.hash;
+        if (fragment.length > 1) {
           try {
-            window.history.scrollRestoration = prevRestoration;
+            window.history.scrollRestoration = "auto";
           } catch {
             /* ignore */
           }
-        };
-
-        armYieldHeroResetOnUserScroll(finishReloadScrollLock);
-
-        const resetTimeouts = isAndroidMobileReload
-          ? ANDROID_RELOAD_SCROLL_TOP_TIMEOUTS_MS
-          : HERO_VIEWPORT_RESET_TIMEOUTS_MS;
-        scheduleAggressiveHeroViewportResets(resetTimeouts);
-
-        timeoutIds.push(
-          window.setTimeout(
-            finishReloadScrollLock,
-            isAndroidMobileReload ? RELOAD_HERO_LOCK_MS : RELOAD_HERO_LOCK_MS_DESKTOP,
-          ),
-        );
+          const targetHash = normalizeLandingNavHash(fragment);
+          let reloadHashSyncDone = false;
+          const syncReloadHashAnchor = (): void => {
+            if (cancelled || reloadHashSyncDone) return;
+            if (isLandingNavAnchorAligned(targetHash)) {
+              reloadHashSyncDone = true;
+              window.dispatchEvent(new CustomEvent(LANDING_ANCHOR_SETTLED_EVENT));
+              return;
+            }
+            applyUrlHashScrollOnHome(true);
+            if (isLandingNavAnchorAligned(targetHash)) {
+              reloadHashSyncDone = true;
+              window.dispatchEvent(new CustomEvent(LANDING_ANCHOR_SETTLED_EVENT));
+            }
+          };
+          requestAnimationFrame(() => {
+            requestAnimationFrame(syncReloadHashAnchor);
+          });
+          for (const ms of [0, 60, 150, 320, 600, 1000, 1600, 2400, 3200, 4200]) {
+            timeoutIds.push(window.setTimeout(syncReloadHashAnchor, ms));
+          }
+          const onLoad = (): void => syncReloadHashAnchor();
+          if (document.readyState === "complete") {
+            syncReloadHashAnchor();
+          } else {
+            window.addEventListener("load", onLoad, { once: true });
+            cleanupFns.push(() => window.removeEventListener("load", onLoad));
+          }
+          const onPageShow = (): void => syncReloadHashAnchor();
+          window.addEventListener("pageshow", onPageShow);
+          cleanupFns.push(() => window.removeEventListener("pageshow", onPageShow));
+        }
         return;
       }
 
       if (applyHashSectionRestore()) {
+        return;
+      }
+
+      if (window.scrollY >= USER_SCROLL_YIELDS_HERO_SYNC_PX) {
         return;
       }
 
@@ -270,7 +280,7 @@ export function ScrollToSectionOnLoad() {
     const onPopState = (): void => {
       if (cancelled || window.location.pathname !== "/") return;
       queueMicrotask(() => {
-        if (cancelled || isReload) return;
+        if (cancelled) return;
         applyHashSectionRestore();
       });
     };
@@ -278,18 +288,13 @@ export function ScrollToSectionOnLoad() {
     window.addEventListener("popstate", onPopState);
     cleanupFns.push(() => window.removeEventListener("popstate", onPopState));
 
-    let raf1 = 0;
-    if (isReload) {
-      run();
-    } else {
-      raf1 = requestAnimationFrame(() => {
-        requestAnimationFrame(run);
-      });
-    }
+    const raf1 = requestAnimationFrame(() => {
+      requestAnimationFrame(run);
+    });
 
     return () => {
       cancelled = true;
-      if (raf1) cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf1);
       timeoutIds.forEach((id) => window.clearTimeout(id));
       cleanupFns.splice(0).forEach((cleanup) => cleanup());
     };

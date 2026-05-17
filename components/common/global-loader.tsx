@@ -104,7 +104,11 @@ export function GlobalLoader({ disabled = false }: GlobalLoaderProps) {
       const lock = scrollLockRef.current;
       scrollLockRef.current = null;
       if (lock != null) {
-        window.scrollTo(0, lock.y);
+        const hasSectionHash =
+          typeof window !== "undefined" && window.location.hash.length > 1;
+        if (!hasSectionHash || lock.y > 0) {
+          window.scrollTo(0, lock.y);
+        }
       }
     };
   }, [scrollLocked]);

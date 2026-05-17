@@ -14,9 +14,11 @@ import {
   hasPendingGalleryHeroReturn,
   hasPendingGalleryReturn,
 } from "@/components/common/gallery-project-return-nav";
+import { isDocumentReloadNavigation } from "@/lib/global-loader-session";
 import {
   buildHomeSectionReturnPath,
   getPinnedHomeReturnSectionForProductSlug,
+  isAllowedProductListingReturnSectionId,
   isGalleryHomeReturnPath,
   isGalleryInSiteReturnPath,
   isProductDetailPathname,
@@ -26,7 +28,10 @@ import {
   sanitizeProductHomeReturnHref,
 } from "@/lib/product-listing-sections";
 
-export const INSTANT_PRODUCT_RETURN_SCROLL = { scrollBehavior: "auto" as const };
+export const INSTANT_PRODUCT_RETURN_SCROLL = {
+  scrollBehavior: "auto" as const,
+  bypassInstantScrollLock: true,
+} as const;
 
 /** Target `/#section` dari session (atau fallback `#produk` di halaman detail). */
 export function resolveProductDetailBackTarget(): string | null {
@@ -98,11 +103,24 @@ export function syncHomeToProductDetailReturnTarget(): boolean {
  */
 export function tryApplyProductListingReturnOnHome(): boolean {
   if (typeof window === "undefined" || window.location.pathname !== "/") return false;
+  if (isDocumentReloadNavigation()) return false;
 
   const currentHref = currentHomeHref();
 
   const intentHref = peekLandingHashNavigationIntent(currentHref);
   if (intentHref && isProductHomeReturnPath(intentHref)) {
+    try {
+      const id = decodeURIComponent(
+        new URL(intentHref, window.location.origin).hash.replace(/^#/, ""),
+      )
+        .trim()
+        .toLowerCase();
+      if (!isAllowedProductListingReturnSectionId(id)) {
+        return false;
+      }
+    } catch {
+      return false;
+    }
     clearLandingHashNavigationIntent();
     if (currentHref !== intentHref) {
       try {
@@ -122,6 +140,15 @@ export function tryApplyProductListingReturnOnHome(): boolean {
 
   const h = window.location.hash;
   if (h.length > 1) {
+    let sectionId: string;
+    try {
+      sectionId = decodeURIComponent(h.replace(/^#/, "")).trim().toLowerCase();
+    } catch {
+      return false;
+    }
+    if (!isAllowedProductListingReturnSectionId(sectionId)) {
+      return false;
+    }
     const safeHome = sanitizeProductHomeReturnHref(`/${h}`);
     if (safeHome) {
       markHomeReturnScrollHandled();
@@ -135,6 +162,7 @@ export function tryApplyProductListingReturnOnHome(): boolean {
 
 export function shouldSuppressHomeHeroSync(): boolean {
   return (
+    isDocumentReloadNavigation() ||
     peekHomeReturnScrollHandled() ||
     hasPendingProductListingReturn() ||
     hasPendingGalleryReturn() ||
