@@ -2896,6 +2896,19 @@ html[data-performance-lightweight="1"] .landing-hash-section-flash {
   }
 }
 
+/* Restore hash instan (back dari detail): cegah scroll anchoring & smooth scroll
+ * global memicu koreksi mikro setelah `scrollTo` programmatic (Safari iOS / Chrome Android). */
+@media (max-width: 767.98px) {
+  html[data-landing-instant-restore="1"] {
+    overflow-anchor: none;
+    scroll-behavior: auto !important;
+  }
+
+  html[data-landing-instant-restore="1"] main {
+    overflow-anchor: none;
+  }
+}
+
 /* ============================================================================
  * Mobile scroll perf overrides
  *  - Header: turunkan blur saat layar mobile. backdrop-filter pada element

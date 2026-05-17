@@ -20,7 +20,12 @@ let premiumScrollRafId = 0;
 /** Cegah scroll restore ganda (popstate + ScrollToSectionOnLoad) dalam satu navigasi balik. */
 let landingInstantScrollLockUntil = 0;
 const LANDING_INSTANT_SCROLL_LOCK_MS = 520;
-const MOBILE_ANCHOR_STABILIZE_THRESHOLD_PX = 6;
+/** Drift > ambang baru dikoreksi sekali (hindari micro-jump Safari subpixel). */
+const MOBILE_ANCHOR_STABILIZE_THRESHOLD_PX = 8;
+const LANDING_INSTANT_RESTORE_ATTR = "data-landing-instant-restore";
+const LANDING_INSTANT_RESTORE_CHROME_MS = 420;
+let landingInstantRestoreClearTimer: number | undefined;
+let mobileAnchorRestoreGeneration = 0;
 
 function cancelPremiumLandingScroll(): void {
   if (premiumScrollRafId) {
@@ -255,40 +260,62 @@ function tryAcquireLandingInstantScrollLock(): boolean {
 }
 
 /**
- * Mobile back dari detail: koreksi halus setelah header RO / visualViewport / paint section.
- * Hanya jika drift > ambang — hindari “loncat” berulang yang terlihat.
+ * Selama restore instan mobile: matikan scroll anchoring browser + smooth scroll global
+ * agar Safari tidak “menarik” posisi setelah `scrollTo` programmatic.
+ * Lihat `html[data-landing-instant-restore]` di globals.css.
+ */
+function armLandingInstantRestoreViewport(): void {
+  if (!isMobileishViewport()) return;
+  const root = document.documentElement;
+  root.setAttribute(LANDING_INSTANT_RESTORE_ATTR, "1");
+  if (landingInstantRestoreClearTimer !== undefined) {
+    window.clearTimeout(landingInstantRestoreClearTimer);
+  }
+  landingInstantRestoreClearTimer = window.setTimeout(() => {
+    root.removeAttribute(LANDING_INSTANT_RESTORE_ATTR);
+    landingInstantRestoreClearTimer = undefined;
+  }, LANDING_INSTANT_RESTORE_CHROME_MS);
+}
+
+/**
+ * Satu koreksi opsional setelah visualViewport/header settle (toolbar Safari).
+ * Bukan retry loop — maksimal satu `scrollTo` tambahan jika drift nyata.
  */
 function stabilizeMobileInstantLandingAnchor(el: HTMLElement): void {
   if (!isMobileishViewport()) return;
 
-  const applyIfNeeded = (): void => {
+  const generation = ++mobileAnchorRestoreGeneration;
+  let corrected = false;
+
+  const maybeCorrectOnce = (): void => {
+    if (corrected || generation !== mobileAnchorRestoreGeneration) return;
     const targetY = measureLandingAnchorScrollY(el);
     if (targetY == null) return;
-    if (Math.abs(window.scrollY - targetY) > MOBILE_ANCHOR_STABILIZE_THRESHOLD_PX) {
-      scrollWindowToY(targetY, "auto");
-    }
+    if (Math.abs(window.scrollY - targetY) <= MOBILE_ANCHOR_STABILIZE_THRESHOLD_PX) return;
+    corrected = true;
+    scrollWindowToY(targetY, "auto");
   };
-
-  requestAnimationFrame(() => requestAnimationFrame(applyIfNeeded));
-  window.setTimeout(applyIfNeeded, 90);
-  window.setTimeout(applyIfNeeded, 200);
 
   const vv = window.visualViewport;
-  if (!vv) return;
+  if (!vv) {
+    window.setTimeout(maybeCorrectOnce, 120);
+    return;
+  }
 
-  let vvTimer: number | undefined;
+  let idleTimer: number | undefined;
   const onVvResize = (): void => {
-    if (vvTimer !== undefined) window.clearTimeout(vvTimer);
-    vvTimer = window.setTimeout(() => {
-      applyIfNeeded();
-      vv.removeEventListener("resize", onVvResize);
-    }, 48);
+    if (generation !== mobileAnchorRestoreGeneration) return;
+    if (idleTimer !== undefined) window.clearTimeout(idleTimer);
+    idleTimer = window.setTimeout(maybeCorrectOnce, 120);
   };
+
   vv.addEventListener("resize", onVvResize, { passive: true });
   window.setTimeout(() => {
-    if (vvTimer !== undefined) window.clearTimeout(vvTimer);
+    if (generation !== mobileAnchorRestoreGeneration) return;
+    if (idleTimer !== undefined) window.clearTimeout(idleTimer);
     vv.removeEventListener("resize", onVvResize);
-  }, 420);
+    maybeCorrectOnce();
+  }, 360);
 }
 
 /** Posisikan tepi atas `el` tepat di bawah bilah sticky (tinggi aktual dari layout). */
@@ -336,6 +363,10 @@ export function scrollToLandingNavHref(
 
   if (instant && !tryAcquireLandingInstantScrollLock()) {
     return;
+  }
+
+  if (mobileInstant) {
+    armLandingInstantRestoreViewport();
   }
 
   const maxAttempts = instant ? 28 : 36;
